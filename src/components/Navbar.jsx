@@ -6,7 +6,7 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { FiShoppingCart } from "react-icons/fi";
 import { BsChatLeft } from "react-icons/bs";
 import { RiNotification3Fill } from "react-icons/ri";
-import avatar from '../data/avatar.jpg';
+import avatar from '../data/avatar.png';
 const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
     <TooltipComponent content={title} position="BottomCenter">
         <button
@@ -47,7 +47,6 @@ const Navbar = () => {
         <div className="flex justify-between p-2 md:ml-6 md:mr-6 relative">
             <NavButton title="Menu" customFunc={handleActveMenu} color={currentColor} icon={<AiOutlineMenu />} />
             <div className="flex">
-                <NavButton title="Cart" customFunc={() => handleClick('cart')} color={currentColor} icon={<FiShoppingCart />} />
                 <NavButton title="Chat" dotColor="#03C9D7" customFunc={() => handleClick('chat')} color={currentColor} icon={<BsChatLeft />} />
                 <NavButton title="Notification" dotColor="rgb(254, 201, 15)" customFunc={() => handleClick('notification')} color={currentColor} icon={<RiNotification3Fill />} />
                 <TooltipComponent content="Profile" position="BottomCenter">

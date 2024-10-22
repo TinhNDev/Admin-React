@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { SiShopware } from "react-icons/si";
+import { GiStorkDelivery } from "react-icons/gi";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 
 import { useStateContext } from "../context/ContextProvider";
@@ -25,7 +25,7 @@ const Sidebar = () => {
                 <>
                     <div className="flex justify-between items-center">
                         <Link to='/' onClick={handleCloseSidebar} className="items-center gap-3 ml-3 mt-4 flex text-xl font-extrabold tracking-tight dark:text-white text-slate-900" >
-                            <SiShopware /> <span>Admin</span>
+                        <GiStorkDelivery /> <span>Admin</span>
                         </Link>
                         <TooltipComponent content="Menu" position="BottomCenter">
                             <button
@@ -46,7 +46,7 @@ const Sidebar = () => {
                                 </p>
                                 {item.links.map((link) => (
                                     <NavLink
-                                        to={`/${link.name}`}
+                                        to={`/${link.path}`}
                                         key={link.name}
                                         onClick={handleCloseSidebar}
                                         style={({ isActive }) => ({
@@ -55,7 +55,7 @@ const Sidebar = () => {
                                         className={({ isActive }) => (isActive ? activeLink : normalLink)}
                                     >
                                         {link.icon}
-                                        <span className="capitalize"></span>
+                                        <span className="capitalize">{link.name}</span>
                                     </NavLink>
                                 ))}
                             </div>

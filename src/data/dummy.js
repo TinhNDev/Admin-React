@@ -1,16 +1,16 @@
 import React from 'react';
-import { AiOutlineCalendar, AiOutlineShoppingCart, AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
+import { IoFastFoodOutline } from "react-icons/io5";
 import { FiShoppingBag, FiEdit, FiPieChart, FiBarChart, FiCreditCard, FiStar, FiShoppingCart } from 'react-icons/fi';
 import { BsKanban, BsBarChart, BsBoxSeam, BsCurrencyDollar, BsShield, BsChatLeft } from 'react-icons/bs';
-import { BiColorFill } from 'react-icons/bi';
-import { IoMdContacts } from 'react-icons/io';
+import { FaShopify,FaRegComment  } from "react-icons/fa";
+import { BiSolidCoupon,BiSolidDashboard  } from "react-icons/bi";
 import { RiContactsLine, RiStockLine } from 'react-icons/ri';
-import { MdOutlineSupervisorAccount } from 'react-icons/md';
+import { MdOutlineSupervisorAccount,MdRestaurant,MdOutlineDeliveryDining   } from 'react-icons/md';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
 import { GiLouvrePyramid } from 'react-icons/gi';
 import { GrLocation } from 'react-icons/gr';
-import avatar from './avatar.jpg';
+import avatar from './avatar.png';
 import avatar2 from './avatar2.jpg';
 import avatar3 from './avatar3.png';
 import avatar4 from './avatar4.jpg';
@@ -21,7 +21,6 @@ import product4 from './product4.jpg';
 import product5 from './product5.jpg';
 import product6 from './product6.jpg';
 import product7 from './product7.jpg';
-import product8 from './product8.jpg';
 
 export const gridOrderImage = (props) => (
   <div>
@@ -471,88 +470,58 @@ export const employeesGrid = [
 
 export const links = [
   {
-    title: 'Dashboard',
+    title: 'Chung',
     links: [
       {
-        name: 'ecommerce',
-        icon: <FiShoppingBag />,
+        name: 'Tổng Quát',
+        icon: <BiSolidDashboard  />,
+        path: 'dashboard'
       },
     ],
   },
 
   {
-    title: 'Pages',
+    title: 'Trang',
     links: [
       {
-        name: 'orders',
-        icon: <AiOutlineShoppingCart />,
+        name: 'Sản Phẩm',
+        icon: <IoFastFoodOutline />,
+        path: 'products'
       },
       {
-        name: 'employees',
-        icon: <IoMdContacts />,
+        name: 'Đơn Hàng',
+        icon: <FaShopify />,
+        path: 'orders'
       },
       {
-        name: 'customers',
+        name: 'Người Giao Hàng',
+        icon: <MdOutlineDeliveryDining  />,
+        path: 'shippers'
+      },
+      {
+        name: 'Khách Hàng',
         icon: <RiContactsLine />,
+        path: 'customers'
+      },
+      {
+        name: 'Nhà Hàng',
+        icon: <MdRestaurant  />,
+        path: 'restaurants'
       },
     ],
   },
   {
-    title: 'Apps',
+    title: 'Dịch Vụ',
     links: [
       {
-        name: 'calendar',
-        icon: <AiOutlineCalendar />,
+        name: 'Khuyến Mãi',
+        icon: <BiSolidCoupon />,
+        path: 'cupons'
       },
       {
-        name: 'kanban',
-        icon: <BsKanban />,
-      },
-      {
-        name: 'editor',
-        icon: <FiEdit />,
-      },
-      {
-        name: 'color-picker',
-        icon: <BiColorFill />,
-      },
-    ],
-  },
-  {
-    title: 'Charts',
-    links: [
-      {
-        name: 'line',
-        icon: <AiOutlineStock />,
-      },
-      {
-        name: 'area',
-        icon: <AiOutlineAreaChart />,
-      },
-
-      {
-        name: 'bar',
-        icon: <AiOutlineBarChart />,
-      },
-      {
-        name: 'pie',
-        icon: <FiPieChart />,
-      },
-      {
-        name: 'financial',
-        icon: <RiStockLine />,
-      },
-      {
-        name: 'color-mapping',
-        icon: <BsBarChart />,
-      },
-      {
-        name: 'pyramid',
-        icon: <GiLouvrePyramid />,
-      },
-      {
-        name: 'stacked',
-        icon: <AiOutlineBarChart />,
+        name: 'Phản Hồi',
+        icon: <FaRegComment  />,
+        path: 'comments'
       },
     ],
   },
