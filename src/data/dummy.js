@@ -473,9 +473,9 @@ export const links = [
     title: 'Chung',
     links: [
       {
-        name: 'Tổng Quát',
+        name: 'Đăng Nhập',
         icon: <BiSolidDashboard  />,
-        path: 'dashboard'
+        path: 'login'
       },
     ],
   },

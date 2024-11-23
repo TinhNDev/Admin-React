@@ -1,55 +1,147 @@
-import React, { useRef } from 'react';
-import { GridComponent, ColumnsDirective, ColumnDirective, Resize, Sort, ContextMenu, Filter, Page, ExcelExport, PdfExport, Edit, Inject, Toolbar } from '@syncfusion/ej2-react-grids';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAllProducts, publishProduct, unpublishProduct } from '../apis/restaurant/product';
+import { useStateContext } from '../context/ContextProvider';
+import { Container, Typography, Grid, Box, CircularProgress } from '@mui/material';
+import styled from '@emotion/styled';
 
-import { ordersData, contextMenuItems, ordersGrid } from '../data/dummy';
-import Header from '../components/Header';
+const PageTitle = styled(Typography)`
+  margin-bottom: 20px;
+  font-weight: bold;
+`;
+
+const ScrollableGrid = styled(Grid)`
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  padding-right: 10px;
+`;
 
 const Product = () => {
-    const gridRef = useRef(null);  // Tạo một tham chiếu đến GridComponent
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { currentMode } = useStateContext();
+  const navigate = useNavigate();
 
-    const handleSearch = (event) => {
-        const grid = gridRef.current;  // Lấy tham chiếu của bảng
-        if (grid) {
-            grid.search(event.target.value);  // Thực hiện tìm kiếm trên bảng với giá trị nhập vào
-        }
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getAllProducts();
+        setProducts(data);
+      } catch (err) {
+        setError('Failed to fetch products');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const editing = { allowDeleting: true, allowEditing: true };
+    fetchProducts();
+  }, []);
 
-    return (
-        <div className="m-2 md:m-10 mt-16 p-2 md:p-10 bg-white rounded-3xl">
-            <Header category="Page" title="Products" />
-            <div className="mb-4 flex justify-end">
-  <input
-    type="text"
-    placeholder="Search products..."
-    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
-    onChange={handleSearch}
-  />
-</div>
+  const handleSingleClick = async (product) => {
+    try {
+      if (product.is_public) {
+        // Chuyển trạng thái sang "Không được duyệt"
+        const response = await unpublishProduct(product.id);
+        if (response) {
+          setProducts((prev) =>
+            prev.map((p) =>
+              p.id === product.id ? { ...p, is_public: false, is_draft: true } : p
+            )
+          );
+          alert('Sản phẩm đã chuyển sang "Không được duyệt"!');
+        }
+      } else {
+        // Chuyển trạng thái sang "Được duyệt"
+        const response = await publishProduct(product.id);
+        if (response) {
+          setProducts((prev) =>
+            prev.map((p) =>
+              p.id === product.id ? { ...p, is_public: true, is_draft: false } : p
+            )
+          );
+          alert('Sản phẩm đã được duyệt!');
+        }
+      }
+    } catch (err) {
+      alert('Có lỗi xảy ra!');
+    }
+  };
 
+  const handleDoubleClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
 
+  const handleClick = (product) => {
+    let clickTimeout;
+    if (clickTimeout) {
+      clearTimeout(clickTimeout);
+      handleDoubleClick(product.id); // Double click để chỉnh sửa chi tiết
+    } else {
+      clickTimeout = setTimeout(() => {
+        handleSingleClick(product); // Single click để đổi trạng thái
+        clearTimeout(clickTimeout);
+      }, 300);
+    }
+  };
 
-            <GridComponent
-                id="gridcomp"
-                dataSource={ordersData}
-                allowPaging
-                allowSorting
-                allowExcelExport
-                allowPdfExport
-                contextMenuItems={contextMenuItems}
-                editSettings={editing}
-                ref={gridRef}
+  if (loading) return <CircularProgress />;
+  if (error) return <Typography color="error">{error}</Typography>;
+
+  const textColor = currentMode === 'Dark' ? '#FFFFFF' : '#000000';
+
+  return (
+    <Container>
+      <PageTitle variant="h4" style={{ color: textColor }}>
+        Danh sách sản phẩm
+      </PageTitle>
+      <ScrollableGrid container spacing={2}>
+        {products.map((product) => (
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            key={product.id}
+            onClick={() => handleClick(product)}
+            style={{
+              cursor: 'pointer',
+              backgroundColor: product.is_public ? '#d4edda' : '#f8d7da',
+            }}
+          >
+            <Box
+              sx={{
+                borderRadius: '10px',
+                padding: '10px',
+                backgroundColor: currentMode === 'Dark' ? '#333' : '#f5f5f5',
+              }}
             >
-                <ColumnsDirective>
-                    {ordersGrid.map((item, index) => (
-                        <ColumnDirective key={index} {...item} />
-                    ))}
-                </ColumnsDirective>
-                <Inject services={[Resize, Sort, ContextMenu, Filter, Page, ExcelExport, Edit, PdfExport, Toolbar]} />
-            </GridComponent>
-        </div>
-    );
+              <img
+                src={product.image}
+                alt={product.name}
+                style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+              />
+              <Typography variant="h6" style={{ color: textColor }}>
+                {product.name}
+              </Typography>
+              <Typography
+                variant="body2"
+                style={{
+                  color: product.is_public ? '#28a745' : '#dc3545',
+                  fontWeight: 'bold',
+                }}
+              >
+                {product.is_public ? 'Đã duyệt' : 'Chưa duyệt'}
+              </Typography>
+              <Typography variant="body2" style={{ color: textColor }}>
+                Giá: {product.price.toLocaleString()} VND
+              </Typography>
+            </Box>
+          </Grid>
+        ))}
+      </ScrollableGrid>
+    </Container>
+  );
 };
 
 export default Product;

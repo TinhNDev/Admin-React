@@ -1,16 +1,23 @@
 import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { registerLicense } from '@syncfusion/ej2-base';
+import Cookie from "js-cookie";
+
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
-import "./App.css";
-
-import { useStateContext } from "./context/ContextProvider";
+import Auth from './pages/Auth';
 import ThemeSettings from "./components/ThemeSettings";
 import Footer from "./components/Footer";
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NDaF5cWGZCf1JpR2JGfV5ycEVHYVZRQHxfSk0SNHVRdkdnWH9ccnVWQmRYWUJyV0U=');
+import Product from "./pages/Product";
+import ProductDetail from "./pages/ProductDetail";
+
+import { useStateContext } from "./context/ContextProvider";
+import "./App.css";
+
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NDaF1cXmhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEFiWH1ccHJWTmJdUkRzWw==');
+
 const App = () => {
   const {
     setCurrentColor,
@@ -31,15 +38,14 @@ const App = () => {
     }
   }, []);
 
+  const isAuthenticated = Cookie.get("accessToken");
+
   return (
     <div className={currentMode === 'Dark' ? 'dark' : ''}>
       <BrowserRouter>
         <div className="flex relative dark:bg-main-dark-bg">
           <div className="fixed right-4 bottom-4" style={{ zIndex: '1000' }}>
-            <TooltipComponent
-              content="Settings"
-              position="Top"
-            >
+            <TooltipComponent content="Settings" position="Top">
               <button
                 type="button"
                 onClick={() => setThemeSettings(true)}
@@ -48,9 +54,9 @@ const App = () => {
               >
                 <FiSettings />
               </button>
-
             </TooltipComponent>
           </div>
+
           {activeMenu ? (
             <div className="w-72 fixed sidebar dark:bg-secondary-dark-bg bg-white">
               <Sidebar />
@@ -60,23 +66,37 @@ const App = () => {
               <Sidebar />
             </div>
           )}
-          <div
-            className={
-              activeMenu
-                ? "dark:bg-main-dark-bg bg-main-bg min-h-screen md:ml-72 w-full  "
-                : "bg-main-bg dark:bg-main-dark-bg  w-full min-h-screen flex-2 "
+
+          <div className={`
+            ${activeMenu 
+              ? "dark:bg-main-dark-bg bg-main-bg min-h-screen md:ml-72 w-full" 
+              : "bg-main-bg dark:bg-main-dark-bg w-full min-h-screen flex-2"
             }
-          >
-            <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full ">
+          `}>
+            <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full">
               <Navbar />
             </div>
+
             <div>{themeSettings && <ThemeSettings />}</div>
-            {/* <Route>
-                <Route></Route>
-            </Route> */}
+
+            <Routes>
+              <Route 
+                path="/login" 
+                element={isAuthenticated ? <Navigate to="/login" /> : <Auth />} 
+              />
+              <Route 
+                path="/products" 
+                element={isAuthenticated ? <Product /> : <Navigate to="/login" />} 
+              />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route 
+                path="/" 
+                element={<Navigate to={isAuthenticated ? "/products" : "/login"} />} 
+              />
+            </Routes>
+
             <Footer />
           </div>
-          
         </div>
       </BrowserRouter>
     </div>

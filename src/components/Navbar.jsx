@@ -7,6 +7,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { BsChatLeft } from "react-icons/bs";
 import { RiNotification3Fill } from "react-icons/ri";
 import avatar from '../data/avatar.png';
+import Cookie from 'js-cookie'
 const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
     <TooltipComponent content={title} position="BottomCenter">
         <button
