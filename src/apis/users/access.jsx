@@ -11,7 +11,7 @@ export const signUp = async (email, password, role) => {
       {
         headers: {
           "x-api-key": config.API_KEY,
-          "Content-Type": "application/json"
+          "Content-Type ": "application/json"
         }
       }
     );

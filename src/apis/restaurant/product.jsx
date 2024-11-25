@@ -5,7 +5,7 @@ import Cookie from 'js-cookie';
 export const getAllProducts = async () => {
   try {
     console.log(`${config.API_URL}/products`)
-    const response = await axios.get(`http://localhost:8080/v1/api/products?limit=30&page=1`,{
+    const response = await axios.get(`${config.API_URL}/products?limit=30&page=1`,{
         headers:{
             "x-api-key":config.API_KEY
         }
@@ -18,7 +18,7 @@ export const getAllProducts = async () => {
 
 export const updateProduct = async (product_id, categoriesId, toppingData, payload) => {
   try {
-    const response = await axios.put(`http://localhost:8080/v1/api/products/${product_id}`, {
+    const response = await axios.put(`${config.API_URL}/products/${product_id}`, {
       categoriesId,
       toppingData,
       productData: payload.productData,
@@ -26,7 +26,7 @@ export const updateProduct = async (product_id, categoriesId, toppingData, paylo
       headers:{
         "x-api-key":config.API_KEY,
         "Authorization":Cookie.get("accessToken"),
-        "x-client-id":"2"
+        "x-client-id":"9"
     }
     });
     return response.data;
@@ -38,11 +38,11 @@ export const updateProduct = async (product_id, categoriesId, toppingData, paylo
 
 export const publishProduct = async(product_id) =>{
   try {
-    const response = await axios.post(`http://localhost:8080/v1/api/products/public/${product_id}`,{},{
+    const response = await axios.post(`${config.API_URL}/products/public/${product_id}`,{},{
       headers:{
         "x-api-key":config.API_KEY,
-        "Authorization":Cookie.get("accessToken"),
-        "x-client-id":"2"
+        "Authorization":`eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5LCJlbWFpbCI6ImFkbWluMTJAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMyNDAwODg4LCJleHAiOjE3MzI1NzM2ODh9.sKiKtrPHIGvSRRfr1wdb-bKm86wus9kHeJMy8b5Ayj0pLZA-DMYgmvwemcpa1dSWMY-yjmM5eATy8KPIv-tLjVHeACF627smseXdR7z5Dhs6rfQw1xiOig55-UnOJkraD_l-tciGpgUP2-x0rj8W3QTndj28ioIn3jhC7BT-WXkeUxD50wf0W7DCdzyjK9wTpNaJ5SfH_6KC3ph3gh4trhoSvF-Ps74sn2BOqRDjViiE-PbulEl6czbfq6WQN-ZB4BCopoMQ_6uSGECx8I_xXjTfETJzLKZK1TpxOu4jo5oXs_gCNk0xe2LWAcwbgFd5Qfqw8RjIKfCDf3hbavm3tQ`,
+        "x-client-id":"9"
       }
     });
     return response.data
@@ -54,11 +54,11 @@ export const publishProduct = async(product_id) =>{
 
 export const unpublishProduct = async (product_id) => {
   try {
-    const response = await axios.post(`http://localhost:8080/v1/api/products/unpublic/${product_id}`,{}, {
+    const response = await axios.post(`${config.API_URL}/products/unpublic/${product_id}`,{}, {
       headers: {
         "x-api-key": config.API_KEY,
         "Authorization": Cookie.get("accessToken"),
-        "x-client-id": "2",
+        "x-client-id": "9",
       },
     });
     return response.data;
