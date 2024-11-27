@@ -42,6 +42,7 @@ export const signIn = async (email, password) => {
     if (response.data.metadata.tokens && response.data.metadata.tokens.accessToken) {
       Cookie.set("accessToken", response.data.metadata.tokens.accessToken, { expires: 3 });
       Cookie.set("refreshToken", response.data.metadata.tokens.refreshToken, { expires: 7 });
+      Cookie.set("username", response.data.metadata.user.email)
       Cookie.set("userId", response.data.metadata.user.id)
     }
     return response.data;
