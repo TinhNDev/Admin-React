@@ -15,6 +15,7 @@ import ProductDetail from "./pages/ProductDetail";
 
 import { useStateContext } from "./context/ContextProvider";
 import "./App.css";
+import RestaurantList from "./pages/Restaurant";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NDaF1cXmhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEFiWH1ccHJWTmJdUkRzWw==');
 
@@ -89,6 +90,10 @@ const App = () => {
                 element={isAuthenticated ? <Product /> : <Navigate to="/login" />} 
               />
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route 
+                path="/restaurants" 
+                element={isAuthenticated ? <RestaurantList /> : <Navigate to="/login" />} 
+              />
               <Route 
                 path="/" 
                 element={<Navigate to={isAuthenticated ? "/products" : "/login"} />} 

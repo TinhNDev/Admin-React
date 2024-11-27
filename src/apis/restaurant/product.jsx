@@ -41,8 +41,8 @@ export const publishProduct = async(product_id) =>{
     const response = await axios.post(`${config.API_URL}/products/public/${product_id}`,{},{
       headers:{
         "x-api-key":config.API_KEY,
-        "Authorization":`eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5LCJlbWFpbCI6ImFkbWluMTJAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMyNDAwODg4LCJleHAiOjE3MzI1NzM2ODh9.sKiKtrPHIGvSRRfr1wdb-bKm86wus9kHeJMy8b5Ayj0pLZA-DMYgmvwemcpa1dSWMY-yjmM5eATy8KPIv-tLjVHeACF627smseXdR7z5Dhs6rfQw1xiOig55-UnOJkraD_l-tciGpgUP2-x0rj8W3QTndj28ioIn3jhC7BT-WXkeUxD50wf0W7DCdzyjK9wTpNaJ5SfH_6KC3ph3gh4trhoSvF-Ps74sn2BOqRDjViiE-PbulEl6czbfq6WQN-ZB4BCopoMQ_6uSGECx8I_xXjTfETJzLKZK1TpxOu4jo5oXs_gCNk0xe2LWAcwbgFd5Qfqw8RjIKfCDf3hbavm3tQ`,
-        "x-client-id":"9"
+        "Authorization":Cookie.get("accessToken"),
+        "x-client-id":Cookie.get("userId")
       }
     });
     return response.data
@@ -58,7 +58,7 @@ export const unpublishProduct = async (product_id) => {
       headers: {
         "x-api-key": config.API_KEY,
         "Authorization": Cookie.get("accessToken"),
-        "x-client-id": "9",
+        "x-client-id": Cookie.get("userId"),
       },
     });
     return response.data;
