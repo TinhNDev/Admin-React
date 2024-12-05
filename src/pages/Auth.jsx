@@ -14,8 +14,8 @@ const Auth = () => {
     try {
       const response = await signIn(email, password);
       if (response) {
-        Cookie.set("accessToken", response.tokens.accessToken, { expires: 7 });
-        navigate("/home");
+        navigate("/products");
+        window.location.reload()
       }
     } catch (error) {
       setError("Đăng nhập thất bại. Vui lòng thử lại.");
