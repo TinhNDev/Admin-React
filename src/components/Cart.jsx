@@ -1,16 +1,11 @@
-import React from "react";
-import {MdOutlineCancel} from 'react-icons/md'
-import {AiOutlinePlus, AiOutlineMinus} from 'react-icons/ai'
+import React from 'react';
 
-import { useStateContext } from "../context/ContextProvider";
-import Button from "./Button";
-
-const Cart = () =>{
-    const {currentColor} = useStateContext();
-
-    return(
+const Cart = () => {
+    return (
         <div>
             
         </div>
-    )
-}
+    );
+};
+
+export default Cart;
