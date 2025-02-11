@@ -4,7 +4,7 @@ import { admin_login, messageClear } from '../store/reducers/authReducer';
 import { PropagateLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import img_admin from './../data/avatar4.jpg';
+import img_admin from './../data/avatar2.jpg';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -51,11 +51,11 @@ const Login = () => {
 
     return (
         <div className="min-w-screen min-h-screen flex justify-center items-center bg-white">
-            <div className="flex bg-white shadow-lg rounded-lg overflow-hidden" style={{ width: '80%', maxWidth: '900px' }}>
+            <div className="flex flex-row bg-white shadow-lg rounded-lg overflow-hidden w-4/5 max-w-3xl">
                 {/* Left section for form */}
-                <div className="w-full md:w-1/2 p-8 bg-white">
+                <div className="w-1/2 p-8 bg-white">
                     <div className="text-left mb-6">
-                        <h2 className="text-3xl font-bold text-gray-900">DG Ecommerce</h2>
+                        <h2 className="text-3xl font-bold text-gray-900">Yummy Bee</h2>
                         <p className="text-gray-600 mt-2">Welcome back admin</p>
                         <h3 className="text-4xl font-bold mt-4">Sign in</h3>
                     </div>
@@ -75,7 +75,7 @@ const Login = () => {
                         </div>
                         <div className="flex flex-col gap-2 mb-4">
                             <label htmlFor="password" className="text-gray-700 font-semibold flex justify-between">
-                                Password <span className="text-orange-500 cursor-pointer"></span>
+                                Password
                             </label>
                             <input
                                 onChange={inputHandle}
@@ -98,10 +98,9 @@ const Login = () => {
                 </div>
 
                 {/* Right section for illustration */}
-                <div className="hidden md:flex w-1/2 bg-orange-50 justify-center items-center">
-                <img src={img_admin} alt="Admin Illustration" className="w-3/4 h-auto" />
-</div>
-
+                <div className="flex w-1/2 bg-orange-50 justify-center items-center">
+                    <img src={img_admin} alt="Admin Illustration" className="w-3/4 h-auto" />
+                </div>
             </div>
         </div>
     );
