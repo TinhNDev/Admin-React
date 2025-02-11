@@ -1,13 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../api/api";
+import api from "../../apis/api";
 import { jwtDecode } from "jwt-decode";
 
 
 export const admin_login = createAsyncThunk(
-    'auth/adminr_login',
+    'auth/admin_login',
     async(info, { rejectWithValue,fulfillWithValue }) => {
         try {
-            const {data} = await api.post('/admin/admin-login',info)
+            const {data} = await api.post('/user/login',info)
             localStorage.setItem('adminToken',data.token)
            // console.log(data) 
             return fulfillWithValue(data)
@@ -61,10 +61,10 @@ const authReducer = createSlice({
                 state.loader = false;
             })
             .addCase(admin_login.fulfilled, (state, { payload }) => {
-                const userInfo = decodeToken(payload.token)
+                const adminInfo = decodeToken(payload.token)
                 state.successMessage = payload.message;
                 state.loader = false;
-                state.userInfo = userInfo
+                state.userInfo = adminInfo
             })
     }
 })
