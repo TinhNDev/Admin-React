@@ -1,25 +1,24 @@
-import React from 'react';
-
-import './App.css';
-import { BrowserRouter, Route, Routes, Navigate  } from 'react-router-dom';
-
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; 
+import Router from "./router/Router";
+import publicRoutes from "./router/routes/publicRoutes";
+import { getRoutes } from "./router/routes";
 
 
 function App() {
 
-  return (
-    <BrowserRouter>
-    <Routes>
-      <Route path='/login' element={<Login/>} />
-      <Route path='/' element={<Dashboard/>} />
-     <Route path="*" element={<Navigate to="/login" replace />} />
-     </Routes>
-    
-    </BrowserRouter>
-  );
+    const navigate = useNavigate(); 
+
+    const [allRoutes, setAllRoutes] = useState([...publicRoutes]);
+
+    useEffect(() => {
+
+        navigate("/login");
+        const routes = getRoutes();
+        setAllRoutes([...allRoutes, routes]);
+    }, []);
+
+    return <Router allRoutes={allRoutes} />;
 }
 
 export default App;
-;
