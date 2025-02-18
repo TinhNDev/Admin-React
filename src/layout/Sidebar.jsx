@@ -30,11 +30,11 @@ const Sidebar = ({showSidebar, setShowSidebar}) => {
             </Link> 
         </div>
 
-        <div className='px-[16px]'>
+        <div className='px-[16px] py-[50px]'>
             <ul>
                 {
                     allNav.map((n,i) =><li key={i}>
-                       <Link to={n.path} className={`${pathname === n.path ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' : 'text-[#030811] font-bold duration-200 ' } px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1 `} >
+                       <Link to={n.path} className={`${pathname === n.path ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' : 'text-[#030811] font-bold duration-200 ' } px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1 `} >
                         <span>{n.icon}</span>
                         <span>{n.title}</span>
                         </Link>
@@ -43,7 +43,7 @@ const Sidebar = ({showSidebar, setShowSidebar}) => {
                 }
 
             <li>
-                <button className='text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                <button className='text-[#030811] font-bold duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
                 <span><BiLogOutCircle /></span>
                 <span>Logout</span>
                 </button>
