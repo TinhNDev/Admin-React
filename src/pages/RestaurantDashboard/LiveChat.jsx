@@ -3,7 +3,7 @@ import React from 'react';
 const LiveChat = () => {
     return (
         <div>
-            livechattt
+            livechat
         </div>
     );
 };

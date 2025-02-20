@@ -3,7 +3,9 @@ import { PiUsersThreeFill } from "react-icons/pi";
 import { IoRestaurant } from "react-icons/io5";
 import { MdLocalShipping } from "react-icons/md";
 import { FaBowlFood } from "react-icons/fa6";
-import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
+import { MdFeedback } from "react-icons/md";
+import { FaCodePullRequest } from "react-icons/fa6";
+import { RiCoupon2Fill } from "react-icons/ri";
 
 export const allNav = [
     {
@@ -36,17 +38,31 @@ export const allNav = [
     },
     {
         id : 5,
-        title : 'Product',
+        title : 'AddFood Request',
         icon : <FaBowlFood />,
         role : 'admin',
-        path: '/admin/product'
+        path: '/admin/productRequest'
     },
     {
         id : 6,
-        title : 'LiveChat',
-        icon : <IoChatbubbleEllipsesSharp />,
+        title : 'Restaurant Request',
+        icon : <FaCodePullRequest />,
         role : 'admin',
-        path: '/admin/live-chat'
+        path: '/admin/restaurant-request'
+    },
+    {
+        id : 7,
+        title : 'Coupon',
+        icon : <RiCoupon2Fill />,
+        role : 'admin',
+        path: '/admin/coupon'
+    },
+    {
+        id : 8,
+        title : 'FeedBack',
+        icon : <MdFeedback />,
+        role : 'admin',
+        path: '/admin/feedback'
     },
 
 

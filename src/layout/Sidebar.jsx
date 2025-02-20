@@ -4,6 +4,7 @@ import { getNav } from '../navigation/index';
 import { BiLogOutCircle } from "react-icons/bi";
 import {  useSelector } from "react-redux";
 import logo from '../data/avatar4.jpg'
+import { IoSettings } from "react-icons/io5";
 
 const Sidebar = ({showSidebar, setShowSidebar}) => {
 
@@ -23,7 +24,7 @@ const Sidebar = ({showSidebar, setShowSidebar}) => {
             <div onClick={()=> setShowSidebar(false)} className={`fixed duration-200 ${!showSidebar ? 'invisible' : 'visible'} w-screen h-screen bg-[#8cbce780] top-0 left-0 z-10`} > 
             </div>
 
-    <div className={`w-[260px] fixed bg-[#e6e7fb] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/_5%)] transition-all ${showSidebar ? 'left-0' : '-left-[260px] lg:left-0'} `}>
+    <div className={`w-[260px] fixed bg-[#eb5d50] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/_5%)] transition-all ${showSidebar ? 'left-0' : '-left-[260px] lg:left-0'} `}>
         <div className='h-[70px] flex justify-center items-center'>
             <Link to='/' className='w-[180px] h-[50px]'>
                 <img className='w-full h-full' src={logo} alt="" />
@@ -41,13 +42,22 @@ const Sidebar = ({showSidebar, setShowSidebar}) => {
 
                     </li> )
                 }
-
-            <li>
-                <button className='text-[#030811] font-bold duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
-                <span><BiLogOutCircle /></span>
-                <span>Logout</span>
-                </button>
-            </li>
+                    <div className='mt-auto flex flex-col h-[calc(100%-70px)]'>
+                        <hr className='border-t border-gray-300 my-2' />
+                        <li>
+                            <button className='text-[#030811] font-bold duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                                <span><IoSettings /></span>
+                                <span>Setting</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button className='text-[#030811] font-bold duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                                <span><BiLogOutCircle /></span>
+                                <span>Logout</span>
+                            </button>
+                        </li>
+                    
+                    </div>
  
 
 

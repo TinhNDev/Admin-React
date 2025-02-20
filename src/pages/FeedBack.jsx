@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Product = () => {
+const FeedBack = () => {
     return (
         <div>
-            productssss
+            feedback
         </div>
     );
 };
 
-export default Product;
+export default FeedBack;

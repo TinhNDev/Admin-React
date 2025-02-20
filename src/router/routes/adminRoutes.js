@@ -3,8 +3,11 @@ const Dashboard = lazy(()=> import('../../pages/Dashboard'))
 const Restaurant = lazy(()=> import('../../pages/Restaurant'))
 const Customer = lazy(()=> import('../../pages/Customer'))
 const Shipper = lazy(()=> import('../../pages/Shipper'))
-const Product = lazy(()=> import('../../pages/Product'))
-const LiveChat = lazy(()=> import('../../pages/LiveChat'))
+const ProductRequest = lazy(()=> import('../../pages/ProductRequest'))
+const FeedBack = lazy(()=> import('../../pages/FeedBack'))
+const RestaurantRequest = lazy(()=> import('../../pages/RestaurantRequest'))
+const Coupon = lazy(()=> import('../../pages/Coupon'))
+const DetailRestaurant = lazy(()=> import('../../pages/DetailRestaurant'))
 
 
 export const adminRoutes = [
@@ -29,15 +32,29 @@ export const adminRoutes = [
         role : 'admin'
     },
     {
-        path: 'admin/product',
-        element : <Product/>,
+        path: 'admin/productRequest',
+        element : <ProductRequest/>,
         role : 'admin'
     },
     {
-        path: 'admin/live-chat',
-        element : <LiveChat/>,
+        path: 'admin/feedback',
+        element : <FeedBack/>,
         role : 'admin'
     },
-    
+    {
+        path: 'admin/restaurant-request',
+        element : <RestaurantRequest/>,
+        role : 'admin'
+    },
+    {
+        path: 'admin/coupon',
+        element : <Coupon/>,
+        role : 'admin'
+    },
+    {
+        path: 'admin/restaurant/details/:restaurantId',
+        element : <DetailRestaurant/>,
+        role : 'admin'
+    },
  
 ]
