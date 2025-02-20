@@ -6,6 +6,8 @@ import { FaBowlFood } from "react-icons/fa6";
 import { MdFeedback } from "react-icons/md";
 import { FaCodePullRequest } from "react-icons/fa6";
 import { RiCoupon2Fill } from "react-icons/ri";
+import { IoMdInformationCircle } from "react-icons/io";
+import { IoIosChatbubbles } from "react-icons/io";
 
 export const allNav = [
     {
@@ -63,6 +65,34 @@ export const allNav = [
         icon : <MdFeedback />,
         role : 'admin',
         path: '/admin/feedback'
+    },
+    {
+        id : 10,
+        title : 'Dashboard',
+        icon : <AiOutlineDashboard />,
+        role : 'restaurant',
+        path: '/restaurant/dashboard'
+    },
+    {
+        id : 11,
+        title : 'Product',
+        icon : <FaBowlFood />,
+        role : 'restaurant',
+        path: '/restaurant/product'
+    },
+    {
+        id : 12,
+        title : 'LiveChat',
+        icon : <IoIosChatbubbles />,
+        role : 'restaurant',
+        path: '/restaurant/live-chat'
+    },
+    {
+        id : 13,
+        title : 'Information',
+        icon : <IoMdInformationCircle />,
+        role : 'restaurant',
+        path: '/restaurant/information'
     },
 
 

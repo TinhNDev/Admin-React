@@ -8,7 +8,7 @@ const Infomation = lazy(()=> import('../../pages/RestaurantDashboard/Infomation'
 
 
 
-export const adminRoutes = [
+export const restaurantRoutes = [
     {
         path: 'restaurant/dashboard',
         element : <ResDashboard/>,

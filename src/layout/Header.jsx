@@ -1,9 +1,12 @@
 import React from 'react';
 import { FaList } from 'react-icons/fa';
 import img_admin from './../data/avatar2.jpg';
+import {  useSelector } from "react-redux";
 
 
 const Header = ({showSidebar, setShowSidebar}) => {
+
+    const {adminInfo} = useSelector(state => state.auth);
 
 
     return (
@@ -22,8 +25,8 @@ const Header = ({showSidebar, setShowSidebar}) => {
           <div className='flex justify-center items-center'>
             <div className='flex justify-center items-center gap-3'>
               <div className='flex justify-center items-center flex-col text-end'>
-          <h2 className='text-md font-bold'>Admin</h2>
-          <span className='text-[14px] w-full font-normal'>Admin</span>
+          <h2 className='text-md font-bold'>lalala</h2>
+          <span className='text-[14px] w-full font-normal'>{ adminInfo.role }</span>
               </div>
                 <img className='w-[45px] h-[45px] rounded-full overflow-hidden' src={img_admin} alt="" />  
             </div>
