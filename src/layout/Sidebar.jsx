@@ -9,7 +9,7 @@ import { IoSettings } from "react-icons/io5";
 const Sidebar = ({showSidebar, setShowSidebar}) => {
 
 
-    const {role} = useSelector(state => state.auth.adminInfo);
+    const {role} = useSelector(state => state.auth.userInfo);
 
     const {pathname} = useLocation()
     const [allNav,setAllNav] = useState([])

@@ -1,13 +1,28 @@
-import React, { useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import Search from '../components/Search';
 import { Link } from 'react-router-dom';
 import Pagination from '../components/Pagination'; 
 import { FaEye, FaTrash } from 'react-icons/fa'; 
+import { useDispatch, useSelector } from 'react-redux';
+import {get_allRestaurant} from '../store/reducers/restaurantReducer';
 
 const Restaurant = () => {
-    const [currentPage, setCurrentPage] = useState(1)
-    const [searchValue, setSearchValue] = useState('')
-    const [parPage, setParPage] = useState(5)
+    const dispatch = useDispatch();
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchValue, setSearchValue] = useState('');
+    const [parPage, setParPage] = useState(5);
+
+    const { restaurants, totalRestaurant } = useSelector(state => state.restaurant);
+
+    useEffect(() => {
+        const obj = {
+            parPage: parseInt(parPage),
+            page: parseInt(currentPage),
+            searchValue
+        };
+        dispatch(get_allRestaurant(obj));
+    }, [searchValue, currentPage, parPage]);
 
     return (
         <div className='px-2 lg:px-7 pt-5'>
@@ -33,23 +48,23 @@ const Restaurant = () => {
 
         <tbody>
             {
-                [1,2,3,4].map((d, i) => <tr key={i}>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{d}</td>
+                restaurants.map((res,index) =>( <tr key={index}>
+                <td className='py-1 px-4 font-medium whitespace-nowrap'>{index + 1}</td>
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
-                    <img className='w-[45px] h-[45px]' src={`../data/avatar${d}.png`} alt="" />
+                    <img className='w-[45px] h-[45px]' src={`../data/avatar${1}.png`} alt="" />
                 </td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>Thanh Tinh</td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>0909090909090</td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>HCM </td>
+                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{res.name}</td>
+                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{res.phone_number}</td>
+                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{res.address_x} </td>
                  
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
                     <div className='flex justify-start items-center gap-4'>
-                    <Link to={`/admin/restaurant/details/${d}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'> <FaEye/> </Link>
+                    <Link to={`/admin/restaurant/details/${1}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'> <FaEye/> </Link>
                     <Link className='p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50'> <FaTrash/> </Link> 
                     </div>
                     
                     </td>
-            </tr> )
+            </tr>     ))
             }
 
             

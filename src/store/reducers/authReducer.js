@@ -39,7 +39,7 @@ const authReducer = createSlice({
     name: 'auth',
     initialState: {
         loader: false,
-        adminInfo: decodeToken(localStorage.getItem('adminToken')),
+        userInfo: decodeToken(localStorage.getItem('adminToken')),
         errorMessage: '',
         successMessage: '',
     },
@@ -49,10 +49,10 @@ const authReducer = createSlice({
             state.successMessage = "";
         },
         user_reset: (state) => {
-            state.adminInfo = null;
+            state.userInfo = null;
         },
         logout: (state) => {
-            state.adminInfo = null;
+            state.userInfo = null;
             localStorage.removeItem('adminToken');
         }
     },
@@ -72,10 +72,10 @@ const authReducer = createSlice({
                 state.loader = false;
             })
             .addCase(admin_login.fulfilled, (state, { payload }) => {
-                const adminInfo = decodeToken(payload.accessToken);
+                const userInfo = decodeToken(payload.accessToken);
                 state.successMessage = "Login successful";
                 state.loader = false;
-                state.adminInfo = adminInfo;
+                state.userInfo = userInfo;
             });
     }
 });
