@@ -51,7 +51,7 @@ const Restaurant = () => {
                 restaurants.map((res,index) =>( <tr key={index}>
                 <td className='py-1 px-4 font-medium whitespace-nowrap'>{index + 1}</td>
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
-                    <img className='w-[45px] h-[45px]' src={`../data/avatar${1}.png`} alt="" />
+                    {/* <img className='w-[45px] h-[45px]' src={`../data/avatar.png`} alt="" /> */}
                 </td>
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{res.name}</td>
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{res.phone_number}</td>
@@ -59,7 +59,7 @@ const Restaurant = () => {
                  
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
                     <div className='flex justify-start items-center gap-4'>
-                    <Link to={`/admin/restaurant/details/${1}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'> <FaEye/> </Link>
+                    <Link to={`/admin/restaurant/details/${res.id}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'> <FaEye/> </Link>
                     <Link className='p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50'> <FaTrash/> </Link> 
                     </div>
                     
