@@ -51,7 +51,7 @@ const Restaurant = () => {
                 restaurants.map((res,index) =>( <tr key={index}>
                 <td className='py-1 px-4 font-medium whitespace-nowrap'>{index + 1}</td>
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
-                    {/* <img className='w-[45px] h-[45px]' src={`../data/avatar.png`} alt="" /> */}
+                    <img className='w-[45px] h-[45px]' src={res.image} alt="" />
                 </td>
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{res.name}</td>
                 <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{res.phone_number}</td>

@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { get_restaurant, messageClear } from '../store/reducers/restaurantReducer';
+import { get_driver, messageClear } from '../store/reducers/driverReducer';
 import toast from 'react-hot-toast';
 
-const DetailRestaurant = () => {
-    const dispatch = useDispatch();
-    const { restaurant, successMessage, errorMessage, loader } = useSelector(state => state.restaurant);
-    const { restaurantId } = useParams();
+const DetailShipper = () => {
 
-    // Lấy dữ liệu nhà hàng khi component mount
+    const dispatch = useDispatch();
+    const { driver, successMessage, errorMessage, loader } = useSelector(state => state.driver);
+    const { shipperId } = useParams();
+
     useEffect(() => {
-        if (restaurantId) {
-            console.log("Dispatching get_restaurant with ID:", restaurantId);
-            dispatch(get_restaurant(restaurantId)); 
-        }
-    }, [dispatch, restaurantId]);
+        dispatch(get_driver()); 
+    }, []);
 
     const [status, setStatus] = useState('');
 
@@ -33,10 +30,10 @@ const DetailRestaurant = () => {
 
     // Khi restaurant thay đổi, cập nhật status
     useEffect(() => { 
-        if (restaurant) { 
-            setStatus(restaurant?.status || '');
+        if (driver) { 
+            setStatus(driver?.status || '');
         } 
-    }, [restaurant]);
+    }, [driver]);
 
     const submit = (e) => {
         e.preventDefault();
@@ -46,7 +43,7 @@ const DetailRestaurant = () => {
 
     return (
         <div className='px-2 lg:px-7 pt-5'>
-            <h1 className='text-[20px] font-bold mb-3'>Restaurant Details</h1>
+            <h1 className='text-[20px] font-bold mb-3'>Shipper Details</h1>
 
             {/* Hiển thị loading */}
             {loader && <p className="text-center text-blue-500">Đang tải dữ liệu...</p>}
@@ -58,8 +55,8 @@ const DetailRestaurant = () => {
                     {/* Ảnh nhà hàng */}
                     <div className='w-3/12 flex justify-center items-center py-3'>
                         <div>
-                            {restaurant?.image ? (
-                                <img className='w-full h-[230px]' src={restaurant.image} alt={restaurant.name} />
+                            {driver?.image ? (
+                                <img className='w-full h-[230px]' src={driver.image} alt={driver.name} />
                             ) : (
                                 <span>Image Not Uploaded</span>
                             )}
@@ -73,19 +70,19 @@ const DetailRestaurant = () => {
                             <div className='flex flex-col gap-2 p-4 bg-[#b1addf] rounded-md'>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
                                     <span>Name:</span>
-                                    <span>{restaurant?.name || "N/A"}</span> 
+                                    <span>{driver?.name || "N/A"}</span> 
                                 </div>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
                                     <span>Time Opening:</span>
-                                    <span>{restaurant?.opening_hours || "N/A"}</span> 
+                                    <span>{driver?.opening_hours || "N/A"}</span> 
                                 </div>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
                                     <span>Description:</span>
-                                    <span>{restaurant?.description || "N/A"}</span> 
+                                    <span>{driver?.description || "N/A"}</span> 
                                 </div>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
                                     <span>Phone Number:</span>
-                                    <span>{restaurant?.phone_number || "N/A"}</span> 
+                                    <span>{driver?.phone_number || "N/A"}</span> 
                                 </div>
                             </div> 
                         </div> 
@@ -98,11 +95,11 @@ const DetailRestaurant = () => {
                             <div className='flex flex-col gap-2 p-4 bg-[#b1addf] rounded-md'>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
                                     <span>Address:</span>
-                                    <span>{restaurant?.address || "N/A"}</span> 
+                                    <span>{driver?.address || "N/A"}</span> 
                                 </div>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
                                     <span>Status:</span>
-                                    <span>{restaurant?.status || "N/A"}</span> 
+                                    <span>{driver?.status || "N/A"}</span> 
                                 </div>
                             </div> 
                         </div> 
@@ -134,4 +131,4 @@ const DetailRestaurant = () => {
     );
 };
 
-export default DetailRestaurant;
+export default DetailShipper;
