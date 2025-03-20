@@ -6,7 +6,7 @@ export const get_allRestaurant = createAsyncThunk(
     "admin/get_allRestaurant",
     async ({ parPage, page, searchValue }, { rejectWithValue, fulfillWithValue, getState }) => {
         try {
-            const token = localStorage.getItem("adminToken");
+            const token = localStorage.getItem("userToken");
             const adminId = getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
 
             if (!token || !adminId) {

@@ -13,7 +13,6 @@ function App() {
 
     useEffect(() => {
 
-        navigate("/login");
         const routes = getRoutes();
         setAllRoutes([...allRoutes, routes]);
     }, []);

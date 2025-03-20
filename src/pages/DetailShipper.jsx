@@ -11,8 +11,11 @@ const DetailShipper = () => {
     const { shipperId } = useParams();
 
     useEffect(() => {
-        dispatch(get_driver()); 
-    }, []);
+        if (shipperId) {
+            console.log("Dispatching get_restaurant with ID:", shipperId);
+            dispatch(get_driver(shipperId)); 
+        }
+    }, [dispatch, shipperId]);
 
     const [status, setStatus] = useState('');
 

@@ -70,28 +70,28 @@ export const allNav = [
         id : 10,
         title : 'Dashboard',
         icon : <AiOutlineDashboard />,
-        role : 'restaurant',
+        role : 'seller',
         path: '/restaurant/dashboard'
     },
     {
         id : 11,
         title : 'Product',
         icon : <FaBowlFood />,
-        role : 'restaurant',
+        role : 'seller',
         path: '/restaurant/product'
     },
     {
         id : 12,
         title : 'LiveChat',
         icon : <IoIosChatbubbles />,
-        role : 'restaurant',
+        role : 'seller',
         path: '/restaurant/live-chat'
     },
     {
         id : 13,
         title : 'Information',
         icon : <IoMdInformationCircle />,
-        role : 'restaurant',
+        role : 'seller',
         path: '/restaurant/information'
     },
 

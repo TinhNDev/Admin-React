@@ -6,7 +6,7 @@ export const get_allDriver = createAsyncThunk(
     "admin/get_allDriver",
     async ({ parPage, page, searchValue }, { rejectWithValue, fulfillWithValue, getState }) => {
         try {
-            const token = localStorage.getItem("adminToken");
+            const token = localStorage.getItem("userToken");
             const adminId = getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
 
             if (!token || !adminId) {
@@ -30,25 +30,26 @@ export const get_allDriver = createAsyncThunk(
 );
 
 export const get_driver = createAsyncThunk(
-    "admin/get_driver",
-    async ({ parPage, page, searchValue }, { rejectWithValue, fulfillWithValue, getState }) => {
+    'admin/get_driver',
+    async (shipperID, { rejectWithValue, fulfillWithValue,getState }) => {
         try {
-            const token = localStorage.getItem("adminToken");
+            console.log("shipperID ID:", shipperID);
+            const token = localStorage.getItem("userToken");
             const adminId = getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
 
             if (!token || !adminId) {
                 return rejectWithValue("Không có quyền truy cập, vui lòng đăng nhập.");
             }
 
-            const { data } = await api.get("/driver/detail", {
-                params: { parPage, page, search: searchValue },
+            const { data } = await api.get(`/admin/${shipperID}/driver`, {
                 headers: {
                     Authorization: token,
                     "x-client-id": adminId,
                 },
             });
 
-            return fulfillWithValue(data.metadata);
+            console.log("API Response:", data); // Debug API response
+            return fulfillWithValue(data.metadata); // Lấy đúng `metadata`
         } catch (error) {
             console.error("Lỗi API:", error?.response?.data || error.message);
             return rejectWithValue(error.response?.data?.message || "Không thể kết nối đến server.");
@@ -102,7 +103,7 @@ const driverReducer = createSlice({
             })
             .addCase(get_driver.rejected, (state, { payload }) => {
                 state.loader = false;
-                state.errorMessage = payload || "Không thể lấy danh sách driver.";
+                state.errorMessage = payload || "Không thể lấy driver.";
             })
 
     },

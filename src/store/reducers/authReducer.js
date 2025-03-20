@@ -25,6 +25,28 @@ export const admin_login = createAsyncThunk(
         }
     }
 );
+export const seller_register = createAsyncThunk(
+    'auth/seller_register',
+    async (info, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const updatedInfo = {
+                ...info,
+                fcmToken: "cdfOiecxQr-kDJLWiu_YSX:APA91bG5SDal5HAXyaD5o_uFaqljdJDXWN3m7IEbvIlP4o6PclTcknP02q5HL-JCAM1cMfVh3kouwF7swGnE2Cz1yQda8K58Wtht4IuPEoClBVntCuT-h",
+            };
+
+            const { data } = await api.post('/user/signup', updatedInfo);
+
+            const { metadata } = data;
+
+            return fulfillWithValue({ metadata });
+        } catch (error) {
+            return rejectWithValue(error.response?.data || { error: "Registration failed" });
+        }
+    }
+);
+
+
+
 
 // Logout function
 export const logout = createAsyncThunk(
@@ -98,6 +120,24 @@ const authReducer = createSlice({
                 state.loader = false;
                 state.userInfo = userInfo;
             })
+            //register cases
+            .addCase(seller_register.pending, (state) => {
+                state.loader = true;
+                state.errorMessage = '';
+                state.successMessage = '';
+            })
+            .addCase(seller_register.fulfilled, (state, { payload }) => {
+                console.log("✅ Redux nhận payload:", payload);
+                state.successMessage = payload.message || "SignUp successfully";
+                state.loader = false;
+            })
+            .addCase(seller_register.rejected, (state, { payload }) => {
+                console.error("❌ Redux nhận lỗi:", payload);
+                state.errorMessage = payload?.message || "Registration failed";
+                state.loader = false;
+            })
+            
+            
             
             // Logout cases
             .addCase(logout.pending, (state) => {
