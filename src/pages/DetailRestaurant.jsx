@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { get_restaurant, messageClear } from '../store/reducers/restaurantReducer';
+import { get_restaurant, messageClear, change_seller_status } from '../store/reducers/restaurantReducer';
 import toast from 'react-hot-toast';
 
 const DetailRestaurant = () => {
@@ -33,16 +33,37 @@ const DetailRestaurant = () => {
 
     // Khi restaurant thay đổi, cập nhật status
     useEffect(() => { 
-        if (restaurant) { 
-            setStatus(restaurant?.status || '');
+        if (restaurant?.status) { 
+            console.log("Cập nhật status:", restaurant.status); // Kiểm tra dữ liệu
+            setStatus(restaurant.status);
         } 
     }, [restaurant]);
 
+    // Xử lý cập nhật trạng thái
     const submit = (e) => {
         e.preventDefault();
-        // Thực hiện cập nhật trạng thái nhà hàng (nếu cần thêm action)
-        console.log("Cập nhật trạng thái:", status);
+
+        if (!restaurantId) {
+            toast.error("Không tìm thấy ID nhà hàng.");
+            return;
+        }
+
+        if (status === restaurant.status) {
+            // Nếu trạng thái giống với trạng thái hiện tại
+            toast.error("Nhà hàng đang ở trạng thái này.");
+            return;
+        }
+
+        // Gửi API cập nhật trạng thái
+        dispatch(change_seller_status({ resID: restaurantId }))
+            .then(() => {
+                toast.success("Cập nhật trạng thái thành công!");
+            })
+            .catch(() => {
+                toast.error("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
+            });
     };
+    
 
     return (
         <div className='px-2 lg:px-7 pt-5'>
@@ -80,10 +101,6 @@ const DetailRestaurant = () => {
                                     <span>{restaurant?.opening_hours || "N/A"}</span> 
                                 </div>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Description:</span>
-                                    <span>{restaurant?.description || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
                                     <span>Phone Number:</span>
                                     <span>{restaurant?.phone_number || "N/A"}</span> 
                                 </div>
@@ -101,8 +118,8 @@ const DetailRestaurant = () => {
                                     <span>{restaurant?.address || "N/A"}</span> 
                                 </div>
                                 <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Status:</span>
-                                    <span>{restaurant?.status || "N/A"}</span> 
+                                    <span>Description:</span>
+                                    <span>{restaurant?.description|| "N/A"}</span> 
                                 </div>
                             </div> 
                         </div> 
@@ -112,18 +129,21 @@ const DetailRestaurant = () => {
                 {/* Form cập nhật trạng thái */}
                 <div> 
                     <form onSubmit={submit}>
-                        <div className='flex gap-4 py-3'>
-                            <select 
-                                value={status} 
-                                onChange={(e) => setStatus(e.target.value)} 
-                                className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#b1addf] border border-slate-700 rounded-md text-[#000000]' 
+                        <div className="flex gap-4 py-3">
+                            <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                                className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#b1addf] border border-slate-700 rounded-md text-[#000000]"
                                 required
                             >
                                 <option value="">--Select Status--</option>
-                                <option value="active">active</option>
-                                <option value="deactive">pending</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
                             </select>
-                            <button type="submit" className='bg-red-500 w-[170px] hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2'>
+                            <button
+                                type="submit"
+                                className="bg-red-500 w-[170px] hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2"
+                            >
                                 Submit
                             </button>
                         </div>

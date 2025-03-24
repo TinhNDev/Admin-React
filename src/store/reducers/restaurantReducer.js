@@ -34,17 +34,48 @@ export const get_restaurant = createAsyncThunk(
     'admin/get_restaurant',
     async (resID, { rejectWithValue, fulfillWithValue }) => {
         try {
-            console.log("Restaurant ID:", resID);
             const { data } = await api.get(`/restaurant/${resID}/detail`);
-
-            console.log("API Response:", data); // Debug API response
-            return fulfillWithValue(data.metadata); // Lấy đúng `metadata`
+        
+            return fulfillWithValue(data.metadata); 
         } catch (error) {
             console.error("Lỗi API:", error?.response?.data || error.message);
             return rejectWithValue(error.response?.data?.message || "Không thể kết nối đến server.");
         }
     }
 );
+//Change status seller
+export const change_seller_status = createAsyncThunk(
+    "admin/change_seller_status",
+    async ({ resID }, { rejectWithValue, fulfillWithValue, getState }) => {
+        try {
+            const token = localStorage.getItem("userToken");
+            const adminId = getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
+
+            if (!token || !adminId) {
+                throw new Error("Thiếu thông tin xác thực (token hoặc adminId).");
+            }
+
+            // Gửi yêu cầu API (chỉ với resID)
+            const { data } = await api.put(
+                `/admin/restaurant/${resID}`,
+                {}, // Không gửi trạng thái
+                {
+                    headers: {
+                        Authorization: token,
+                        "x-client-id": adminId,
+                    },
+                }
+            );
+
+            return fulfillWithValue(data.metadata); // Metadata từ API
+        } catch (error) {
+            console.error("❌ Lỗi API:", error?.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Lỗi từ server (500). Kiểm tra lại API.");
+        }
+    }
+);
+
+
 
 
 // Restaurant Reducer
@@ -79,6 +110,19 @@ const restaurantReducer = createSlice({
             .addCase(get_allRestaurant.rejected, (state, { payload }) => {
                 state.loader = false;
                 state.errorMessage = payload || "Không thể lấy danh sách nhà hàng.";
+            })
+            .addCase(change_seller_status.pending, (state) => {
+                state.loader = true;
+                state.errorMessage = "";
+            })
+            .addCase(change_seller_status.fulfilled, (state, { payload }) => {
+                console.log("Data received in reducer:", payload);
+                state.loader = false;
+                state.restaurant = payload;
+            })
+            .addCase(change_seller_status.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload || "Không thể cập nhật trạng thái người bán.";
             })
 
             // Lấy chi tiết một nhà hàng

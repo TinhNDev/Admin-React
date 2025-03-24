@@ -34,36 +34,43 @@ const Sidebar = ({showSidebar, setShowSidebar}) => {
         </div>
 
         <div className='px-[16px] py-[50px]'>
-            <ul>
-                {
-                    allNav.map((n,i) =><li key={i}>
-                       <Link to={n.path} className={`${pathname === n.path ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' : 'text-[#030811] font-bold duration-200 ' } px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1 `} >
-                        <span>{n.icon}</span>
-                        <span>{n.title}</span>
+        <ul>
+            {
+                allNav.map((n, i) => (
+                    <li key={i}>
+                        <Link 
+                            to={n.path} 
+                            className={`${pathname === n.path 
+                                ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' 
+                                : 'text-[#030811] duration-200'} 
+                                text-lg px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                        >
+                            <span>{n.icon}</span>
+                            <span>{n.title}</span>
                         </Link>
+                    </li>
+                ))
+            }
+            <div className='mt-auto flex flex-col h-[calc(100%-70px)]'>
+                <hr className='border-t border-gray-300 my-2' />
+                <li>
+                    <button className='text-[#030811] text-lg duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                        <span><IoSettings /></span>
+                        <span>Setting</span>
+                    </button>
+                </li>
+                <li>
+                    <button 
+                        onClick={() => dispatch(logout({navigate, role}))} 
+                        className='text-[#030811] text-lg duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'
+                    >
+                        <span><BiLogOutCircle /></span>
+                        <span>Logout</span>
+                    </button>
+                </li>
+            </div>
+        </ul>
 
-                    </li> )
-                }
-                    <div className='mt-auto flex flex-col h-[calc(100%-70px)]'>
-                        <hr className='border-t border-gray-300 my-2' />
-                        <li>
-                            <button className='text-[#030811] font-bold duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
-                                <span><IoSettings /></span>
-                                <span>Setting</span>
-                            </button>
-                        </li>
-                        <li>
-                            <button onClick={() => dispatch(logout({navigate,role }))} className='text-[#030811] font-bold duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
-                                <span><BiLogOutCircle /></span>
-                                <span>Logout</span>
-                            </button>
-                        </li>
-                    
-                    </div>
- 
-
-
-            </ul>
 
         </div>
         
