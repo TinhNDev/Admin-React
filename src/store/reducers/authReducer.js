@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 
 // Admin login
 export const admin_login = createAsyncThunk(
-    'auth/admin_login',
+    'auth/login',
     async (info, { rejectWithValue, fulfillWithValue }) => {
         try {
             const { data } = await api.post('/user/login', info);

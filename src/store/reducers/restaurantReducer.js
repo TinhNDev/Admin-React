@@ -74,8 +74,62 @@ export const change_seller_status = createAsyncThunk(
         }
     }
 );
+//Tự lấy detail nhà hàng
+export const get_detailRes = createAsyncThunk(
+    "restaurant/get_detailRes",
+    async (resID, { rejectWithValue, fulfillWithValue, getState }) => {
+        try {
+            const token = localStorage.getItem("userToken");
+            const sellerId = getState().auth.userInfo?.user_id || localStorage.getItem("sellerID");
 
-
+            if (!token || !sellerId) {
+                throw new Error("Thiếu thông tin xác thực.");
+            }
+            const { data } = await api.get("/restaurant/detail", {
+                headers: {
+                    Authorization: token,
+                    "x-client-id": sellerId,
+                },
+            });
+        
+            return fulfillWithValue(data.metadata); 
+        } catch (error) {
+            console.error("Lỗi API:", error?.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Không thể kết nối đến server.");
+        }
+    }
+);
+//Change detail seller
+export const change_seller_detail = createAsyncThunk(
+    "restaurant/change_seller_detail",
+    async (payload, { rejectWithValue, fulfillWithValue, getState }) => {
+      try {
+        const token = localStorage.getItem("userToken");
+        const sellerId = getState().auth.userInfo?.user_id || localStorage.getItem("sellerID");
+  
+        if (!token || !sellerId) {
+          throw new Error("Missing authentication information (token or sellerId).");
+        }
+  
+        const { data } = await api.put(
+          `/restaurant`, // API endpoint
+          payload, // Payload containing updated restaurant details
+          {
+            headers: {
+              Authorization: token,
+              "x-client-id": sellerId,
+            },
+          }
+        );
+  
+        return fulfillWithValue(data.metadata); // Return metadata from response
+      } catch (error) {
+        console.error("API Error:", error?.response?.data || error.message);
+        return rejectWithValue(error.response?.data?.message || "Server error (500). Please check the API.");
+      }
+    }
+  );
+  
 
 
 // Restaurant Reducer
@@ -116,7 +170,6 @@ const restaurantReducer = createSlice({
                 state.errorMessage = "";
             })
             .addCase(change_seller_status.fulfilled, (state, { payload }) => {
-                console.log("Data received in reducer:", payload);
                 state.loader = false;
                 state.restaurant = payload;
             })
@@ -124,6 +177,20 @@ const restaurantReducer = createSlice({
                 state.loader = false;
                 state.errorMessage = payload || "Không thể cập nhật trạng thái người bán.";
             })
+            //update detail
+            .addCase(change_seller_detail.pending, (state) => {
+                state.loader = true;
+                state.errorMessage = "";
+              })
+              .addCase(change_seller_detail.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.restaurant = payload; 
+                state.successMessage = "Details updated successfully!";
+              })
+              .addCase(change_seller_detail.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload || "Failed to update details.";
+              })
 
             // Lấy chi tiết một nhà hàng
             .addCase(get_restaurant.pending, (state) => {
@@ -131,13 +198,25 @@ const restaurantReducer = createSlice({
                 state.errorMessage = "";
             })
             .addCase(get_restaurant.fulfilled, (state, { payload }) => {
-                console.log("Data received in reducer:", payload); 
                 state.loader = false;
                 state.restaurant = payload;
             })
             .addCase(get_restaurant.rejected, (state, { payload }) => {
                 state.loader = false;
                 state.errorMessage = payload || "Không thể lấy dữ liệu nhà hàng.";
+            })
+            // Lấy chi tiết detail
+            .addCase(get_detailRes.pending, (state) => {
+                state.loader = true;
+                state.errorMessage = "";
+            })
+            .addCase(get_detailRes.fulfilled, (state, { payload }) => { 
+                state.loader = false;
+                state.restaurant = payload;
+            })
+            .addCase(get_detailRes.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload || "Không thể lấy detail.";
             });
     },
 });
