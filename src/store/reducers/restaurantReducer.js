@@ -74,7 +74,7 @@ export const change_seller_status = createAsyncThunk(
         }
     }
 );
-//Tự lấy detail nhà hàng
+//Lấy detail nhà hàng
 export const get_detailRes = createAsyncThunk(
     "restaurant/get_detailRes",
     async (resID, { rejectWithValue, fulfillWithValue, getState }) => {
@@ -99,7 +99,7 @@ export const get_detailRes = createAsyncThunk(
         }
     }
 );
-//Change detail seller
+
 export const change_seller_detail = createAsyncThunk(
     "restaurant/change_seller_detail",
     async (payload, { rejectWithValue, fulfillWithValue, getState }) => {
@@ -111,9 +111,12 @@ export const change_seller_detail = createAsyncThunk(
           throw new Error("Missing authentication information (token or sellerId).");
         }
   
+        // Định dạng payload đúng yêu cầu
+        const formattedPayload = { restaurant: payload };
+  
         const { data } = await api.put(
           `/restaurant`, // API endpoint
-          payload, // Payload containing updated restaurant details
+          formattedPayload,
           {
             headers: {
               Authorization: token,
@@ -122,7 +125,7 @@ export const change_seller_detail = createAsyncThunk(
           }
         );
   
-        return fulfillWithValue(data.metadata); // Return metadata from response
+        return fulfillWithValue(data.metadata);
       } catch (error) {
         console.error("API Error:", error?.response?.data || error.message);
         return rejectWithValue(error.response?.data?.message || "Server error (500). Please check the API.");
@@ -130,6 +133,9 @@ export const change_seller_detail = createAsyncThunk(
     }
   );
   
+  
+
+
 
 
 // Restaurant Reducer
