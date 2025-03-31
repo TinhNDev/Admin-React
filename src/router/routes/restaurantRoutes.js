@@ -20,7 +20,7 @@ export const restaurantRoutes = [
         role : 'restaurant'
     },
     {
-        path: 'restaurant/product',
+        path: 'restaurant/add-product',
         element : <Product/>,
         role : 'restaurant'
     },

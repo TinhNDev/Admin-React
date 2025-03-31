@@ -75,10 +75,10 @@ export const allNav = [
     },
     {
         id : 11,
-        title : 'Product',
+        title : 'Add Product',
         icon : <FaBowlFood />,
         role : 'seller',
-        path: '/restaurant/product'
+        path: '/restaurant/add-product'
     },
     {
         id : 12,
