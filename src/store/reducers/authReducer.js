@@ -50,28 +50,43 @@ export const seller_register = createAsyncThunk(
 
 // Logout function
 export const logout = createAsyncThunk(
-    'auth/logout',
-    async ({ navigate, role }, { rejectWithValue, fulfillWithValue, dispatch }) => {
+    "auth/logout",
+    async (_, { rejectWithValue, fulfillWithValue, getState }) => {
         try {
-            const { data } = await api.post('/user/logout', {}, { withCredentials: true });
+            const token = localStorage.getItem("userToken");
+            const userID = getState().auth?.userInfo?.user_id;
 
-            // Xóa token khỏi localStorage và header
-            localStorage.removeItem('userToken');
+            console.log("🛠 Token gửi đi:", token);
+            console.log("🛠 UserID gửi đi:", userID);
 
-            // Điều hướng sau khi logout
-            if (role === 'admin') {
-                navigate('/admin/login');
-            } else {
-                navigate('/login');
+            if (!token || !userID) {
+                return rejectWithValue("Không có quyền hành động.");
             }
 
-            dispatch(clearUserData());
-            return fulfillWithValue(data);
+            const response = await api.post(
+                "/user/logout",
+                {}, // Không cần gửi dữ liệu trong body
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "x-client-id": userID,
+                    },
+                }
+            );
+
+            console.log("✅ Logout thành công:", response.data);
+
+            localStorage.removeItem("userToken");
+            return fulfillWithValue("Logout successful");
         } catch (error) {
+            console.error("❌ Lỗi khi logout:", error.response?.data || error.message);
             return rejectWithValue(error.response?.data || { error: "Logout failed" });
         }
     }
 );
+
+
+  
 
 // Decode token function
 const decodeToken = (token) => {
@@ -120,24 +135,21 @@ const authReducer = createSlice({
                 state.loader = false;
                 state.userInfo = userInfo;
             })
-            //register cases
+            
+            // Register cases
             .addCase(seller_register.pending, (state) => {
                 state.loader = true;
                 state.errorMessage = '';
                 state.successMessage = '';
             })
             .addCase(seller_register.fulfilled, (state, { payload }) => {
-                console.log("✅ Redux nhận payload:", payload);
                 state.successMessage = payload.message || "SignUp successfully";
                 state.loader = false;
             })
             .addCase(seller_register.rejected, (state, { payload }) => {
-                console.error("❌ Redux nhận lỗi:", payload);
                 state.errorMessage = payload?.message || "Registration failed";
                 state.loader = false;
             })
-            
-            
             
             // Logout cases
             .addCase(logout.pending, (state) => {
@@ -149,10 +161,12 @@ const authReducer = createSlice({
             }) 
             .addCase(logout.fulfilled, (state, { payload }) => {
                 state.loader = false;
-                state.successMessage = payload?.message || "Logout successful";
+                state.successMessage = payload?.metadata?.meesage || "Logout successful"; 
                 state.userInfo = null;
                 state.token = null;
+                state.errorMessage = ""; 
             });
+            
     }
 });
 
