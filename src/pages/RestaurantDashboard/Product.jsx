@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { add_product, messageClear } from '../../store/reducers/productReducer'; 
 
 const Product = () => {
+    const dispatch = useDispatch();
+    const productState = useSelector(state => state.product) || {};
+    const { loader = false, successMessage = '', errorMessage = '' } = productState;
+
     const [productData, setProductData] = useState({
         name: "",
-        image: "",
+        //image: "",
         descriptions: "",
         price: 0,
         quantity: 0,
@@ -11,7 +17,6 @@ const Product = () => {
         is_draft: false
     });
     
-    // Thêm state để lưu file ảnh
     const [imageFile, setImageFile] = useState(null);
 
     const handleChange = (e) => {
@@ -22,13 +27,10 @@ const Product = () => {
         });
     };
     
-    // Xử lý khi chọn file ảnh
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setImageFile(file);
-            
-            // Tạo URL tạm thời để preview ảnh
             const imageUrl = URL.createObjectURL(file);
             setProductData({
                 ...productData,
@@ -37,32 +39,50 @@ const Product = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Tạo FormData để gửi lên server (nếu cần)
         const formData = new FormData();
-        formData.append('name', productData.name);
-        formData.append('descriptions', productData.descriptions);
-        formData.append('price', productData.price);
-        formData.append('quantity', productData.quantity);
-        formData.append('is_available', productData.is_available);
-        formData.append('is_draft', productData.is_draft);
+        Object.keys(productData).forEach(key => {
+            formData.append(key, productData[key]);
+        });
         
-        // Thêm file ảnh vào formData
         if (imageFile) {
             formData.append('image', imageFile);
         }
         
-        console.log("Form data ready to submit:", productData);
-        console.log("Image file:", imageFile);
-        
-        // Phần xử lý backend sẽ được thực hiện ở đây
+        try {
+            await dispatch(add_product(formData)).unwrap();
+            setProductData({
+                name: "",
+                //image: "",
+                descriptions: "",
+                price: 0,
+                quantity: 0,
+                is_available: true,
+                is_draft: false
+            });
+            setImageFile(null);
+        } catch (error) {
+            console.error("Failed to add product:", error);
+        }
     };
+
+    useEffect(() => {
+        if (successMessage || errorMessage) {
+            const timer = setTimeout(() => {
+                dispatch(messageClear());
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, errorMessage, dispatch]);
 
     return (
         <div className="w-full p-6 bg-white rounded-lg shadow-md">
             <h2 className="text-3xl font-bold text-gray-800 mb-8">Add new product</h2>
+            
+            {successMessage && <div className="text-green-600 mb-4">{successMessage}</div>}
+            {errorMessage && <div className="text-red-600 mb-4">{errorMessage}</div>}
             
             <form onSubmit={handleSubmit} className="space-y-8 w-full">
                 <div className="mb-6 w-full">
@@ -177,8 +197,9 @@ const Product = () => {
                     <button 
                         type="submit" 
                         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg w-full sm:w-auto px-8 py-4 text-center"
+                        disabled={loader}
                     >
-                        Thêm sản phẩm
+                        {loader ? 'Adding...' : 'Thêm sản phẩm'}
                     </button>
                     
                     <button 
