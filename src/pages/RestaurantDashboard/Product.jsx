@@ -180,17 +180,6 @@ const Product = () => {
                         <label htmlFor="is_available" className="ms-3 text-lg font-medium text-gray-900">Có sẵn</label>
                     </div>
                     
-                    <div className="flex items-center">
-                        <input 
-                            id="is_draft" 
-                            type="checkbox" 
-                            name="is_draft"
-                            checked={productData.is_draft}
-                            onChange={handleChange}
-                            className="w-5 h-5 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300" 
-                        />
-                        <label htmlFor="is_draft" className="ms-3 text-lg font-medium text-gray-900">Bản nháp</label>
-                    </div>
                 </div>
                 
                 <div className="flex justify-between w-full">
