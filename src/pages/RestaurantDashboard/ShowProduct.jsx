@@ -1,11 +1,11 @@
 import React from 'react';
 
-const LiveChat = () => {
+const ShowProduct = () => {
     return (
         <div>
-            livechat
+            lproductsssss
         </div>
     );
 };
 
-export default LiveChat;
+export default ShowProduct;

@@ -7,7 +7,7 @@ import { MdFeedback } from "react-icons/md";
 import { FaCodePullRequest } from "react-icons/fa6";
 import { RiCoupon2Fill } from "react-icons/ri";
 import { IoMdInformationCircle } from "react-icons/io";
-import { IoIosChatbubbles } from "react-icons/io";
+import { MdFastfood } from "react-icons/md";
 
 export const allNav = [
     {
@@ -82,10 +82,10 @@ export const allNav = [
     },
     {
         id : 12,
-        title : 'LiveChat',
-        icon : <IoIosChatbubbles />,
+        title : 'Products',
+        icon : <MdFastfood />,
         role : 'seller',
-        path: '/restaurant/live-chat'
+        path: '/restaurant/products'
     },
     {
         id : 13,

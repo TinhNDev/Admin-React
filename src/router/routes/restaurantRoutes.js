@@ -1,6 +1,6 @@
 import { lazy } from "react";         
 const ResDashboard = lazy(()=> import('../../pages/RestaurantDashboard/ResDashboard'))
-const LiveChat = lazy(()=> import('../../pages/RestaurantDashboard/LiveChat'))
+const ShowProduct = lazy(()=> import('../../pages/RestaurantDashboard/ShowProduct'))
 const Product = lazy(()=> import('../../pages/RestaurantDashboard/Product'))
 const Infomation = lazy(()=> import('../../pages/RestaurantDashboard/Infomation'))
 
@@ -15,8 +15,8 @@ export const restaurantRoutes = [
         role : 'restaurant'
     },
     {
-        path: 'restaurant/live-chat',
-        element : <LiveChat/>,
+        path: 'restaurant/products',
+        element : <ShowProduct/>,
         role : 'restaurant'
     },
     {
