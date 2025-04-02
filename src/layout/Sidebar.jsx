@@ -8,26 +8,27 @@ import { IoSettings } from "react-icons/io5";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { logout } from '../store/reducers/authReducer';
 
-const Sidebar = ({ showSidebar, setShowSidebar }) => {
+// Thay đổi props để nhận collapsed và toggleCollapsed từ MainLayout
+const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { pathname } = useLocation();
     
-    // Khởi tạo state collapsed từ localStorage nếu có
-    const [collapsed, setCollapsed] = useState(() => {
-        const savedState = localStorage.getItem('sidebarCollapsed');
-        return savedState !== null ? JSON.parse(savedState) : false;
-    });
+    // Xóa state collapsed nội bộ
+    // const [collapsed, setCollapsed] = useState(() => {
+    //     const savedState = localStorage.getItem('sidebarCollapsed');
+    //     return savedState !== null ? JSON.parse(savedState) : false;
+    // });
     
     const userInfo = useSelector(state => state.auth.userInfo);
     const role = userInfo?.role || "";
 
     const [allNav, setAllNav] = useState([]);
 
-    // Lưu trạng thái collapsed vào localStorage khi nó thay đổi
-    useEffect(() => {
-        localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
-    }, [collapsed]);
+    // Xóa useEffect để lưu trạng thái collapsed vào localStorage
+    // useEffect(() => {
+    //     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
+    // }, [collapsed]);
 
     useEffect(() => {
         const navs = getNav(role);
@@ -46,9 +47,10 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
         navigate("/login");
     };
 
-    const toggleCollapse = () => {
-        setCollapsed(!collapsed);
-    };
+    // Xóa hàm toggleCollapse nội bộ
+    // const toggleCollapse = () => {
+    //     setCollapsed(!collapsed);
+    // };
 
     return (
         <div>
@@ -65,7 +67,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                         </Link>
                     )}
                     <button 
-                        onClick={toggleCollapse}
+                        onClick={toggleCollapsed} // Sử dụng toggleCollapsed từ props
                         className={`flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full w-8 h-8 ${collapsed ? 'ml-auto' : ''}`}
                     >
                         {collapsed ? <MdKeyboardArrowRight size={20} /> : <MdKeyboardArrowLeft size={20} />}
