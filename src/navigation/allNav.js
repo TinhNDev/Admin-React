@@ -17,13 +17,6 @@ export const allNav = [
         path: '/admin/dashboard'
     },
     {
-        id : 2,
-        title : 'Customers',
-        icon : <PiUsersThreeFill />,
-        role : 'admin',
-        path: '/admin/customer'
-    },
-    {
         id : 3,
         title : 'Restaurant',
         icon : <IoRestaurant />,

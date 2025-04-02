@@ -1,7 +1,6 @@
 import { lazy } from "react";         
 const Dashboard = lazy(()=> import('../../pages/Dashboard'))
 const Restaurant = lazy(()=> import('../../pages/Restaurant'))
-const Customer = lazy(()=> import('../../pages/Customer'))
 const Shipper = lazy(()=> import('../../pages/Shipper'))
 const FeedBack = lazy(()=> import('../../pages/FeedBack'))
 const Coupon = lazy(()=> import('../../pages/Coupon'))
@@ -26,11 +25,6 @@ export const adminRoutes = [
                 role: 'admin'
             }
         ]
-    },
-    {
-        path: 'admin/customer',
-        element : <Customer/>,
-        role : 'admin'
     },
     {
         path: 'admin/shipper',
