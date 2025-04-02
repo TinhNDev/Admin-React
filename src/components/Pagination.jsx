@@ -1,8 +1,7 @@
 import React from 'react';
-import { MdOutlineKeyboardDoubleArrowLeft,MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
 
-
-const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
+const Pagination = ({pageNumber, setPageNumber, totalItem, parPage, showItem}) => {
 
     let totalPage = Math.ceil(totalItem / parPage)
     let startPage = pageNumber
@@ -18,11 +17,17 @@ const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
     }
 
     const createBtn = () => {
-
         const btns = []
         for (let i = startPage; i < endPage; i++) {
             btns.push(
-                <li onClick={()=>setPageNumber(i)} className={` ${pageNumber === i ? 'bg-indigo-300 shadow-lg shadow-indigo-300/50 text-white' : 'bg-slate-600 hover:bg-indigo-400 shadow-lg hover:shadow-indigo-500/50 hover:text-white text-[#000000]'} w-[33px] h-[33px] rounded-full flex justify-center items-center cursor-pointer `}>
+                <li 
+                    key={i}
+                    onClick={() => setPageNumber(i)} 
+                    className={`${pageNumber === i 
+                        ? 'bg-blue-500 shadow-lg shadow-blue-300/50 text-white' 
+                        : 'bg-white hover:bg-blue-100 shadow-md hover:shadow-blue-200/50 text-blue-500 border border-blue-200'} 
+                        w-[33px] h-[33px] rounded-full flex justify-center items-center cursor-pointer`}
+                >
                     {i}                    
                 </li>
             ) 
@@ -33,7 +38,11 @@ const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
     return (
         <ul className='flex gap-3'>
             {
-                pageNumber > 1 && <li onClick={() => setPageNumber(pageNumber - 1)} className='w-[33px] h-[33px] rounded-full flex justify-center items-center bg-slate-300 text-[#000000] cursor-pointer'>
+                pageNumber > 1 && 
+                <li 
+                    onClick={() => setPageNumber(pageNumber - 1)} 
+                    className='w-[33px] h-[33px] rounded-full flex justify-center items-center bg-white text-blue-500 cursor-pointer border border-blue-200 hover:bg-blue-50'
+                >
                     <MdOutlineKeyboardDoubleArrowLeft />
                 </li>
             }
@@ -41,15 +50,16 @@ const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
                 createBtn()
             }
             {
-                pageNumber < totalPage && <li onClick={() => setPageNumber(pageNumber + 1)} className='w-[33px] h-[33px] rounded-full flex justify-center items-center bg-slate-300 text-[#000000] cursor-pointer'>
-                    <MdOutlineKeyboardDoubleArrowRight  />
+                pageNumber < totalPage && 
+                <li 
+                    onClick={() => setPageNumber(pageNumber + 1)} 
+                    className='w-[33px] h-[33px] rounded-full flex justify-center items-center bg-white text-blue-500 cursor-pointer border border-blue-200 hover:bg-blue-50'
+                >
+                    <MdOutlineKeyboardDoubleArrowRight />
                 </li>
             }
-
         </ul>
     )
-
-
 };
 
 export default Pagination;

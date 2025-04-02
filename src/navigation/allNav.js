@@ -4,7 +4,6 @@ import { IoRestaurant } from "react-icons/io5";
 import { MdLocalShipping } from "react-icons/md";
 import { FaBowlFood } from "react-icons/fa6";
 import { MdFeedback } from "react-icons/md";
-import { FaCodePullRequest } from "react-icons/fa6";
 import { RiCoupon2Fill } from "react-icons/ri";
 import { IoMdInformationCircle } from "react-icons/io";
 import { MdFastfood } from "react-icons/md";
@@ -44,13 +43,6 @@ export const allNav = [
         icon : <FaBowlFood />,
         role : 'admin',
         path: '/admin/productRequest'
-    },
-    {
-        id : 6,
-        title : 'Restaurant Request',
-        icon : <FaCodePullRequest />,
-        role : 'admin',
-        path: '/admin/restaurant-request'
     },
     {
         id : 7,

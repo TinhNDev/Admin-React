@@ -5,6 +5,7 @@ import { BiLogOutCircle } from "react-icons/bi";
 import { useSelector, useDispatch } from "react-redux";
 import logo from '../data/avatar4.jpg';
 import { IoSettings } from "react-icons/io5";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { logout } from '../store/reducers/authReducer';
 
 const Sidebar = ({ showSidebar, setShowSidebar }) => {
@@ -12,18 +13,27 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
     
-    // Kiểm tra userInfo trước khi truy cập role
+    // Khởi tạo state collapsed từ localStorage nếu có
+    const [collapsed, setCollapsed] = useState(() => {
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        return savedState !== null ? JSON.parse(savedState) : false;
+    });
+    
     const userInfo = useSelector(state => state.auth.userInfo);
-    const role = userInfo?.role || "";  // Nếu không có role, trả về ""
+    const role = userInfo?.role || "";
 
     const [allNav, setAllNav] = useState([]);
+
+    // Lưu trạng thái collapsed vào localStorage khi nó thay đổi
+    useEffect(() => {
+        localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
+    }, [collapsed]);
 
     useEffect(() => {
         const navs = getNav(role);
         setAllNav(navs);
     }, [role]);
 
-    // Điều hướng về login nếu userInfo bị null (sau khi logout)
     useEffect(() => {
         if (!userInfo) {
             navigate("/login");
@@ -32,8 +42,12 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
 
     const handleLogout = async () => {
         await dispatch(logout());
-        localStorage.removeItem("userToken");  // Xóa token khi logout
-        navigate("/login");  // Chuyển hướng về trang login
+        localStorage.removeItem("userToken");
+        navigate("/login");
+    };
+
+    const toggleCollapse = () => {
+        setCollapsed(!collapsed);
     };
 
     return (
@@ -43,44 +57,57 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                 className={`fixed duration-200 ${!showSidebar ? 'invisible' : 'visible'} w-screen h-screen bg-[#8cbce780] top-0 left-0 z-10`} 
             /> 
 
-            <div className={`w-[260px] fixed bg-[#eb5d50] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/_5%)] transition-all ${showSidebar ? 'left-0' : '-left-[260px] lg:left-0'}`}>
-                <div className='h-[70px] flex justify-center items-center'>
-                    <Link to='/' className='w-[180px] h-[50px]'>
-                        <img className='w-full h-full' src={logo} alt="" />
-                    </Link> 
+            <div className={`${collapsed ? 'w-[70px]' : 'w-[260px]'} fixed bg-white z-50 top-0 h-screen shadow-lg transition-all ${showSidebar ? 'left-0' : collapsed ? '-left-[70px] lg:left-0' : '-left-[260px] lg:left-0'}`}>
+                <div className='h-[70px] flex justify-between items-center border-b border-gray-200 px-4'>
+                    {!collapsed && (
+                        <Link to='/' className='w-[180px] h-[50px]'>
+                            <img className='w-full h-full' src={logo} alt="" />
+                        </Link>
+                    )}
+                    <button 
+                        onClick={toggleCollapse}
+                        className={`flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full w-8 h-8 ${collapsed ? 'ml-auto' : ''}`}
+                    >
+                        {collapsed ? <MdKeyboardArrowRight size={20} /> : <MdKeyboardArrowLeft size={20} />}
+                    </button>
                 </div>
 
-                <div className='px-[16px] py-[50px]'>
-                    <ul>
+                <div className={`px-[16px] py-[50px] ${collapsed ? 'flex justify-center' : ''}`}>
+                    <ul className={`${collapsed ? 'flex flex-col items-center' : 'w-full'}`}>
                         {allNav.map((n, i) => (
-                            <li key={i}>
+                            <li key={i} className={collapsed ? 'w-10' : 'w-full'}>
                                 <Link 
                                     to={n.path} 
                                     className={`${pathname === n.path 
                                         ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' 
-                                        : 'text-[#030811] duration-200'} 
-                                        text-lg px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                                        : 'text-gray-700 hover:bg-gray-100 duration-200'} 
+                                        text-lg px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                                    title={n.title}
                                 >
                                     <span>{n.icon}</span>
-                                    <span>{n.title}</span>
+                                    {!collapsed && <span>{n.title}</span>}
                                 </Link>
                             </li>
                         ))}
-                        <div className='mt-auto flex flex-col h-[calc(100%-70px)]'>
-                            <hr className='border-t border-gray-300 my-2' />
-                            <li>
-                                <button className='text-[#030811] text-lg duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                        <div className={`mt-auto flex flex-col ${collapsed ? 'items-center' : ''}`}>
+                            <hr className='border-t border-gray-200 my-2 w-full' />
+                            <li className={collapsed ? 'w-10' : 'w-full'}>
+                                <button 
+                                    className={`text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                                    title="Setting"
+                                >
                                     <span><IoSettings /></span>
-                                    <span>Setting</span>
+                                    {!collapsed && <span>Setting</span>}
                                 </button>
                             </li>
-                            <li>
+                            <li className={collapsed ? 'w-10' : 'w-full'}>
                                 <button 
                                     onClick={handleLogout} 
-                                    className='text-[#030811] text-lg duration-200 px-[12px] py-[15px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'
+                                    className={`text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                                    title="Logout"
                                 >
                                     <span><BiLogOutCircle /></span>
-                                    <span>Logout</span>
+                                    {!collapsed && <span>Logout</span>}
                                 </button>
                             </li>
                         </div>
