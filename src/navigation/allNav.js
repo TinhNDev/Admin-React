@@ -38,13 +38,6 @@ export const allNav = [
         path: '/admin/shipper'
     },
     {
-        id : 5,
-        title : 'AddFood Request',
-        icon : <FaBowlFood />,
-        role : 'admin',
-        path: '/admin/productRequest'
-    },
-    {
         id : 7,
         title : 'Coupon',
         icon : <RiCoupon2Fill />,

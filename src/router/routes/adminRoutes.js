@@ -3,7 +3,6 @@ const Dashboard = lazy(()=> import('../../pages/Dashboard'))
 const Restaurant = lazy(()=> import('../../pages/Restaurant'))
 const Customer = lazy(()=> import('../../pages/Customer'))
 const Shipper = lazy(()=> import('../../pages/Shipper'))
-const ProductRequest = lazy(()=> import('../../pages/ProductRequest'))
 const FeedBack = lazy(()=> import('../../pages/FeedBack'))
 const Coupon = lazy(()=> import('../../pages/Coupon'))
 const DetailRestaurant = lazy(()=> import('../../pages/DetailRestaurant'))
@@ -44,11 +43,6 @@ export const adminRoutes = [
                 role: 'admin'
             }
         ]
-    },
-    {
-        path: 'admin/productRequest',
-        element : <ProductRequest/>,
-        role : 'admin'
     },
     {
         path: 'admin/feedback',
