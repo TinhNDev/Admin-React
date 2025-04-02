@@ -19,7 +19,14 @@ export const adminRoutes = [
     {
         path: 'admin/restaurant',
         element : <Restaurant/>,
-        role : 'admin'
+        role : 'admin',
+        children: [
+            {
+                path: 'details/:restaurantId',
+                element: <DetailRestaurant/>,
+                role: 'admin'
+            }
+        ]
     },
     {
         path: 'admin/customer',
@@ -29,7 +36,14 @@ export const adminRoutes = [
     {
         path: 'admin/shipper',
         element : <Shipper/>,
-        role : 'admin'
+        role : 'admin',
+        children: [
+            {
+                path: 'details/:shipperId',
+                element: <DetailShipper/>,
+                role: 'admin'
+            }
+        ]
     },
     {
         path: 'admin/productRequest',
@@ -45,16 +59,5 @@ export const adminRoutes = [
         path: 'admin/coupon',
         element : <Coupon/>,
         role : 'admin'
-    },
-    {
-        path: 'admin/restaurant/details/:restaurantId',
-        element : <DetailRestaurant/>,
-        role : 'admin'
-    },
-    {
-        path: 'admin/shipper/details/:shipperId',
-        element : <DetailShipper/>,
-        role : 'admin'
-    },
- 
+    }
 ]

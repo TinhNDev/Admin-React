@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { get_restaurant, messageClear, change_seller_status } from '../store/reducers/restaurantReducer';
+import { useParams, useNavigate } from 'react-router-dom';
+import { get_restaurant, messageClear, change_seller_status, get_allRestaurant } from '../store/reducers/restaurantReducer';
 import toast from 'react-hot-toast';
 
 const DetailRestaurant = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { restaurant, successMessage, errorMessage, loader } = useSelector(state => state.restaurant);
     const { restaurantId } = useParams();
 
@@ -34,7 +35,7 @@ const DetailRestaurant = () => {
     // Khi restaurant thay đổi, cập nhật status
     useEffect(() => { 
         if (restaurant?.status) { 
-            console.log("Cập nhật status:", restaurant.status); // Kiểm tra dữ liệu
+            console.log("Cập nhật status:", restaurant.status);
             setStatus(restaurant.status);
         } 
     }, [restaurant]);
@@ -49,107 +50,127 @@ const DetailRestaurant = () => {
         }
 
         if (status === restaurant.status) {
-            // Nếu trạng thái giống với trạng thái hiện tại
             toast.error("Nhà hàng đang ở trạng thái này.");
             return;
         }
 
-        // Gửi API cập nhật trạng thái
         dispatch(change_seller_status({ resID: restaurantId }))
             .then(() => {
                 toast.success("Cập nhật trạng thái thành công!");
+                // Sau khi cập nhật thành công, đóng modal và refresh dữ liệu
+                closeOverlayAndRefresh();
             })
             .catch(() => {
                 toast.error("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
             });
     };
     
+    // Đóng overlay, quay lại trang danh sách và refresh dữ liệu
+    const closeOverlayAndRefresh = () => {
+        // Dispatch action để tải lại danh sách nhà hàng
+        const currentParams = JSON.parse(sessionStorage.getItem('restaurantListParams') || '{}');
+        dispatch(get_allRestaurant(currentParams));
+        
+        // Quay lại trang danh sách
+        navigate('/admin/restaurant');
+    };
+
+    // Đóng overlay và quay lại trang danh sách
+    const closeOverlay = () => {
+        closeOverlayAndRefresh();
+    };
+
+    // Cleanup khi component unmount
+    useEffect(() => {
+        return () => {
+            // Khi component unmount, tải lại danh sách nhà hàng
+            const currentParams = JSON.parse(sessionStorage.getItem('restaurantListParams') || '{}');
+            dispatch(get_allRestaurant(currentParams));
+        };
+    }, []);
 
     return (
-        <div className='px-2 lg:px-7 pt-5'>
-            <h1 className='text-[20px] font-bold mb-3'>Restaurant Details</h1>
-
-            {/* Hiển thị loading */}
-            {loader && <p className="text-center text-blue-500">Đang tải dữ liệu...</p>}
-
-            <div className='w-full p-4 bg-[#b1addf] rounded-md'>
-
-                <div className='w-full flex flex-wrap text-[#000000]'>
-
-                    {/* Ảnh nhà hàng */}
-                    <div className='w-3/12 flex justify-center items-center py-3'>
-                        <div>
-                            {restaurant?.image ? (
-                                <img className='w-full h-[230px]' src={restaurant.image} alt={restaurant.name} />
-                            ) : (
-                                <span>Image Not Uploaded</span>
-                            )}
-                        </div> 
-                    </div>
-
-                    {/* Thông tin cơ bản */}
-                    <div className='w-4/12'>
-                        <div className='px-0 md:px-5 py-2'>
-                            <h2 className='py-2 text-lg'>Basic Info</h2>
-                            <div className='flex flex-col gap-2 p-4 bg-[#b1addf] rounded-md'>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Name:</span>
-                                    <span>{restaurant?.name || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Time Opening:</span>
-                                    <span>{restaurant?.opening_hours || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Phone Number:</span>
-                                    <span>{restaurant?.phone_number || "N/A"}</span> 
-                                </div>
-                            </div> 
-                        </div> 
-                    </div>
-
-                    {/* Chi tiết nhà hàng */}
-                    <div className='w-4/12'>
-                        <div className='px-0 md:px-5 py-2'>
-                            <h2 className='py-2 text-lg'>Details</h2>
-                            <div className='flex flex-col gap-2 p-4 bg-[#b1addf] rounded-md'>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Address:</span>
-                                    <span>{restaurant?.address || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Description:</span>
-                                    <span>{restaurant?.description|| "N/A"}</span> 
-                                </div>
-                            </div> 
-                        </div> 
-                    </div>
-                </div> 
-
-                {/* Form cập nhật trạng thái */}
-                <div> 
-                    <form onSubmit={submit}>
-                        <div className="flex gap-4 py-3">
-                            <select
-                                value={status}
-                                onChange={(e) => setStatus(e.target.value)}
-                                className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#b1addf] border border-slate-700 rounded-md text-[#000000]"
-                                required
-                            >
-                                <option value="">--Select Status--</option>
-                                <option value="active">Active</option>
-                                <option value="pending">Pending</option>
-                            </select>
-                            <button
-                                type="submit"
-                                className="bg-red-500 w-[170px] hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </form>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center p-4 border-b">
+                    <h1 className='text-[20px] font-bold'>Restaurant Details</h1>
+                    <button 
+                        onClick={closeOverlay}
+                        className="text-gray-500 hover:text-gray-700 text-2xl"
+                    >
+                        &times;
+                    </button>
                 </div>
-            </div> 
+
+                {/* Hiển thị loading */}
+                {loader && <p className="text-center text-blue-500 py-4">Đang tải dữ liệu...</p>}
+
+                <div className='p-4 bg-white'>
+                    <div className='w-full flex flex-col md:flex-row gap-4'>
+                        {/* Ảnh nhà hàng */}
+                        <div className='md:w-1/3'>
+                            {restaurant?.image ? (
+                                <img className='w-full h-auto rounded-md' src={restaurant.image} alt={restaurant.name} />
+                            ) : (
+                                <div className="w-full h-[200px] bg-gray-200 flex items-center justify-center rounded-md">
+                                    <span>Image Not Uploaded</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Thông tin nhà hàng */}
+                        <div className='md:w-2/3'>
+                            <div className='bg-[#f8f9fa] p-4 rounded-md mb-4'>
+                                <h2 className='text-lg font-semibold mb-2'>Basic Info</h2>
+                                <div className='grid grid-cols-1 gap-2'>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Name:</span>
+                                        <span>{restaurant?.name || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Time Opening:</span>
+                                        <span>{restaurant?.opening_hours || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Phone Number:</span>
+                                        <span>{restaurant?.phone_number || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Address:</span>
+                                        <span>{restaurant?.address || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Description:</span>
+                                        <span>{restaurant?.description|| "N/A"}</span> 
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Form cập nhật trạng thái */}
+                            <form onSubmit={submit}>
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <select
+                                        value={status}
+                                        onChange={(e) => setStatus(e.target.value)}
+                                        className="px-4 py-2 focus:border-indigo-500 outline-none bg-white border border-slate-300 rounded-md"
+                                        required
+                                    >
+                                        <option value="">--Select Status--</option>
+                                        <option value="active">Active</option>
+                                        <option value="pending">Pending</option>
+                                    </select>
+                                    <button
+                                        type="submit"
+                                        className="bg-red-500 hover:bg-red-600 text-white rounded-md px-4 py-2"
+                                    >
+                                        Update Status
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

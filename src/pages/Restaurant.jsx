@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Search from '../components/Search';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom'; 
 import Pagination from '../components/Pagination'; 
 import { FaEye, FaTrash } from 'react-icons/fa'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { get_allRestaurant } from '../store/reducers/restaurantReducer';
 import SortableHeader from '../components/SortableHeader';
+
 
 const Restaurant = () => {
     const dispatch = useDispatch();
@@ -171,6 +172,7 @@ const Restaurant = () => {
                     />
                 </div>
             </div>
+            <Outlet />
         </div>
     );
 };
