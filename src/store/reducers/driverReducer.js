@@ -60,7 +60,7 @@ export const get_driver = createAsyncThunk(
 //Change status shipper
 export const change_shipper_status = createAsyncThunk(
     "admin/change_shipper_status",
-    async ({ shipperID }, { rejectWithValue, fulfillWithValue, getState }) => {
+    async ({ driverId, status }, { rejectWithValue, fulfillWithValue, getState }) => {
         try {
             const token = localStorage.getItem("userToken");
             const adminId = getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
@@ -69,10 +69,10 @@ export const change_shipper_status = createAsyncThunk(
                 throw new Error("Thiếu thông tin xác thực (token hoặc adminId).");
             }
 
-            // Gửi yêu cầu API (chỉ với resID)
+            // Gửi yêu cầu API với driverId và status
             const { data } = await api.put(
-                `/admin/driver/${shipperID}`,
-                {}, // Không gửi trạng thái
+                `/admin/driver/${driverId}`,
+                { status }, // Thêm status vào body của request
                 {
                     headers: {
                         Authorization: token,
