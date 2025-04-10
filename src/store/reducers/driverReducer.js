@@ -57,6 +57,38 @@ export const get_driver = createAsyncThunk(
     }
 );
 
+//Change status shipper
+export const change_shipper_status = createAsyncThunk(
+    "admin/change_shipper_status",
+    async ({ shipperID }, { rejectWithValue, fulfillWithValue, getState }) => {
+        try {
+            const token = localStorage.getItem("userToken");
+            const adminId = getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
+
+            if (!token || !adminId) {
+                throw new Error("Thiếu thông tin xác thực (token hoặc adminId).");
+            }
+
+            // Gửi yêu cầu API (chỉ với resID)
+            const { data } = await api.put(
+                `/admin/driver/${shipperID}`,
+                {}, // Không gửi trạng thái
+                {
+                    headers: {
+                        Authorization: token,
+                        "x-client-id": adminId,
+                    },
+                }
+            );
+
+            return fulfillWithValue(data.metadata); // Metadata từ API
+        } catch (error) {
+            console.error("❌ Lỗi API:", error?.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Lỗi từ server (500). Kiểm tra lại API.");
+        }
+    }
+);
+
 
 
 
@@ -104,6 +136,18 @@ const driverReducer = createSlice({
             .addCase(get_driver.rejected, (state, { payload }) => {
                 state.loader = false;
                 state.errorMessage = payload || "Không thể lấy driver.";
+            })
+            .addCase(change_shipper_status.pending, (state) => {
+                state.loader = true;
+                state.errorMessage = "";
+            })
+            .addCase(change_shipper_status.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.driver = payload;
+            })
+            .addCase(change_shipper_status.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload || "Không thể cập nhật trạng thái shipper.";
             })
 
     },
