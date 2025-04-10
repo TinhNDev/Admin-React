@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { get_driver, messageClear } from '../store/reducers/driverReducer';
+import { useParams, useNavigate } from 'react-router-dom';
+import { get_driver, messageClear, change_shipper_status, get_allDriver } from '../store/reducers/driverReducer';
 import toast from 'react-hot-toast';
 
 const DetailShipper = () => {
-
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { driver, successMessage, errorMessage, loader } = useSelector(state => state.driver);
     const { shipperId } = useParams();
 
+    // Lấy dữ liệu shipper khi component mount
     useEffect(() => {
         if (shipperId) {
-            console.log("Dispatching get_restaurant with ID:", shipperId);
+            console.log("Dispatching get_driver with ID:", shipperId);
             dispatch(get_driver(shipperId)); 
         }
     }, [dispatch, shipperId]);
@@ -31,105 +32,150 @@ const DetailShipper = () => {
         }
     }, [successMessage, errorMessage, dispatch]);
 
-    // Khi restaurant thay đổi, cập nhật status
+    // Khi driver thay đổi, cập nhật status
     useEffect(() => { 
-        if (driver) { 
-            setStatus(driver?.status || '');
+        if (driver?.status) { 
+            console.log("Cập nhật status:", driver.status);
+            setStatus(driver.status);
         } 
     }, [driver]);
 
+    // Xử lý cập nhật trạng thái
     const submit = (e) => {
         e.preventDefault();
-        // Thực hiện cập nhật trạng thái nhà hàng (nếu cần thêm action)
-        console.log("Cập nhật trạng thái:", status);
+
+        if (!shipperId) {
+            toast.error("Không tìm thấy ID shipper.");
+            return;
+        }
+
+        if (status === driver.status) {
+            toast.error("Shipper đang ở trạng thái này.");
+            return;
+        }
+
+        dispatch(change_shipper_status({ driverId: shipperId }))
+            .then(() => {
+                toast.success("Cập nhật trạng thái thành công!");
+                // Sau khi cập nhật thành công, đóng modal và refresh dữ liệu
+                closeOverlayAndRefresh();
+            })
+            .catch(() => {
+                toast.error("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
+            });
+    };
+    
+    // Đóng overlay, quay lại trang danh sách và refresh dữ liệu
+    const closeOverlayAndRefresh = () => {
+        // Dispatch action để tải lại danh sách shipper
+        const currentParams = JSON.parse(sessionStorage.getItem('driverListParams') || '{}');
+        dispatch(get_allDriver(currentParams));
+        
+        // Quay lại trang danh sách
+        navigate('/admin/shipper');
     };
 
+    // Đóng overlay và quay lại trang danh sách
+    const closeOverlay = () => {
+        closeOverlayAndRefresh();
+    };
+
+    // Cleanup khi component unmount
+    useEffect(() => {
+        return () => {
+            // Khi component unmount, tải lại danh sách shipper
+            const currentParams = JSON.parse(sessionStorage.getItem('driverListParams') || '{}');
+            dispatch(get_allDriver(currentParams));
+        };
+    }, []);
+
     return (
-        <div className='px-2 lg:px-7 pt-5'>
-            <h1 className='text-[20px] font-bold mb-3'>Shipper Details</h1>
-
-            {/* Hiển thị loading */}
-            {loader && <p className="text-center text-blue-500">Đang tải dữ liệu...</p>}
-
-            <div className='w-full p-4 bg-[#b1addf] rounded-md'>
-
-                <div className='w-full flex flex-wrap text-[#000000]'>
-
-                    {/* Ảnh nhà hàng */}
-                    <div className='w-3/12 flex justify-center items-center py-3'>
-                        <div>
-                            {driver?.image ? (
-                                <img className='w-full h-[230px]' src={driver.image} alt={driver.name} />
-                            ) : (
-                                <span>Image Not Uploaded</span>
-                            )}
-                        </div> 
-                    </div>
-
-                    {/* Thông tin cơ bản */}
-                    <div className='w-4/12'>
-                        <div className='px-0 md:px-5 py-2'>
-                            <h2 className='py-2 text-lg'>Basic Info</h2>
-                            <div className='flex flex-col gap-2 p-4 bg-[#b1addf] rounded-md'>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Name:</span>
-                                    <span>{driver?.name || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Time Opening:</span>
-                                    <span>{driver?.opening_hours || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Description:</span>
-                                    <span>{driver?.description || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Phone Number:</span>
-                                    <span>{driver?.phone_number || "N/A"}</span> 
-                                </div>
-                            </div> 
-                        </div> 
-                    </div>
-
-                    {/* Chi tiết nhà hàng */}
-                    <div className='w-4/12'>
-                        <div className='px-0 md:px-5 py-2'>
-                            <h2 className='py-2 text-lg'>Details</h2>
-                            <div className='flex flex-col gap-2 p-4 bg-[#b1addf] rounded-md'>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Address:</span>
-                                    <span>{driver?.address || "N/A"}</span> 
-                                </div>
-                                <div className='flex gap-2 font-bold text-[#000000]'>
-                                    <span>Status:</span>
-                                    <span>{driver?.status || "N/A"}</span> 
-                                </div>
-                            </div> 
-                        </div> 
-                    </div>
-                </div> 
-
-                {/* Form cập nhật trạng thái */}
-                <div> 
-                    <form onSubmit={submit}>
-                        <div className='flex gap-4 py-3'>
-                            <select 
-                                value={status} 
-                                onChange={(e) => setStatus(e.target.value)} 
-                                className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#b1addf] border border-slate-700 rounded-md text-[#000000]' 
-                                required
-                            >
-                                <option value="">--Select Status--</option>
-                                <option value="active">active</option>
-                                <option value="deactive">pending</option>
-                            </select>
-                            <button type="submit" className='bg-red-500 w-[170px] hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2'>
-                                Submit
-                            </button>
-                        </div>
-                    </form>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center p-4 border-b">
+                    <h1 className='text-[20px] font-bold'>Shipper Details</h1>
+                    <button 
+                        onClick={closeOverlay}
+                        className="text-gray-500 hover:text-gray-700 text-2xl"
+                    >
+                        &times;
+                    </button>
                 </div>
-            </div> 
+
+                {/* Hiển thị loading */}
+                {loader && <p className="text-center text-blue-500 py-4">Đang tải dữ liệu...</p>}
+
+                <div className='p-4 bg-white'>
+                    <div className='w-full flex flex-col md:flex-row gap-4'>
+                        {/* Ảnh shipper */}
+                        <div className='md:w-1/3'>
+                            {driver?.image ? (
+                                <img className='w-full h-auto rounded-md' src={driver.image} alt={driver.name} />
+                            ) : (
+                                <div className="w-full h-[200px] bg-gray-200 flex items-center justify-center rounded-md">
+                                    <span>Image Not Uploaded</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Thông tin shipper */}
+                        <div className='md:w-2/3'>
+                            <div className='bg-[#f8f9fa] p-4 rounded-md mb-4'>
+                                <h2 className='text-lg font-semibold mb-2'>Basic Info</h2>
+                                <div className='grid grid-cols-1 gap-2'>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Name:</span>
+                                        <span>{driver.Profile.name || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Phone Number:</span>
+                                        <span>{driver.Profile.phone_number || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Car Name:</span>
+                                        <span>{driver.car_name || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">Number car:</span>
+                                        <span>{driver.cavet || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">CCCD Back:</span>
+                                        <span>{driver.cccdBack || "N/A"}</span> 
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <span className="font-bold">CCCD Front:</span>
+                                        <span>{driver.cccdFront || "N/A"}</span> 
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Form cập nhật trạng thái */}
+                            <form onSubmit={submit}>
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <select
+                                        value={status}
+                                        onChange={(e) => setStatus(e.target.value)}
+                                        className="px-4 py-2 focus:border-indigo-500 outline-none bg-white border border-slate-300 rounded-md"
+                                        required
+                                    >
+                                        <option value="">--Select Status--</option>
+                                        <option value="active">BUSY</option>
+                                        <option value="pending">ONLINE</option>
+                                        <option value="pending">PROCESSING</option>
+                                    </select>
+                                    <button
+                                        type="submit"
+                                        className="bg-red-500 hover:bg-red-600 text-white rounded-md px-4 py-2"
+                                    >
+                                        Update Status
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
