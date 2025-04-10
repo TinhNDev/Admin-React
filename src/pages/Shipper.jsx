@@ -104,6 +104,14 @@ const Shipper = () => {
                                     className="w-1/5"
                                 />
                                 <SortableHeader 
+                                    label="Status" 
+                                    field="status" 
+                                    sortField={sortField} 
+                                    sortOrder={sortOrder} 
+                                    onSort={handleSort} 
+                                    className="w-1/5"
+                                />
+                                <SortableHeader 
                                     label="Phone" 
                                     field="phone_number" 
                                     sortField={sortField} 
@@ -132,6 +140,17 @@ const Shipper = () => {
                                             <img className='w-[45px] h-[45px] rounded-full object-cover' src={dri.Profile.image} alt="" />
                                         </td>
                                         <td scope='row' className='py-2 px-4 font-medium'>{dri.Profile.name}</td>
+                                        <td scope='row' className='py-2 px-4 font-medium'>
+                                            <span className={`px-2 py-1 rounded-full text-xs ${
+                                                dri.status === 'BUSY' ? 'bg-green-100 text-green-800' : 
+                                                dri.status === 'PROCESSING' ? 'bg-yellow-100 text-yellow-800' : 
+                                                dri.status === 'ONLINE' ?'bg-yellow-100 text-blue-500':
+                                                'bg-red-100 text-red-800'
+
+                                            }`}>
+                                                {dri.status || 'N/A'}
+                                            </span>
+                                        </td>
                                         <td scope='row' className='py-2 px-4 font-medium'>{dri.Profile.phone_number}</td>
                                         <td scope='row' className='py-2 px-4 font-medium'>{dri.license_plate}</td>
                                         
