@@ -6,7 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import logo from '../data/avatar4.jpg';
 import { IoSettings } from "react-icons/io5";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { logout } from '../store/reducers/authReducer';
+import toast from 'react-hot-toast';
+import { messageClear } from '../store/reducers/authReducer';
 
 // Thay đổi props để nhận collapsed và toggleCollapsed từ MainLayout
 const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) => {
@@ -42,9 +43,10 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
     }, [userInfo, navigate]);
 
     const handleLogout = async () => {
-        await dispatch(logout());
         localStorage.removeItem("userToken");
         navigate("/login");
+        toast.success('Logout success');
+        dispatch(messageClear());
     };
 
     // Xóa hàm toggleCollapse nội bộ

@@ -48,42 +48,7 @@ export const seller_register = createAsyncThunk(
 
 
 
-// Logout function
-export const logout = createAsyncThunk(
-    "auth/logout",
-    async (_, { rejectWithValue, fulfillWithValue, getState }) => {
-        try {
-            const token = localStorage.getItem("userToken");
-            const userID = getState().auth?.userInfo?.user_id;
 
-            console.log("🛠 Token gửi đi:", token);
-            console.log("🛠 UserID gửi đi:", userID);
-
-            if (!token || !userID) {
-                return rejectWithValue("Không có quyền hành động.");
-            }
-
-            const response = await api.post(
-                "/user/logout",
-                {}, // Không cần gửi dữ liệu trong body
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "x-client-id": userID,
-                    },
-                }
-            );
-
-            console.log("✅ Logout thành công:", response.data);
-
-            localStorage.removeItem("userToken");
-            return fulfillWithValue("Logout successful");
-        } catch (error) {
-            console.error("❌ Lỗi khi logout:", error.response?.data || error.message);
-            return rejectWithValue(error.response?.data || { error: "Logout failed" });
-        }
-    }
-);
 
 
   
@@ -151,21 +116,6 @@ const authReducer = createSlice({
                 state.loader = false;
             })
             
-            // Logout cases
-            .addCase(logout.pending, (state) => {
-                state.loader = true;
-            }) 
-            .addCase(logout.rejected, (state, { payload }) => {
-                state.loader = false;
-                state.errorMessage = payload?.error || "Logout failed";
-            }) 
-            .addCase(logout.fulfilled, (state, { payload }) => {
-                state.loader = false;
-                state.successMessage = payload?.metadata?.meesage || "Logout successful"; 
-                state.userInfo = null;
-                state.token = null;
-                state.errorMessage = ""; 
-            });
             
     }
 });
