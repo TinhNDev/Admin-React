@@ -121,7 +121,7 @@ const DetailRestaurant = () => {
                         {/* Thông tin nhà hàng */}
                         <div className='md:w-2/3'>
                             <div className='bg-[#f8f9fa] p-4 rounded-md mb-4'>
-                                <h2 className='text-lg font-semibold mb-2'>Basic Info</h2>
+                                <h2 className="text-lg font-semibold mb-2 text-center">Basic Info</h2>
                                 <div className='grid grid-cols-1 gap-2'>
                                     <div className='flex gap-2'>
                                         <span className="font-bold">Name:</span>
