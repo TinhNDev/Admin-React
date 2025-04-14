@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getNav } from '../navigation/index';
 import { BiLogOutCircle } from "react-icons/bi";
@@ -8,28 +8,20 @@ import { IoSettings } from "react-icons/io5";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import toast from 'react-hot-toast';
 import { messageClear } from '../store/reducers/authReducer';
+import { useTheme } from '../components/ThemeToggle';
+import { MdLightMode, MdPolicy,MdDarkMode  } from "react-icons/md";
 
-// Thay đổi props để nhận collapsed và toggleCollapsed từ MainLayout
+
 const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { pathname } = useLocation();
-    
-    // Xóa state collapsed nội bộ
-    // const [collapsed, setCollapsed] = useState(() => {
-    //     const savedState = localStorage.getItem('sidebarCollapsed');
-    //     return savedState !== null ? JSON.parse(savedState) : false;
-    // });
-    
     const userInfo = useSelector(state => state.auth.userInfo);
     const role = userInfo?.role || "";
 
     const [allNav, setAllNav] = useState([]);
-
-    // Xóa useEffect để lưu trạng thái collapsed vào localStorage
-    // useEffect(() => {
-    //     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
-    // }, [collapsed]);
+    const [showSettingsMenu, setShowSettingsMenu] = useState(false); // Trạng thái mở/đóng menu Setting
+    const { darkMode, toggleTheme } = useTheme(); // Sử dụng trạng thái và hàm toggle từ ThemeContext
 
     useEffect(() => {
         const navs = getNav(role);
@@ -49,11 +41,6 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
         dispatch(messageClear());
     };
 
-    // Xóa hàm toggleCollapse nội bộ
-    // const toggleCollapse = () => {
-    //     setCollapsed(!collapsed);
-    // };
-
     return (
         <div>
             <div 
@@ -69,7 +56,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                         </Link>
                     )}
                     <button 
-                        onClick={toggleCollapsed} // Sử dụng toggleCollapsed từ props
+                        onClick={toggleCollapsed} 
                         className={`flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full w-8 h-8 ${collapsed ? 'ml-auto' : ''}`}
                     >
                         {collapsed ? <MdKeyboardArrowRight size={20} /> : <MdKeyboardArrowLeft size={20} />}
@@ -78,6 +65,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
 
                 <div className={`px-[16px] py-[50px] ${collapsed ? 'flex justify-center' : ''}`}>
                     <ul className={`${collapsed ? 'flex flex-col items-center' : 'w-full'}`}>
+                        {/* Navigation */}
                         {allNav.map((n, i) => (
                             <li key={i} className={collapsed ? 'w-10' : 'w-full'}>
                                 <Link 
@@ -93,17 +81,49 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                                 </Link>
                             </li>
                         ))}
+
+                        {/* Settings Menu */}
                         <div className={`mt-auto flex flex-col ${collapsed ? 'items-center' : ''}`}>
                             <hr className='border-t border-gray-200 my-2 w-full' />
+                            {/* Nút Setting */}
                             <li className={collapsed ? 'w-10' : 'w-full'}>
                                 <button 
+                                    onClick={() => setShowSettingsMenu(!showSettingsMenu)} 
                                     className={`text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
                                     title="Setting"
                                 >
                                     <span><IoSettings /></span>
                                     {!collapsed && <span>Setting</span>}
                                 </button>
+
+                                {/* Menu Setting */}
+                                {showSettingsMenu && (
+                                <ul className={`mt-2 ${collapsed ? 'ml-0' : 'ml-4'}`}> {/* Thêm margin-left */}
+                                    {/* Dark/Light Mode */}
+                                    <li>
+                                    <button
+                                        onClick={toggleTheme}
+                                        className="text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
+                                    >
+                                        {darkMode ? <MdDarkMode size={20} /> : <MdLightMode size={20} />} {/* Hiển thị biểu tượng */}
+                                        <span>{darkMode ? "Dark Mode" : "Light Mode"}</span>
+                                    </button>
+                                    </li>
+                                    {/* Private Policy */}
+                                    <li>
+                                    <Link
+                                        to="https://resource.foody.vn/web/security-policy-en.html"
+                                        className="text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
+                                    >
+                                        <MdPolicy size={20} /> {/* Biểu tượng MdPolicy */}
+                                        <span>Private Policy</span>
+                                    </Link>
+                                    </li>
+                                </ul>
+                                )}
                             </li>
+
+                            {/* Nút Logout */}
                             <li className={collapsed ? 'w-10' : 'w-full'}>
                                 <button 
                                     onClick={handleLogout} 
