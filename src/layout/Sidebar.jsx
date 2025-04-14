@@ -9,7 +9,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import toast from 'react-hot-toast';
 import { messageClear } from '../store/reducers/authReducer';
 import { useTheme } from '../components/ThemeToggle';
-import { MdLightMode, MdPolicy,MdDarkMode  } from "react-icons/md";
+import { MdLightMode, MdPolicy,MdDarkMode,MdHelpCenter  } from "react-icons/md";
 
 
 const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) => {
@@ -117,6 +117,16 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                                     >
                                         <MdPolicy size={20} /> {/* Biểu tượng MdPolicy */}
                                         <span>Private Policy</span>
+                                    </Link>
+                                    </li>
+                                    {/* Help Center */}
+                                    <li>
+                                    <Link
+                                        to="./help-center"
+                                        className="text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
+                                    >
+                                        <MdHelpCenter/> {/* Biểu tượng MdPolicy */}
+                                        <span>Help Center </span>
                                     </Link>
                                     </li>
                                 </ul>
