@@ -7,6 +7,7 @@ import { MdFeedback } from "react-icons/md";
 import { RiCoupon2Fill } from "react-icons/ri";
 import { IoMdInformationCircle } from "react-icons/io";
 import { MdFastfood } from "react-icons/md";
+import { IoIosListBox } from "react-icons/io";
 
 export const allNav = [
     {
@@ -67,6 +68,13 @@ export const allNav = [
     },
     {
         id : 13,
+        title : 'Order',
+        icon : <IoIosListBox />,
+        role : 'seller',
+        path: '/restaurant/order'
+    },
+    {
+        id : 14,
         title : 'Information',
         icon : <IoMdInformationCircle />,
         role : 'seller',
