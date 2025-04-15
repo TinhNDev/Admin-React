@@ -1,13 +1,27 @@
-import React, {  } from 'react';
+import React, { useEffect } from 'react';
 import { MdCurrencyExchange,MdProductionQuantityLimits } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { TbUser } from "react-icons/tb";
 import Chart from 'react-apexcharts'
 import { Link } from 'react-router-dom';
 import { MdOutlineRestaurant } from "react-icons/md";
+import { useDispatch, useSelector } from 'react-redux';
+import { get_admin_dashboard_data } from '../store/reducers/dashboardReducer';
+
 
 
 const Dashboard = () => {
+
+    const dispatch = useDispatch()
+    const {totalProduct,totalSeller,totalShipper} = useSelector(state=> state.dashboard)
+
+
+
+
+    useEffect(() => {
+        dispatch(get_admin_dashboard_data())
+    }, [])
+
 
     const state = {
         series : [
@@ -86,7 +100,7 @@ const Dashboard = () => {
 
             <div className="flex justify-between items-center p-5 bg-[#fde2ff] rounded-md w-full">
                 <div className="flex flex-col text-[#5c5a5a]">
-                <h2 className="text-3xl font-bold">10</h2>
+                <h2 className="text-3xl font-bold">{totalSeller}</h2>
                 <span className="text-md font-medium">Restaurant</span>
                 </div>
                 <div className="w-[40px] h-[47px] rounded-full bg-[#760077] flex justify-center items-center text-xl">
@@ -96,7 +110,7 @@ const Dashboard = () => {
 
             <div className="flex justify-between items-center p-5 bg-[#e9feea] rounded-md w-full">
                 <div className="flex flex-col text-[#5c5a5a]">
-                <h2 className="text-3xl font-bold">30</h2>
+                <h2 className="text-3xl font-bold">{totalShipper}</h2>
                 <span className="text-md font-medium">Shipper</span>
                 </div>
                 <div className="w-[40px] h-[47px] rounded-full bg-[#038000] flex justify-center items-center text-xl">
@@ -106,8 +120,8 @@ const Dashboard = () => {
 
             <div className="flex justify-between items-center p-5 bg-[#ecebff] rounded-md w-full">
                 <div className="flex flex-col text-[#5c5a5a]">
-                <h2 className="text-3xl font-bold">50</h2>
-                <span className="text-md font-medium">Customers</span>
+                <h2 className="text-3xl font-bold">{totalProduct}</h2>
+                <span className="text-md font-medium">Product</span>
                 </div>
                 <div className="w-[40px] h-[47px] rounded-full bg-[#0200f8] flex justify-center items-center text-xl">
                 <TbUser className="text-[#fae8e8] shadow-lg" />
