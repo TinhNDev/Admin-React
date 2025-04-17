@@ -80,6 +80,13 @@ export const allNav = [
         role : 'seller',
         path: '/restaurant/information'
     },
+    {
+        id : 15,
+        title : 'AllOrder',
+        icon : <IoIosListBox />,
+        role : 'admin',
+        path: '/admin/all-order'
+    },
 
 
 

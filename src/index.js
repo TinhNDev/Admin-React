@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import store from './store/index';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from './components/ThemeToggle';
 
 const App = lazy(() => import('./App'));
 
@@ -14,7 +13,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Provider store={store}>
-      <ThemeProvider> {/* Bọc ứng dụng bằng ThemeProvider */}
+
         <Suspense>
           <App />
           <Toaster
@@ -27,7 +26,6 @@ root.render(
             }}
           />
         </Suspense>
-      </ThemeProvider>
     </Provider>
   </BrowserRouter>
 );

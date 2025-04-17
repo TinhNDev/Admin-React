@@ -8,8 +8,7 @@ import { IoSettings } from "react-icons/io5";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import toast from 'react-hot-toast';
 import { messageClear } from '../store/reducers/authReducer';
-import { useTheme } from '../components/ThemeToggle';
-import { MdLightMode, MdPolicy,MdDarkMode,MdHelpCenter  } from "react-icons/md";
+import {  MdPolicy,MdHelpCenter  } from "react-icons/md";
 
 
 const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) => {
@@ -21,7 +20,6 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
 
     const [allNav, setAllNav] = useState([]);
     const [showSettingsMenu, setShowSettingsMenu] = useState(false); // Trạng thái mở/đóng menu Setting
-    const { darkMode, toggleTheme } = useTheme(); // Sử dụng trạng thái và hàm toggle từ ThemeContext
 
     useEffect(() => {
         const navs = getNav(role);
@@ -99,16 +97,6 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                                 {/* Menu Setting */}
                                 {showSettingsMenu && (
                                 <ul className={`mt-2 ${collapsed ? 'ml-0' : 'ml-4'}`}> {/* Thêm margin-left */}
-                                    {/* Dark/Light Mode */}
-                                    <li>
-                                    <button
-                                        onClick={toggleTheme}
-                                        className="text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
-                                    >
-                                        {darkMode ? <MdDarkMode size={20} /> : <MdLightMode size={20} />} {/* Hiển thị biểu tượng */}
-                                        <span>{darkMode ? "Dark Mode" : "Light Mode"}</span>
-                                    </button>
-                                    </li>
                                     {/* Private Policy */}
                                     <li>
                                     <Link
