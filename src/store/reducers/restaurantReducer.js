@@ -132,7 +132,34 @@ export const change_seller_detail = createAsyncThunk(
       }
     }
   );
-  
+
+  //Lấy order nhà hàng
+  export const get_orderRes = createAsyncThunk(
+    "admin/get_orderRes",
+    async ({ parPage, page, searchValue }, { rejectWithValue, fulfillWithValue, getState }) => {
+        try {
+            const token = localStorage.getItem("userToken");
+            const sellerID = getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
+
+            if (!token || !sellerID) {
+                return rejectWithValue("Không có quyền truy cập, vui lòng đăng nhập.");
+            }
+
+            const { data } = await api.get("/restaurant/order", {
+                params: { parPage, page, search: searchValue },
+                headers: {
+                    Authorization: token,
+                    "x-client-id": sellerID,
+                },
+            });
+
+            return fulfillWithValue(data.metadata);
+        } catch (error) {
+            console.error("Lỗi API:", error?.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Không thể kết nối đến server.");
+        }
+    }
+);
   
 
 
@@ -146,8 +173,10 @@ const restaurantReducer = createSlice({
         errorMessage: "",
         loader: false,
         restaurants: [],
+        order: [],
         restaurant: null, // Lưu chi tiết một nhà hàng
         totalRestaurant: 0,
+        totalOrder: 0,
     },
     reducers: {
         messageClear: (state) => {
@@ -223,6 +252,20 @@ const restaurantReducer = createSlice({
             .addCase(get_detailRes.rejected, (state, { payload }) => {
                 state.loader = false;
                 state.errorMessage = payload || "Không thể lấy detail.";
+            })
+             // Lấy order
+             .addCase(get_orderRes.pending, (state) => {
+                state.loader = true;
+                state.errorMessage = "";
+            })
+            .addCase(get_orderRes.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.order = payload;
+                state.totalOrder = payload.length;
+            })
+            .addCase(get_orderRes.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload || "Không thể lấy dữ liệu order.";
             });
     },
 });

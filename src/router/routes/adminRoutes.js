@@ -6,6 +6,7 @@ const FeedBack = lazy(()=> import('../../pages/FeedBack'))
 const Coupon = lazy(()=> import('../../pages/Coupon'))
 const DetailRestaurant = lazy(()=> import('../../pages/DetailRestaurant'))
 const DetailShipper = lazy(()=> import('../../pages/DetailShipper'))
+const AllOrder = lazy(()=> import('../../pages/AllOrder'))
 
 
 export const adminRoutes = [
@@ -46,6 +47,11 @@ export const adminRoutes = [
     {
         path: 'admin/coupon',
         element : <Coupon/>,
+        role : 'admin'
+    },
+    {
+        path: 'admin/all-order',
+        element : <AllOrder/>,
         role : 'admin'
     }
 ]

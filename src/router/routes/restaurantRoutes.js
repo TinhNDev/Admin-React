@@ -3,6 +3,7 @@ const ResDashboard = lazy(()=> import('../../pages/RestaurantDashboard/ResDashbo
 const ShowProduct = lazy(()=> import('../../pages/RestaurantDashboard/ShowProduct'))
 const Product = lazy(()=> import('../../pages/RestaurantDashboard/Product'))
 const Infomation = lazy(()=> import('../../pages/RestaurantDashboard/Infomation'))
+const Order = lazy(()=> import('../../pages/RestaurantDashboard/Order'))
 
 
 
@@ -27,6 +28,11 @@ export const restaurantRoutes = [
     {
         path: 'restaurant/information',
         element : <Infomation/>,
+        role : 'restaurant'
+    },
+    {
+        path: 'restaurant/order',
+        element : <Order/>,
         role : 'restaurant'
     },
 

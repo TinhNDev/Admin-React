@@ -15,15 +15,25 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
 
+    // Quản lý state bao gồm role, mặc định là admin
     const [state, setState] = useState({
         email: '',
-        password: ''
+        password: '',
+        role: 'admin'
     });
 
     const inputHandle = (e) => {
         setState({
             ...state,
             [e.target.name]: e.target.value
+        });
+    };
+
+    // Xử lý thay đổi radio button
+    const handleRoleChange = (e) => {
+        setState({
+            ...state,
+            role: e.target.value
         });
     };
 
@@ -68,6 +78,34 @@ const Login = () => {
                         <h3 className="text-4xl font-bold mt-4">Sign in</h3>
                     </div>
                     <form onSubmit={submit}>
+                        {/* Radio chọn role */}
+                        <div className="flex flex-col gap-2 mb-4">
+                            <label className="text-gray-700 font-semibold">Select Role:</label>
+                            <div className="flex gap-6">
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="admin"
+                                        checked={state.role === 'admin'}
+                                        onChange={handleRoleChange}
+                                        className="h-4 w-4 text-orange-500 border-gray-300 focus:ring-orange-400"
+                                    />
+                                    Admin
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="seller"
+                                        checked={state.role === 'seller'}
+                                        onChange={handleRoleChange}
+                                        className="h-4 w-4 text-orange-500 border-gray-300 focus:ring-orange-400"
+                                    />
+                                    Seller
+                                </label>
+                            </div>
+                        </div>
                         <div className="flex flex-col gap-2 mb-4">
                             <label htmlFor="email" className="text-gray-700 font-semibold">Email</label>
                             <input
@@ -104,7 +142,6 @@ const Login = () => {
                                     {showPassword ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
                                 </button>
                             </div>
-
                         </div>
                         <div className="flex items-center gap-2 mb-4">
                             <input
@@ -127,7 +164,7 @@ const Login = () => {
                     </form>
 
                     <div className="text-center mt-4">
-                        <p className="text-gray-600">Don't have an seller account?</p>
+                        <p className="text-gray-600">Don't have a seller account?</p>
                         <Link to="/register" className="text-orange-500 hover:underline">
                             Create an Account
                         </Link>

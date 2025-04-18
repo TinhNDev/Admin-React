@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { get_detailRes, change_seller_detail } from "../../store/reducers/restaurantReducer";
+import { get_detailRes, change_seller_detail,messageClear } from "../../store/reducers/restaurantReducer";
 import { FaRegEdit } from "react-icons/fa";
 import toast from "react-hot-toast";
 
@@ -17,6 +17,7 @@ const Information = () => {
   useEffect(() => {
     const restaurantId = 1; // Replace with dynamic ID if needed
     dispatch(get_detailRes(restaurantId));
+    messageClear();
   }, [dispatch]);
 
   useEffect(() => {
@@ -27,12 +28,17 @@ const Information = () => {
 
   useEffect(() => {
     if (successMessage) {
-      toast.success(successMessage);
+      setTimeout(() => {
+        dispatch(messageClear());
+      }, 3000); 
     }
     if (errorMessage) {
-      toast.error(errorMessage);
+      setTimeout(() => {
+        dispatch(messageClear());
+      }, 3000); 
     }
-  }, [successMessage, errorMessage]);
+  }, [successMessage, errorMessage, dispatch]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,8 +59,10 @@ const Information = () => {
       await dispatch(change_seller_detail(updatedData)).unwrap();
       toast.success("Details updated successfully!");
       setIsEditing(false);
+      messageClear();
     } catch (error) {
       toast.error(error || "Failed to update details.");
+      messageClear();
     }
   };
 
