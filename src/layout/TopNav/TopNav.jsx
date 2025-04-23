@@ -44,7 +44,7 @@ function TopNav({ collapsed }) {
                         contentData={notifications}
                         renderItems={(item,index) => renderNotificationItem(item, index)}
                         renderFooter={()=>
-                            <Link to="/">View All</Link>
+                            <Link to="/admin/feedback">View All</Link>
                         }
                      />
                 </div>
