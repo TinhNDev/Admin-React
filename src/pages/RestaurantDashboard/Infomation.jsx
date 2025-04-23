@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { get_detailRes, change_seller_detail, messageClear } from "../../store/reducers/restaurantReducer";
+import {
+  get_detailRes,
+  change_seller_detail,
+  messageClear,
+} from "../../store/reducers/restaurantReducer";
+>>>>>>> fd6ec53006c2d2f6bb40b13ae456f5c596731ae7
 import { FaRegEdit } from "react-icons/fa";
 import toast from "react-hot-toast";
 
@@ -262,6 +268,112 @@ const Information = () => {
               ${successMessage ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
               {successMessage || errorMessage}
             </div>
+          </div>
+
+          {/* Address */}
+          <div className="border border-gray-300 rounded-md p-4">
+            <label className="block text-gray-700 font-medium">Address:</label>
+            {isEditing ? (
+              <input
+                type="text"
+                name="address"
+                value={formData.address || ""}
+                onChange={handleInputChange}
+                className="w-full border border-dashed border-gray-300 rounded-md p-2"
+              />
+            ) : (
+              <p className="text-gray-800">{formData.address || "N/A"}</p>
+            )}
+          </div>
+
+          {/* Status */}
+          <div className="border border-gray-300 rounded-md p-4">
+            <label className="block text-gray-700 font-medium">Status:</label>
+            <p className="text-gray-800">{formData.status || "N/A"}</p>
+          </div>
+
+          {/* Opening Hours */}
+          <div className="border border-gray-300 rounded-md p-4">
+            <label className="block text-gray-700 font-medium">
+              Opening Hours:
+            </label>
+            {isEditing ? (
+              <input
+                type="text"
+                name="opening_hours"
+                value={formData.opening_hours || ""}
+                onChange={handleInputChange}
+                className="w-full border border-dashed border-gray-300 rounded-md p-2"
+              />
+            ) : (
+              <p className="text-gray-800">{formData.opening_hours || "N/A"}</p>
+            )}
+          </div>
+
+          {/* Phone Number */}
+          <div className="border border-gray-300 rounded-md p-4">
+            <label className="block text-gray-700 font-medium">
+              Phone Number:
+            </label>
+            {isEditing ? (
+              <input
+                type="text"
+                name="phone_number"
+                value={formData.phone_number || ""}
+                onChange={handleInputChange}
+                className="w-full border border-dashed border-gray-300 rounded-md p-2"
+              />
+            ) : (
+              <p className="text-gray-800">{formData.phone_number || "N/A"}</p>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="border border-gray-300 rounded-md p-4">
+            <label className="block text-gray-700 font-medium">
+              Description:
+            </label>
+            {isEditing ? (
+              <textarea
+                name="description"
+                value={formData.description || ""}
+                onChange={handleInputChange}
+                className="w-full border border-dashed border-gray-300 rounded-md p-2"
+              />
+            ) : (
+              <p className="text-gray-800">{formData.description || "N/A"}</p>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+            >
+              Edit Details
+              <FaRegEdit className="inline ml-2" />
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => setIsEditing(false)}
+                className={`px-4 py-${loader ? "2 bg-gray-" : "2 bg-green-"}`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveClick}
+                disabled={loader} // Disable button while saving
+                className={`px-4 py-2 ${
+                  loader
+                    ? "bg-green-400 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-600"
+                } text-white rounded-md transition`}
+              >
+                {loader ? "Saving..." : "Save Changes"}
+              </button>
+            </>
           )}
         </div>
       </div>
