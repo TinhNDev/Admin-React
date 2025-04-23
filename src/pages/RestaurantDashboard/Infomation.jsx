@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+<<<<<<< HEAD
 import { get_detailRes, change_seller_detail, messageClear } from "../../store/reducers/restaurantReducer";
+=======
 import {
   get_detailRes,
   change_seller_detail,
@@ -262,12 +264,14 @@ const Information = () => {
                 </button>
               </div>
             )}
+<<<<<<< HEAD
           </form>
           {(successMessage || errorMessage) && (
             <div className={`mt-8 text-center rounded p-4 font-semibold text-lg
               ${successMessage ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
               {successMessage || errorMessage}
             </div>
+=======
           </div>
 
           {/* Address */}
@@ -374,6 +378,7 @@ const Information = () => {
                 {loader ? "Saving..." : "Save Changes"}
               </button>
             </>
+>>>>>>> fd6ec53006c2d2f6bb40b13ae456f5c596731ae7
           )}
         </div>
       </div>
