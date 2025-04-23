@@ -5,7 +5,7 @@ import driverReducer from "./reducers/driverReducer";
 import productReducer from "./reducers/productReducer";
 import couponReducer from "./reducers/couponReducer";
 import orderReducer from "./reducers/orderReducer"
-
+import ThemeReducer from "./reducers/ThemeReducer"
 
 const rootReducer = {
     auth: authReducer,
@@ -15,5 +15,6 @@ const rootReducer = {
     product: productReducer,
     coupon: couponReducer,
     order: orderReducer,
+    ThemeReducer: ThemeReducer
 }
 export default rootReducer;

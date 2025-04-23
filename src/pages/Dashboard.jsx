@@ -1,188 +1,258 @@
-import React, { useEffect, useState } from 'react';
-import { MdCurrencyExchange } from "react-icons/md";
-import { FaUsers } from "react-icons/fa";
-import { TbUser } from "react-icons/tb";
-import Chart from 'react-apexcharts';
-import { Link } from 'react-router-dom';
-import { MdOutlineRestaurant } from "react-icons/md";
-import { useDispatch, useSelector } from 'react-redux';
-import { get_admin_dashboard_data } from '../store/reducers/dashboardReducer';
+import React from 'react'
+import statusCards from '../data/JsonData/status-card-data.json'
+import Chart from 'react-apexcharts'
+import StatusCard from '../components/status-card'
+import Table from '../components/table'
+import {Link} from 'react-router-dom'
+import Badge from '../components/badge'
+import {  useSelector } from 'react-redux'
 
 // Giả lập dữ liệu doanh thu từng ngày cho từng tháng
-const dailyRevenueByMonth = {
-  0: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 1
-  1: Array.from({ length: 28 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 2
-  2: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 3
-  3: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 4
-  4: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 5
-  5: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 6
-  6: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 7
-  7: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 8
-  8: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 9
-  9: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 10
-  10: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 11
-  11: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 12
-};
+const chartOptions = {
+  series: [
+      {
+          name:'Online Customers',
+          data:[40,70,20,90,36,80,30,91,60]
+      },
+      {
+          name:'Store Customers',
+          data:[40,20,90,10,63,20,70,11,30,20]
+      },
+  ],
+  options:{
+      color:['#6ab04c','#2980b9'],
+      chart:{
+          background: 'transparent',
+      },
+      dataLabels:{
+          enabled: false,
+      },
+      stroke:{
+          curve:'smooth',
+      },
+      xaxis:{
+          categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep']
+      },
+      legend:{
+          position:'top'
+      },
+      grid: {
+          show:false,
+      }
+  }
+}
 
-const monthLabels = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  
+const TopCustomers={
+  head:[
+      'user',
+      'total orders',
+      'total spending'
+  ],
+  body:[
+      {
+          "username":"frank iwa",
+          "order":"250",
+          "price" : "$12,251"
+      },
+      {
+          "username":"frank iwa",
+          "order":"250",
+          "price" : "$12,251"
+      },
+      {
+          "username":"frank iwa",
+          "order":"250",
+          "price" : "$12,251"
+      },
+      {
+          "username":"frank iwa",
+          "order":"250",
+          "price" : "$12,251"
+      },
+      {
+          "username":"frank iwa",
+          "order":"250",
+          "price" : "$12,251"
+      },
+  ]
+}
 
-const monthlyRevenue = [
-  15000, 18000, 21000, 24000, 20000, 23000, 26000, 28000, 30000, 32000, 29000, 35000
-];
+
+const renderCusomerHead = (item,index) =>(
+  <th key={index}>
+      {item}
+  </th>
+)
+
+const renderCusomerBody = (item,index) => (
+  <tr key={index}>
+      <td>{item.username}</td>
+      <td>{item.order}</td>
+      <td>{item.price}</td>
+  </tr>
+)
+
+const latestOrders = {
+  header: [
+      "order id",
+      "user",
+      "total price",
+      "date",
+      "status"
+  ],
+  body: [
+      {
+          id: "#OD1711",
+          user: "john doe",
+          date: "17 Jun 2021",
+          price: "$900",
+          status: "shipping"
+      },
+      {
+          id: "#OD1712",
+          user: "frank iva",
+          date: "1 Jun 2021",
+          price: "$400",
+          status: "paid"
+      },
+      {
+          id: "#OD1713",
+          user: "anthony baker",
+          date: "27 Jun 2021",
+          price: "$200",
+          status: "pending"
+      },
+      {
+          id: "#OD1712",
+          user: "frank iva",
+          date: "1 Jun 2021",
+          price: "$400",
+          status: "paid"
+      },
+      {
+          id: "#OD1713",
+          user: "anthony baker",
+          date: "27 Jun 2021",
+          price: "$200",
+          status: "refund"
+      }
+  ]
+}
+
+const orderStatus = {
+  "shipping": "primary",
+  "pending": "warning",
+  "paid": "success",
+  "refund": "danger"
+}
+
+const renderOrderHead = (item, index) => (
+  <th key={index}>{item}</th>
+)
+
+const renderOrderBody = (item, index) => (
+  <tr key={index}>
+      <td>{item.id}</td>
+      <td>{item.user}</td>
+      <td>{item.price}</td>
+      <td>{item.date}</td>
+      <td>
+          <Badge type={orderStatus[item.status]} content={item.status}/>
+      </td>
+  </tr>
+)
 
 const Dashboard = () => {
-  const dispatch = useDispatch();
-  const { totalProduct, totalSeller, totalShipper } = useSelector(state => state.dashboard);
+  const themeReducer = useSelector(state => state.ThemeReducer.mode)
 
-  const [view, setView] = useState('month'); // 'month' hoặc 'day'
-  const [selectedMonth, setSelectedMonth] = useState(null);
+  // const dispatch = useDispatch()
 
-  // Chart options cho doanh thu theo tháng
-  const monthChartOptions = {
-    chart: {
-      type: 'bar',
-      events: {
-        dataPointSelection: function(event, chartContext, config) {
-          setSelectedMonth(config.dataPointIndex);
-          setView('day');
-        }
-      }
-    },
-    xaxis: {
-      categories: monthLabels,
-      title: { text: 'Months' }
-    },
-    yaxis: {
-      title: { text: 'Revenue (VND)' }
-    },
-    colors: ['#3b82f6'],
-    tooltip: {
-      y: {
-        formatter: function(val) { return `$${val.toLocaleString()}`; }
-      }
-    }
-  };
+  // useEffect(() => {
 
-  // Chart options cho doanh thu theo ngày của một tháng
-  const dayChartOptions = {
-    chart: { type: 'bar' },
-    xaxis: {
-      categories: selectedMonth !== null
-        ? Array.from({ length: dailyRevenueByMonth[selectedMonth].length }, (_, i) => `Ngày ${i + 1}`)
-        : [],
-      title: { text: selectedMonth !== null ? `Ngày trong ${monthLabels[selectedMonth]}` : '' }
-    },
-    yaxis: {
-      title: { text: 'Revenue ($)' }
-    },
-    colors: ['#f59e42'],
-    tooltip: {
-      y: {
-        formatter: function(val) { return `$${val.toLocaleString()}`; }
-      }
-    }
-  };
-
-  useEffect(() => {
-    dispatch(get_admin_dashboard_data());
-  }, [dispatch]);
-
+  // })
   return (
-    <div className='px-2 md:px-7 py-5'>
-      <div className='w-full grid grid-cols-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-7'>
-        <div className="flex justify-between items-center p-5 bg-[#fae8e8] rounded-md w-full">
-          <div className="flex flex-col text-[#5c5a5a]">
-            <h2 className="text-3xl font-bold">1000$</h2>
-            <span className="text-md font-medium">Total Sales</span>
-          </div>
-          <div className="w-[40px] h-[47px] rounded-full bg-[#fa0305] flex justify-center items-center text-xl">
-            <MdCurrencyExchange className="text-[#fae8e8] shadow-lg" />
-          </div>
-        </div>
-        <div className="flex justify-between items-center p-5 bg-[#fde2ff] rounded-md w-full">
-          <div className="flex flex-col text-[#5c5a5a]">
-            <h2 className="text-3xl font-bold">{totalSeller}</h2>
-            <span className="text-md font-medium">Restaurant</span>
-          </div>
-          <div className="w-[40px] h-[47px] rounded-full bg-[#760077] flex justify-center items-center text-xl">
-            <MdOutlineRestaurant className="text-[#fae8e8] shadow-lg" />
-          </div>
-        </div>
-        <div className="flex justify-between items-center p-5 bg-[#e9feea] rounded-md w-full">
-          <div className="flex flex-col text-[#5c5a5a]">
-            <h2 className="text-3xl font-bold">{totalShipper}</h2>
-            <span className="text-md font-medium">Shipper</span>
-          </div>
-          <div className="w-[40px] h-[47px] rounded-full bg-[#038000] flex justify-center items-center text-xl">
-            <FaUsers className="text-[#fae8e8] shadow-lg" />
-          </div>
-        </div>
-        <div className="flex justify-between items-center p-5 bg-[#ecebff] rounded-md w-full">
-          <div className="flex flex-col text-[#5c5a5a]">
-            <h2 className="text-3xl font-bold">{totalProduct}</h2>
-            <span className="text-md font-medium">Product</span>
-          </div>
-          <div className="w-[40px] h-[47px] rounded-full bg-[#0200f8] flex justify-center items-center text-xl">
-            <TbUser className="text-[#fae8e8] shadow-lg" />
-          </div>
-        </div>
-      </div>
+      <div>
+          <h2 className="page-header">
+              Dashboard
+          </h2>
+          <div className="row">
+              <div className="col-6">
+                  <div className="row">
+                      {
+                          statusCards.map((item,index) =>(
+                              <div className="col-6" key={index}>
+                                  <StatusCard
+                                      icon={item.icon}
+                                      count = {item.count}
+                                      title={item.title}
+                                  />
+                              </div>
+                          ))
+                      }
+                  </div>
+              </div>
+              <div className="col-6">
+                  <div className="card full-height">
+                      {
+                          
+                      }
+                      <Chart 
+                           options={themeReducer === 'theme-mode-dark' ? {
+                              ...chartOptions.options,
+                              theme: { mode: 'dark'}
+                          } : {
+                              ...chartOptions.options,
+                              theme: { mode: 'light'}
+                          }}
+                          series={chartOptions.series}
+                          type='line'
+                          height='100%'
+                      />
+                  </div>
+              </div>
+              <div className="col-4">
+                  <div className="card">
+                      <div className="card__header">
+                          <h3>top customers</h3>
+                      </div>
+                      <div className="card__body">
+                          <Table
+                              headData={TopCustomers.head}
+                              renderHead={(item,index)=>renderCusomerHead(item,index)}
 
-      <div className='w-full flex flex-wrap mt-7'>
-        <div className='w-full lg:w-7/12 lg:pr-3'>
-          <div className='w-full bg-[#e5e4eb] p-4 rounded-md'>
-            {view === 'month' && (
-              <div>
-                <div className="flex gap-4 mb-4">
-                  <button
-                    className="px-4 py-2 rounded bg-blue-500 text-white"
-                    disabled
-                  >
-                    Months
-                  </button>
-                </div>
-                <Chart
-                  options={monthChartOptions}
-                  series={[{ name: 'Doanh thu', data: monthlyRevenue }]}
-                  type="bar"
-                  height={350}
-                />
-                <p className="text-sm text-gray-500 mt-2">* Click on the monthly column to see daily revenue details</p>
+                              bodyData={TopCustomers.body}
+                              renderBody={(item,index)=>renderCusomerBody(item,index)}
+                          />
+                      </div>
+                      <div className="card__footer">
+                          <Link to='/'>
+                              View All!
+                          </Link>
+                      </div>
+                  </div>
               </div>
-            )}
-            {view === 'day' && selectedMonth !== null && (
-              <div>
-                <button
-                  className="mb-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                  onClick={() => setView('month')}
-                >
-                  ← Back
-                </button>
-                <Chart
-                  options={dayChartOptions}
-                  series={[{ name: 'Revenue', data: dailyRevenueByMonth[selectedMonth] }]}
-                  type="bar"
-                  height={350}
-                />
+              <div className="col-8">
+                  <div className="card">
+                      <div className="card__header">
+                          <h3>latest orders</h3>
+                      </div>
+                      <div className="card__body">
+                          <Table
+                               headData={latestOrders.header}
+                               renderHead={(item,index)=>renderOrderHead(item,index)}
+
+                               bodyData={latestOrders.body}
+                               renderBody={(item,index)=>renderOrderBody(item,index)}
+                          />
+                      </div>
+                      <div className="card__footer">
+                          <Link to="/">view ALl</Link>
+                      </div>
+                  </div>
               </div>
-            )}
           </div>
-        </div>
-        <div className='w-full lg:w-5/12 lg:pl-4 mt-6 lg:mt-0'>
-          <div className='w-full bg-[#e5e4eb] p-4 rounded-md text-[#000000]'>
-            <div className='flex justify-between items-center'>
-              <h2 className='font-semibold text-lg text-[#000000] pb-3'>All Order</h2>
-              <Link className='font-semibold text-sm text-[#000000]'>View All</Link>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-  );
+  )
 };
 
 export default Dashboard;

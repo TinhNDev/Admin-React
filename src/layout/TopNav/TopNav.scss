@@ -1,0 +1,90 @@
+.topnav{
+    position: fixed; // Thêm position fixed
+    top: 0;
+    left: 260px; // Mặc định khi Sidebar mở rộng
+    right: 0;
+    height: var(--topnav-height);
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    background-color: var(--main-bg);
+    z-index: 1000; // Đảm bảo nằm trên các phần tử khác
+    transition: left 0.3s; // Hiệu ứng mượt khi co/giãn
+
+    // Khi Sidebar collapsed (thêm class này từ JSX)
+    &.collapsed {
+        left: 70px; // Điều chỉnh theo kích thước Sidebar collapsed
+    }
+
+    &__search{
+        position: relative;
+        height: 50px;
+        background-color: var(--main-bg);
+        display: flex;
+        align-items: center;
+        box-shadow: var(--box-shadow);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+
+        & > input{
+            height: 100%;
+            width: 100%; // Thêm width để input fill khoảng trống
+            padding: 10px 60px 10px 20px;
+            font-size: 1rem;
+            border-radius: var(--border-radius);
+            color: var(--txt-color);
+            background-color:var(--main-bg);
+            outline:none;
+            border: 1px solid var(--txt-grey); // Thêm border nếu cần
+        }
+
+        & > i {
+            font-size: 1.5rem;
+            position:absolute;
+            right: 20px;
+        }
+    }
+
+    &__right{
+        display: flex;
+        align-items: center;   
+    }
+}
+.topnav__right-item ~ .topnav__right-item {
+    margin-left: 30px;
+}
+.notification-item{
+    display: flex;
+    align-items: center;
+    padding:20px;
+    &:hover{
+        background-color: var(--second-bg);
+    }
+    & > i{
+        margin-right: 20px;
+        font-size: 1.5rem;
+    }
+}
+
+.topnav__right-user{
+    display: flex;
+    align-items: center;
+
+    &__image{
+        width: 40px;
+        height: 40px;
+        border-radius:50%;
+        overflow: hidden;
+        margin-right: 10px;
+        &  > img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+}
+.topnav__right-user__name {
+    font-size: 1rem;
+    font-weight: 600;
+}
