@@ -20,9 +20,7 @@ const MainLayout = () => {
     }, [collapsed]);
 
     useEffect(() => {
-        const themeClass = localStorage.getItem('themeMode') || 'light';
         const colorClass = localStorage.getItem('colorMode') || 'blue';
-        dispatch(ThemeAction.setMode(themeClass));
         dispatch(ThemeAction.setColor(colorClass));
     }, [dispatch]);
 

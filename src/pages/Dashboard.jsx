@@ -7,7 +7,7 @@ import {Link} from 'react-router-dom'
 import Badge from '../components/badge'
 import {  useSelector } from 'react-redux'
 
-// Giả lập dữ liệu doanh thu từng ngày cho từng tháng
+
 const chartOptions = {
   series: [
       {
@@ -165,11 +165,6 @@ const renderOrderBody = (item, index) => (
 const Dashboard = () => {
   const themeReducer = useSelector(state => state.ThemeReducer.mode)
 
-  // const dispatch = useDispatch()
-
-  // useEffect(() => {
-
-  // })
   return (
       <div>
           <h2 className="page-header text-2xl font-bold" >
@@ -210,7 +205,7 @@ const Dashboard = () => {
                       />
                   </div>
               </div>
-              <div className="col-4">
+              <div className="col-3">
                   <div className="card">
                       <div className="card__header">
                           <h3 className='text-xl font-bold'>Restaurant</h3>
@@ -225,16 +220,37 @@ const Dashboard = () => {
                           />
                       </div>
                       <div className="card__footer">
-                          <Link to='/'>
+                          <Link to='/admin/restaurant'>
                               View All!
                           </Link>
                       </div>
                   </div>
               </div>
-              <div className="col-8">
+              <div className="col-3">
+                  <div className="card">
+                      <div className="card__header">
+                          <h3 className='text-xl font-bold'>Shipper</h3>
+                      </div>
+                      <div className="card__body">
+                          <Table
+                              headData={TopCustomers.head}
+                              renderHead={(item,index)=>renderCusomerHead(item,index)}
+
+                              bodyData={TopCustomers.body}
+                              renderBody={(item,index)=>renderCusomerBody(item,index)}
+                          />
+                      </div>
+                      <div className="card__footer">
+                          <Link to='/admin/shipper'>
+                              View All!
+                          </Link>
+                      </div>
+                  </div>
+              </div>
+              <div className="col-6">
                   <div className="card ">
                       <div className="card__header">
-                          <h3 className='text-xl font-bold' >latest orders</h3>
+                          <h3 className='text-xl font-bold' >Lastet orders</h3>
                       </div>
                       <div className="card__body">
                           <Table
@@ -246,7 +262,7 @@ const Dashboard = () => {
                           />
                       </div>
                       <div className="card__footer">
-                          <Link to="/">view ALl</Link>
+                          <Link to="/admin/all-order">view All</Link>
                       </div>
                   </div>
               </div>

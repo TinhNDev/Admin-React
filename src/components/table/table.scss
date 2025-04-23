@@ -1,10 +1,11 @@
-.table-wrapper{
-    overflow-y:auto;
-}
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
 
 table{
-    width: 100%;
-    min-width: 400px;
+    width: 100% ;
+    min-width: 400px ;
     border-spacing: 0;
 }
 

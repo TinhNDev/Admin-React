@@ -1,74 +1,74 @@
-import React,{useState} from 'react'
-
-
-import './table.scss'
+import React, { useState, useEffect } from 'react';
+import './table.scss';
 
 function Table(props) {
-    const initDataShow = props.limit && props.bodyData ? props.bodyData.slice(0,Number(props.limit)) : props.bodyData
-    const [dataShow,setDataShow] = useState(initDataShow)
+    const { limit, bodyData = [], headData, renderHead, renderBody } = props;
+
+    const initDataShow = limit ? bodyData.slice(0, Number(limit)) : bodyData;
+    const [dataShow, setDataShow] = useState(initDataShow);
+
     let pages = 1;
+    let range = [];
 
-    let range = []
-
-    if(props.limit !== undefined){
-        let page = Math.floor(props.bodyData.length / Number(props.limit))
-        pages = props.bodyData.length & Number(props.limit) === 0 ? page : page + 1 
-        range = [...Array(pages).keys()]
+    if (limit && bodyData.length) {
+        let page = Math.floor(bodyData.length / Number(limit));
+        pages = (bodyData.length % Number(limit) === 0) ? page : page + 1;
+        range = [...Array(pages).keys()];
     }
 
-    const [currPage, setCurrPage] = useState(0)
+    const [currPage, setCurrPage] = useState(0);
 
     const selectPage = page => {
-        const start = Number(props.limit) * page
-        const end = start + Number(props.limit)
+        const start = Number(limit) * page;
+        const end = start + Number(limit);
+        setDataShow(bodyData.slice(start, end));
+        setCurrPage(page);
+    };
 
-        setDataShow(props.bodyData.slice(start, end))
-
-        setCurrPage(page)
-    }
+    // Reset dataShow khi bodyData hoặc limit thay đổi
+    useEffect(() => {
+        if (limit) {
+            setDataShow(bodyData.slice(0, Number(limit)));
+            setCurrPage(0);
+        } else {
+            setDataShow(bodyData);
+            setCurrPage(0);
+        }
+    }, [bodyData, limit]);
 
     return (
         <div className="table">
             <div className="table-wrapper">
-                <table>
-                  {
-                      props.headData  && props.renderHead ? (
+                <table className="w-full">
+                    {headData && renderHead && (
                         <thead>
                             <tr>
-                                {
-                                    props.headData.map((item,index) => props.renderHead(item,index))
-                                }
+                                {headData.map((item, index) => renderHead(item, index))}
                             </tr>
                         </thead>
-                      ) : null
-                  }
-                  {     
-                     props.bodyData && props.renderBody ? (
+                    )}
+                    {bodyData && renderBody && (
                         <tbody>
-                                {
-                                    dataShow.map((item,index) => props.renderBody(item,index))
-                                }
-                            
+                            {dataShow.map((item, index) => renderBody(item, index))}
                         </tbody>
-                     ) : null
-                  }
+                    )}
                 </table>
             </div>
-            {
-                pages > 1 ? (
-                    <div className="table__pagination">
-                        {
-                            range.map((item, index) =>(
-                                <div key={index} className={`table__pagination-item ${currPage === index ? 'active' : ''}`} onClick={() => selectPage(index)}>
-                                {item + 1}
-                            </div>
-                            ))
-                        }
-                    </div>
-                ) : null
-            }
+            {pages > 1 && (
+                <div className="table__pagination">
+                    {range.map((item, index) => (
+                        <div
+                            key={index}
+                            className={`table__pagination-item ${currPage === index ? 'active' : ''}`}
+                            onClick={() => selectPage(index)}
+                        >
+                            {item + 1}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-    )
+    );
 }
 
-export default Table
+export default Table;

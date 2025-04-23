@@ -70,7 +70,7 @@ const Restaurant = () => {
 
     return (
         <div className='px-2 lg:px-7 pt-5'>
-            <h1 className='text-[#000000] font-semibold text-lg mb-3'>Restaurant</h1>
+            <h1 className='text-[#000000] font-semibold text-2xl mb-3'>Restaurant</h1>
 
             <div className='w-full p-4 bg-white rounded-md shadow-sm'> 
                 <Search setParPage={setParPage} setSearchValue={setSearchValue} searchValue={searchValue} />
@@ -127,7 +127,7 @@ const Restaurant = () => {
                         <tbody>
                             {
                                 sortedRestaurants.map((res, index) => (
-                                    <tr key={index} className='bg-white border-b hover:bg-gray-50'>
+                                    <tr key={index} className='bg-white border-b hover:bg-blue-300'>
                                         <td className='py-2 px-4 font-medium'>{index + 1}</td>
                                         <td scope='row' className='py-2 px-4 font-medium'>
                                             <img className='w-[45px] h-[45px] rounded-full object-cover' src={res.image} alt="" />

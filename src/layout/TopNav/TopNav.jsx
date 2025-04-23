@@ -40,7 +40,7 @@ function TopNav({ collapsed }) {
                 <div className="topnav__right-item">
                     <Dropdown className="" 
                         icon = "bx bx-bell"
-                        badge='12'
+                        badge='5'
                         contentData={notifications}
                         renderItems={(item,index) => renderNotificationItem(item, index)}
                         renderFooter={()=>

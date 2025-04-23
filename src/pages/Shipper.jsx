@@ -77,7 +77,7 @@ const Shipper = () => {
 
     return (
         <div className='px-2 lg:px-7 pt-5'>
-            <h1 className='text-[#000000] font-semibold text-lg mb-3'>Drivers</h1>
+            <h1 className='text-[#000000] font-semibold text-2xl mb-3'>Drivers</h1>
 
             <div className='w-full p-4 bg-white rounded-md shadow-sm'> 
                 <Search setParPage={setParPage} setSearchValue={setSearchValue} searchValue={searchValue} />

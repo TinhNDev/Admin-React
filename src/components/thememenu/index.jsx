@@ -7,20 +7,6 @@ import './ThemeMenu.scss'
 import { useDispatch } from 'react-redux'
 
 import ThemeAction from '../../actions/ThemeAction'
-const mode_settings  = [
-    {
-        id:'light',
-        name:'Light',
-        background:'light-background',
-        class : 'theme-mode-light'
-    },
-    {
-        id : 'dark',
-        name:'Dark',
-        background:'dark-background',
-        class : 'theme-mode-dark'
-    }
-]
 
 const color_settings = [
     {
@@ -98,11 +84,10 @@ function ThemeMenu() {
     }
     
     useEffect(() => {
-        const themeClass = mode_settings.find(e => e.class === localStorage.getItem('themeMode', 'theme-mode-light'))
+
 
         const colorClass = color_settings.find(e => e.class === localStorage.getItem('colorMode', 'theme-mode-light'))
 
-        if (themeClass !== undefined) setCurrMode(themeClass.id)
 
         if (colorClass !== undefined) setCurrColor(colorClass.id)
 
@@ -118,21 +103,6 @@ function ThemeMenu() {
                 <button className="theme-menu__close" onClick={() => closeMenu()}>
                     <i className='bx bx-x'></i>
                 </button>
-                <div className="theme-menu__select">
-                    <span>Choose mode</span>
-                    <ul className="mode-list">
-                        {
-                            mode_settings.map((item, index) => (
-                                <li key={index} onClick={() => setMode(item)}>
-                                    <div className={`mode-list__color ${item.background} ${item.id === currMode ? 'active' : ''}`}>
-                                        <i className='bx bx-check'></i>
-                                    </div>
-                                    <span>{item.name}</span>
-                                </li>
-                            ))
-                        }
-                    </ul>
-                </div>
                 <div className="theme-menu__select">
                     <span>Choose color</span>
                     <ul className="mode-list">
