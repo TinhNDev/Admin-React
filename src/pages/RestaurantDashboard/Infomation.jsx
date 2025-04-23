@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { get_detailRes, change_seller_detail,messageClear } from "../../store/reducers/restaurantReducer";
+import {
+  get_detailRes,
+  change_seller_detail,
+  messageClear,
+} from "../../store/reducers/restaurantReducer";
 import { FaRegEdit } from "react-icons/fa";
 import toast from "react-hot-toast";
 
@@ -30,15 +34,14 @@ const Information = () => {
     if (successMessage) {
       setTimeout(() => {
         dispatch(messageClear());
-      }, 3000); 
+      }, 3000);
     }
     if (errorMessage) {
       setTimeout(() => {
         dispatch(messageClear());
-      }, 3000); 
+      }, 3000);
     }
   }, [successMessage, errorMessage, dispatch]);
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -128,7 +131,9 @@ const Information = () => {
 
           {/* Opening Hours */}
           <div className="border border-gray-300 rounded-md p-4">
-            <label className="block text-gray-700 font-medium">Opening Hours:</label>
+            <label className="block text-gray-700 font-medium">
+              Opening Hours:
+            </label>
             {isEditing ? (
               <input
                 type="text"
@@ -144,7 +149,9 @@ const Information = () => {
 
           {/* Phone Number */}
           <div className="border border-gray-300 rounded-md p-4">
-            <label className="block text-gray-700 font-medium">Phone Number:</label>
+            <label className="block text-gray-700 font-medium">
+              Phone Number:
+            </label>
             {isEditing ? (
               <input
                 type="text"
@@ -160,7 +167,9 @@ const Information = () => {
 
           {/* Description */}
           <div className="border border-gray-300 rounded-md p-4">
-            <label className="block text-gray-700 font-medium">Description:</label>
+            <label className="block text-gray-700 font-medium">
+              Description:
+            </label>
             {isEditing ? (
               <textarea
                 name="description"
@@ -210,4 +219,3 @@ const Information = () => {
 };
 
 export default Information;
-
