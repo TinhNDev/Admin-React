@@ -1,5 +1,4 @@
 import React,  { useEffect }  from 'react'
-import statusCards from '../data/JsonData/status-card-data.json'
 import Chart from 'react-apexcharts'
 import StatusCard from '../components/status-card'
 import { get_allRestaurant } from '../store/reducers/restaurantReducer';
@@ -49,13 +48,14 @@ const chartOptions = {
 
 
 
+
 const Dashboard = () => {
     const dispatch = useDispatch();
   const themeReducer = useSelector(state => state.ThemeReducer.mode)
-  const { restaurants } = useSelector(state => state.restaurant);
- const { drivers } = useSelector(state => state.driver);
+  const { restaurants, totalRestaurant } = useSelector(state => state.restaurant);
+ const { drivers, totalDrivers } = useSelector(state => state.driver);
    const orderState = useSelector((state) => state.order || {});
-   const { orders } = orderState;
+   const { orders, totalOrders } = orderState;
     useEffect(() => {
         dispatch(get_allRestaurant());
     }, []);
@@ -71,6 +71,31 @@ const Dashboard = () => {
   const topRestaurants = restaurants.slice(0, 5);
   const topDrivers = drivers.slice(0, 5);
   const topOrders = orders.slice(0, 5);
+
+  const statusCards = [
+
+    {
+        "icon": "bx bx-shopping-bag",
+        "count": "1,995",
+        "title": "Total sales"
+    },
+    {
+        icon: "bx bx-home",
+        count: totalRestaurant ?? 0,
+        title: "Tổng nhà hàng"
+      },
+      {
+        icon: "bx bx-user",
+        count: totalDrivers ?? 0,
+        title: "Tổng shipper"
+      },
+      {
+        icon: "bx bx-receipt",
+        count: totalOrders ?? 0,
+        title: "Tổng đơn hàng"
+      }
+]
+
 
   return (
       <div>
@@ -278,7 +303,7 @@ const Dashboard = () => {
                         )}
                         </div>
                         <div className="card__footer px-4 py-3 border-t border-gray-200">
-                        <Link to='/admin/restaurant' className="text-blue-600 hover:underline">
+                        <Link to='/admin/all-order' className="text-blue-600 hover:underline">
                             View All!
                         </Link>
                         </div>
