@@ -63,78 +63,79 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                 </div>
 
                 <div className={`px-[16px] py-[50px] ${collapsed ? 'flex justify-center' : ''}`}>
-                    <ul className={`${collapsed ? 'flex flex-col items-center' : 'w-full'}`}>
-                        {/* Navigation */}
-                        {allNav.map((n, i) => (
-                            <li key={i} className={collapsed ? 'w-10' : 'w-full'}>
-                                <Link 
-                                    to={n.path} 
-                                    className={`${pathname === n.path 
-                                        ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' 
-                                        : 'text-gray-700 hover:bg-gray-100 duration-200'} 
-                                        text-lg px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
-                                    title={n.title}
+                <ul className={`${collapsed ? 'flex flex-col items-center' : 'w-full'}`}>
+                    {/* Navigation */}
+                    {allNav.map((n, i) => (
+                        <li key={i} className={collapsed ? 'w-10' : 'w-full'}>
+                        <Link 
+                            to={n.path} 
+                            className={`${pathname === n.path 
+                            ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' 
+                            : 'text-gray-700 hover:bg-gray-100 duration-200'} 
+                            text-lg font-bold px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                            title={n.title}
+                        >
+                            <span>{n.icon}</span>
+                            {!collapsed && <span className="font-bold text-lg">{n.title}</span>}
+                        </Link>
+                        </li>
+                    ))}
+
+                    {/* Settings Menu */}
+                    <div className={`mt-auto flex flex-col ${collapsed ? 'items-center' : ''}`}>
+                        <hr className='border-t border-gray-200 my-2 w-full' />
+                        {/* Nút Setting */}
+                        <li className={collapsed ? 'w-10' : 'w-full'}>
+                        <button 
+                            onClick={() => setShowSettingsMenu(!showSettingsMenu)} 
+                            className={`text-gray-700 hover:bg-gray-100 text-lg font-bold duration-200 px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                            title="Setting"
+                        >
+                            <span><IoSettings /></span>
+                            {!collapsed && <span className="font-bold text-lg">Setting</span>}
+                        </button>
+
+                        {/* Menu Setting */}
+                        {showSettingsMenu && (
+                            <ul className={`mt-2 ${collapsed ? 'ml-0' : 'ml-4'}`}>
+                            {/* Private Policy */}
+                            <li>
+                                <Link
+                                to="https://resource.foody.vn/web/security-policy-en.html"
+                                className="text-gray-700 hover:bg-gray-100 text-lg font-bold duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
                                 >
-                                    <span>{n.icon}</span>
-                                    {!collapsed && <span>{n.title}</span>}
+                                <MdPolicy size={20} />
+                                <span className="font-bold text-lg">Private Policy</span>
                                 </Link>
                             </li>
-                        ))}
-
-                        {/* Settings Menu */}
-                        <div className={`mt-auto flex flex-col ${collapsed ? 'items-center' : ''}`}>
-                            <hr className='border-t border-gray-200 my-2 w-full' />
-                            {/* Nút Setting */}
-                            <li className={collapsed ? 'w-10' : 'w-full'}>
-                                <button 
-                                    onClick={() => setShowSettingsMenu(!showSettingsMenu)} 
-                                    className={`text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
-                                    title="Setting"
+                            {/* Help Center */}
+                            <li>
+                                <Link
+                                to="./help-center"
+                                className="text-gray-700 hover:bg-gray-100 text-lg font-bold duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
                                 >
-                                    <span><IoSettings /></span>
-                                    {!collapsed && <span>Setting</span>}
-                                </button>
-
-                                {/* Menu Setting */}
-                                {showSettingsMenu && (
-                                <ul className={`mt-2 ${collapsed ? 'ml-0' : 'ml-4'}`}> {/* Thêm margin-left */}
-                                    {/* Private Policy */}
-                                    <li>
-                                    <Link
-                                        to="https://resource.foody.vn/web/security-policy-en.html"
-                                        className="text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
-                                    >
-                                        <MdPolicy size={20} /> {/* Biểu tượng MdPolicy */}
-                                        <span>Private Policy</span>
-                                    </Link>
-                                    </li>
-                                    {/* Help Center */}
-                                    <li>
-                                    <Link
-                                        to="./help-center"
-                                        className="text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
-                                    >
-                                        <MdHelpCenter/> {/* Biểu tượng MdPolicy */}
-                                        <span>Help Center </span>
-                                    </Link>
-                                    </li>
-                                </ul>
-                                )}
+                                <MdHelpCenter />
+                                <span className="font-bold text-lg">Help Center</span>
+                                </Link>
                             </li>
+                            </ul>
+                        )}
+                        </li>
 
-                            {/* Nút Logout */}
-                            <li className={collapsed ? 'w-10' : 'w-full'}>
-                                <button 
-                                    onClick={handleLogout} 
-                                    className={`text-gray-700 hover:bg-gray-100 text-lg duration-200 px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
-                                    title="Logout"
-                                >
-                                    <span><BiLogOutCircle /></span>
-                                    {!collapsed && <span>Logout</span>}
-                                </button>
-                            </li>
-                        </div>
+                        {/* Nút Logout */}
+                        <li className={collapsed ? 'w-10' : 'w-full'}>
+                        <button 
+                            onClick={handleLogout} 
+                            className={`text-gray-700 hover:bg-gray-100 text-lg font-bold duration-200 px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                            title="Logout"
+                        >
+                            <span><BiLogOutCircle /></span>
+                            {!collapsed && <span className="font-bold text-lg">Logout</span>}
+                        </button>
+                        </li>
+                    </div>
                     </ul>
+
                 </div>
             </div>
         </div>

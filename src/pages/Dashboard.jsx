@@ -11,38 +11,59 @@ import { useDispatch, useSelector } from 'react-redux'
 
 
 const chartOptions = {
-  series: [
+    series: [
       {
-          name:'Online Customers',
-          data:[40,70,20,90,36,80,30,91,60]
+        name: 'Theo tháng',
+        data: [40, 70, 20, 90, 36, 80, 30, 91, 60]
       },
       {
-          name:'Store Customers',
-          data:[40,20,90,10,63,20,70,11,30,20]
+        name: 'Theo ngày',
+        data: [40, 20, 90, 10, 63, 20, 70, 11, 30, 20]
+      }
+    ],
+    options: {
+      chart: {
+        type: 'bar', 
+        background: 'transparent',
+        toolbar: { show: true }
       },
-  ],
-  options:{
-      color:['#6ab04c','#2980b9'],
-      chart:{
-          background: 'transparent',
+      plotOptions: {
+        bar: {
+          horizontal: false, 
+          columnWidth: '55%',
+          endingShape: 'rounded'
+        }
       },
-      dataLabels:{
-          enabled: false,
+      dataLabels: {
+        enabled: false
       },
-      stroke:{
-          curve:'smooth',
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ['transparent']
       },
-      xaxis:{
-          categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep']
+      xaxis: {
+        categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep']
       },
-      legend:{
-          position:'top'
+      legend: {
+        position: 'top'
       },
       grid: {
-          show:false,
+        show: false
+      },
+      fill: {
+        opacity: 1
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return val;
+          }
+        }
       }
-  }
-}
+    }
+  };
+  
 
 
 
@@ -132,7 +153,7 @@ const Dashboard = () => {
                               theme: { mode: 'light'}
                           }}
                           series={chartOptions.series}
-                          type='line'
+                          type='bar'
                           height='100%'
                       />
                   </div>
