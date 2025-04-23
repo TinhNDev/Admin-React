@@ -19,7 +19,8 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
     const role = userInfo?.role || "";
 
     const [allNav, setAllNav] = useState([]);
-    const [showSettingsMenu, setShowSettingsMenu] = useState(false); // Trạng thái mở/đóng menu Setting
+    const [showSettingsMenu, setShowSettingsMenu] = useState(false); 
+    
 
     useEffect(() => {
         const navs = getNav(role);

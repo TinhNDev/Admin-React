@@ -172,7 +172,7 @@ const Dashboard = () => {
   // })
   return (
       <div>
-          <h2 className="page-header">
+          <h2 className="page-header text-2xl font-bold" >
               Dashboard
           </h2>
           <div className="row">
@@ -213,7 +213,7 @@ const Dashboard = () => {
               <div className="col-4">
                   <div className="card">
                       <div className="card__header">
-                          <h3>top customers</h3>
+                          <h3 className='text-xl font-bold'>Restaurant</h3>
                       </div>
                       <div className="card__body">
                           <Table
@@ -232,9 +232,9 @@ const Dashboard = () => {
                   </div>
               </div>
               <div className="col-8">
-                  <div className="card">
+                  <div className="card ">
                       <div className="card__header">
-                          <h3>latest orders</h3>
+                          <h3 className='text-xl font-bold' >latest orders</h3>
                       </div>
                       <div className="card__body">
                           <Table

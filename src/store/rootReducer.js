@@ -1,13 +1,14 @@
+import { combineReducers } from "redux";
 import authReducer from "./reducers/authReducer";
 import dashboardReducer from "./reducers/dashboardReducer";
 import restaurantReducer from "./reducers/restaurantReducer";
 import driverReducer from "./reducers/driverReducer";
 import productReducer from "./reducers/productReducer";
 import couponReducer from "./reducers/couponReducer";
-import orderReducer from "./reducers/orderReducer"
-import ThemeReducer from "./reducers/ThemeReducer"
+import orderReducer from "./reducers/orderReducer";
+import ThemeReducer from "./reducers/ThemeReducer";
 
-const rootReducer = {
+const rootReducer = combineReducers({
     auth: authReducer,
     dashboard: dashboardReducer,
     restaurant: restaurantReducer,
@@ -16,5 +17,6 @@ const rootReducer = {
     coupon: couponReducer,
     order: orderReducer,
     ThemeReducer: ThemeReducer
-}
+});
+
 export default rootReducer;

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from './Sidebar';
 import TopNav from './TopNav/TopNav';
+import ThemeAction from '../actions/ThemeAction';
 
 const MainLayout = () => {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -10,17 +12,26 @@ const MainLayout = () => {
         return savedState !== null ? JSON.parse(savedState) : false;
     });
 
+    const themeReducer = useSelector(state => state.ThemeReducer);
+    const dispatch = useDispatch();
+
     useEffect(() => {
         localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
     }, [collapsed]);
+
+    useEffect(() => {
+        const themeClass = localStorage.getItem('themeMode') || 'light';
+        const colorClass = localStorage.getItem('colorMode') || 'blue';
+        dispatch(ThemeAction.setMode(themeClass));
+        dispatch(ThemeAction.setColor(colorClass));
+    }, [dispatch]);
 
     const toggleCollapsed = () => {
         setCollapsed(!collapsed);
     };
 
-    return ( 
-        <div className='min-h-screen bg-white dark:bg-gray-900'>
-            {/* Sidebar */}
+    return (
+        <div className={`min-h-screen ${themeReducer.mode} ${themeReducer.color}`}>
             <Sidebar 
                 showSidebar={showSidebar} 
                 setShowSidebar={setShowSidebar}
@@ -28,11 +39,9 @@ const MainLayout = () => {
                 toggleCollapsed={toggleCollapsed}
             />
             
-            {/* Main Content Area */}
-            <div className={`transition-all duration-300 ${
+            <div className={`layout__content ${
                 collapsed ? 'ml-0 lg:ml-[70px]' : 'ml-0 lg:ml-[260px]'
-            }`}>
-                {/* Top Navigation */}
+            } transition-all duration-300`}>
                 <TopNav 
                     collapsed={collapsed}
                     showSidebar={showSidebar}
@@ -40,7 +49,7 @@ const MainLayout = () => {
                     toggleCollapsed={toggleCollapsed}
                 />
                 
-                <div className='pt-[110px] p-4'> 
+                <div className="layout__content-main pt-[110px] p-4">
                     <Outlet />
                 </div>
             </div>
