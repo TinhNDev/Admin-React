@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import Search from '../components/Search';
-import { Link, Outlet } from 'react-router-dom';
-import Pagination from '../components/Pagination';
-import { FaEye, FaTrash } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { get_allOrder } from '../store/reducers/orderReducer';
-import SortableHeader from '../components/SortableHeader';
+import React, { useEffect, useState } from "react";
+import Search from "../components/Search";
+import { Link, Outlet } from "react-router-dom";
+import Pagination from "../components/Pagination";
+import { FaEye, FaTrash } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { get_allOrder } from "../store/reducers/orderReducer";
+import SortableHeader from "../components/SortableHeader";
 
 const AllOrder = () => {
   const dispatch = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [parPage, setParPage] = useState(5);
-  const [sortField, setSortField] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   // Lấy state order một cách an toàn
   const orderState = useSelector((state) => state.order || {});
@@ -33,13 +33,32 @@ const AllOrder = () => {
 
   const handleSort = (field) => {
     if (sortField === field) {
-      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
       setSortField(field);
-      setSortOrder('asc');
+      setSortOrder("asc");
     }
   };
-
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PAID":
+        return "Đã thanh toán";
+      case "UNPAID":
+        return "Chưa thanh toán";
+      case "PREPARING_ORDER":
+        return "Đang chuẩn bị";
+      case "ORDER_CANCELED":
+        return "Đã hủy";
+      case "ORDER_RECEIVED":
+        return "Đã nhận đơn";
+      case "DELIVERING":
+        return "Đang giao hàng";
+      case "ORDER_CONFIRMED":
+        return "Đã xác nhận";
+      default:
+        return status;
+    }
+  };
   const getSortedData = () => {
     if (!sortField) return orders;
 
@@ -47,16 +66,16 @@ const AllOrder = () => {
       let valueA = a[sortField];
       let valueB = b[sortField];
 
-      if (sortField === 'id') {
+      if (sortField === "id") {
         valueA = parseInt(valueA, 10);
         valueB = parseInt(valueB, 10);
-      } else if (typeof valueA === 'string') {
+      } else if (typeof valueA === "string") {
         valueA = valueA.toLowerCase();
         valueB = valueB.toLowerCase();
       }
 
-      if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
-      if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+      if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+      if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
   };
@@ -153,14 +172,24 @@ const AllOrder = () => {
                 <td className="py-2 px-4">
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
-                      order.order_status === 'PAID'
-                        ? 'bg-green-100 text-green-800'
-                        : order.order_status === 'UNPAID'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-blue-100 text-blue-800'
+                      order.order_status === "PAID"
+                        ? "bg-green-100 text-green-800"
+                        : order.order_status === "UNPAID"
+                        ? "bg-red-100 text-red-800"
+                        : order.order_status === "PREPARING_ORDER"
+                        ? "bg-blue-100 text-blue-800"
+                        : order.order_status === "ORDER_CANCELED"
+                        ? "bg-red-100 text-red-800"
+                        : order.order_status === "ORDER_RECEIVED"
+                        ? "bg-purple-100 text-purple-800"
+                        : order.order_status === "DELIVERING"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : order.order_status === "ORDER_CONFIRMED"
+                        ? "bg-indigo-100 text-indigo-800"
+                        : "bg-gray-100 text-gray-800"
                     }`}
                   >
-                    {order.order_status}
+                    {getStatusText(order.order_status)}
                   </span>
                 </td>
                 <td className="py-2 px-4">
