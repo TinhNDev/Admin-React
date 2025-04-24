@@ -23,12 +23,17 @@ const Restaurant = () => {
         const obj = {
             parPage: parseInt(parPage),
             page: parseInt(currentPage),
-            searchValue,
+            search: searchValue,
             sortField,
             sortOrder
         };
         dispatch(get_allRestaurant(obj));
     }, [searchValue, currentPage, parPage, sortField, sortOrder]);
+    
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [parPage, searchValue]);
 
     const handleSort = (field) => {
         if (sortField === field) {
@@ -39,32 +44,40 @@ const Restaurant = () => {
         }
     };
 
-    // Función para ordenar los datos según el campo y orden seleccionados
     const getSortedData = () => {
-        if (!sortField) return restaurants;
-        
-        return [...restaurants].sort((a, b) => {
-            let valueA = a[sortField];
-            let valueB = b[sortField];
-            
-            // Manejar casos especiales
-            if (sortField === 'id') {
-                valueA = parseInt(valueA);
-                valueB = parseInt(valueB);
-            } else if (typeof valueA === 'string') {
-                valueA = valueA.toLowerCase();
-                valueB = valueB.toLowerCase();
-            }
-            
-            if (valueA < valueB) {
-                return sortOrder === 'asc' ? -1 : 1;
-            }
-            if (valueA > valueB) {
-                return sortOrder === 'asc' ? 1 : -1;
-            }
-            return 0;
-        });
+        let data = [...restaurants];
+    
+        // Sắp xếp nếu có sortField
+        if (sortField) {
+            data.sort((a, b) => {
+                let valueA = a[sortField];
+                let valueB = b[sortField];
+    
+                // Xử lý trường hợp đặc biệt
+                if (sortField === 'id') {
+                    valueA = parseInt(valueA);
+                    valueB = parseInt(valueB);
+                } else if (typeof valueA === 'string') {
+                    valueA = valueA.toLowerCase();
+                    valueB = valueB.toLowerCase();
+                }
+    
+                if (valueA < valueB) {
+                    return sortOrder === 'asc' ? -1 : 1;
+                }
+                if (valueA > valueB) {
+                    return sortOrder === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+    
+      
+        const startIndex = (currentPage - 1) * parPage;
+        const endIndex = startIndex + parPage;
+        return data.slice(startIndex, endIndex);
     };
+    
 
     const sortedRestaurants = getSortedData();
 
@@ -128,7 +141,9 @@ const Restaurant = () => {
                             {
                                 sortedRestaurants.map((res, index) => (
                                     <tr key={index} className='bg-white border-b hover:bg-blue-300'>
-                                        <td className='py-2 px-4 font-medium'>{index + 1}</td>
+                                        <td className='py-2 px-4 font-medium'>
+                                            {(currentPage - 1) * parPage + index + 1}
+                                        </td>
                                         <td scope='row' className='py-2 px-4 font-medium'>
                                             <img className='w-[45px] h-[45px] rounded-full object-cover' src={res.image} alt="" />
                                         </td>
@@ -166,7 +181,7 @@ const Restaurant = () => {
                     <Pagination 
                         pageNumber={currentPage}
                         setPageNumber={setCurrentPage}
-                        totalItem={totalRestaurant || 50}
+                        totalItem={totalRestaurant}
                         parPage={parPage}
                         showItem={3}
                     />

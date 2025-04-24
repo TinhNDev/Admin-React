@@ -16,13 +16,13 @@ const Shipper = () => {
     const [sortField, setSortField] = useState(''); // Thêm state cho sắp xếp
     const [sortOrder, setSortOrder] = useState('asc'); // Thêm state cho thứ tự sắp xếp
 
-    const { drivers, totaldriver } = useSelector(state => state.driver);
+    const { drivers, totalDrivers } = useSelector(state => state.driver);
 
     useEffect(() => {
         const obj = {
             parPage: parseInt(parPage),
             page: parseInt(currentPage),
-            searchValue,
+            search: searchValue,
             sortField,
             sortOrder
         };
@@ -40,39 +40,47 @@ const Shipper = () => {
 
     // Hàm sắp xếp dữ liệu theo trường và thứ tự đã chọn
     const getSortedData = () => {
-        if (!sortField) return drivers;
-        
-        return [...drivers].sort((a, b) => {
-            let valueA, valueB;
-            
-            // Xử lý các trường nằm trong Profile
-            if (sortField === 'name' || sortField === 'phone_number') {
-                valueA = a.Profile[sortField];
-                valueB = b.Profile[sortField];
-            } else {
-                valueA = a[sortField];
-                valueB = b[sortField];
-            }
-            
-            // Xử lý các trường đặc biệt
-            if (sortField === 'id') {
-                valueA = parseInt(valueA);
-                valueB = parseInt(valueB);
-            } else if (typeof valueA === 'string') {
-                valueA = valueA.toLowerCase();
-                valueB = valueB.toLowerCase();
-            }
-            
-            if (valueA < valueB) {
-                return sortOrder === 'asc' ? -1 : 1;
-            }
-            if (valueA > valueB) {
-                return sortOrder === 'asc' ? 1 : -1;
-            }
-            return 0;
-        });
+        let data = [...drivers];
+    
+        // Sắp xếp nếu có sortField
+        if (sortField) {
+            data.sort((a, b) => {
+                let valueA, valueB;
+    
+                // Xử lý các trường trong Profile
+                if (sortField === 'name' || sortField === 'phone_number') {
+                    valueA = a.Profile?.[sortField] || ''; // Thêm optional chaining
+                    valueB = b.Profile?.[sortField] || '';
+                } else {
+                    valueA = a[sortField];
+                    valueB = b[sortField];
+                }
+    
+                // Xử lý trường hợp đặc biệt
+                if (sortField === 'id') {
+                    valueA = parseInt(valueA);
+                    valueB = parseInt(valueB);
+                } else if (typeof valueA === 'string') {
+                    valueA = valueA.toLowerCase();
+                    valueB = valueB.toLowerCase();
+                }
+    
+                if (valueA < valueB) {
+                    return sortOrder === 'asc' ? -1 : 1;
+                }
+                if (valueA > valueB) {
+                    return sortOrder === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+    
+        // Thêm phân trang frontend
+        const startIndex = (currentPage - 1) * parPage;
+        const endIndex = startIndex + parPage;
+        return data.slice(startIndex, endIndex);
     };
-
+    
     const sortedDrivers = getSortedData();
 
     return (
@@ -135,7 +143,7 @@ const Shipper = () => {
                             {
                                 sortedDrivers.map((dri, index) => (
                                     <tr key={index} className='bg-white border-b hover:bg-gray-50'>
-                                        <td className='py-2 px-4 font-medium'>{index + 1}</td>
+                                        <td className='py-2 px-4 font-medium'>{(currentPage - 1) * parPage + index + 1}</td>
                                         <td scope='row' className='py-2 px-4 font-medium'>
                                             <img className='w-[45px] h-[45px] rounded-full object-cover' src={dri.Profile.image} alt="" />
                                         </td>
@@ -175,7 +183,7 @@ const Shipper = () => {
                     <Pagination 
                         pageNumber={currentPage}
                         setPageNumber={setCurrentPage}
-                        totalItem={totaldriver || 50}
+                        totalItem={totalDrivers}
                         parPage={parPage}
                         showItem={3}
                     />

@@ -60,25 +60,34 @@ const AllOrder = () => {
     }
   };
   const getSortedData = () => {
-    if (!sortField) return orders;
-
-    return [...orders].sort((a, b) => {
-      let valueA = a[sortField];
-      let valueB = b[sortField];
-
-      if (sortField === "id") {
-        valueA = parseInt(valueA, 10);
-        valueB = parseInt(valueB, 10);
-      } else if (typeof valueA === "string") {
-        valueA = valueA.toLowerCase();
-        valueB = valueB.toLowerCase();
-      }
-
-      if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
-      if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
+    let data = [...orders];
+  
+    // Sắp xếp nếu có sortField
+    if (sortField) {
+      data.sort((a, b) => {
+        let valueA = a[sortField];
+        let valueB = b[sortField];
+  
+        if (sortField === "id") {
+          valueA = parseInt(valueA, 10);
+          valueB = parseInt(valueB, 10);
+        } else if (typeof valueA === "string") {
+          valueA = valueA.toLowerCase();
+          valueB = valueB.toLowerCase();
+        }
+  
+        if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+        if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+  
+    // Thêm phân trang frontend
+    const startIndex = (currentPage - 1) * parPage;
+    const endIndex = startIndex + parPage;
+    return data.slice(startIndex, endIndex);
   };
+  
 
   const sortedOrders = getSortedData();
 

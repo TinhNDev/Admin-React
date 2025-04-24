@@ -1,24 +1,22 @@
 import React from 'react';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
 
-const Pagination = ({pageNumber, setPageNumber, totalItem, parPage, showItem}) => {
-
-    let totalPage = Math.ceil(totalItem / parPage)
-    let startPage = pageNumber
-
-    let dif = totalPage - pageNumber
-    if (dif <= showItem) {
-        startPage = totalPage - showItem
-    }
-    let endPage = startPage < 0 ? showItem : showItem + startPage
-     
-    if (startPage <= 0) {
-        startPage = 1
+const Pagination = ({ pageNumber, setPageNumber, totalItem, parPage, showItem }) => {
+    const totalPage = Math.ceil(totalItem / parPage);
+    
+    // Tính toán startPage và endPage
+    let startPage = Math.max(1, pageNumber - Math.floor(showItem / 2));
+    let endPage = Math.min(totalPage, startPage + showItem - 1);
+    
+    // Điều chỉnh nếu không đủ showItem
+    if (endPage - startPage + 1 < showItem) {
+        startPage = Math.max(1, endPage - showItem + 1);
     }
 
     const createBtn = () => {
-        const btns = []
-        for (let i = startPage; i < endPage; i++) {
+        const btns = [];
+        for (let i = startPage; i <= endPage; i++) {
+            if (i < 1 || i > totalPage) continue; // Đảm bảo chỉ tạo nút hợp lệ
             btns.push(
                 <li 
                     key={i}
@@ -32,9 +30,9 @@ const Pagination = ({pageNumber, setPageNumber, totalItem, parPage, showItem}) =
                 </li>
             ) 
         }
-        return btns
+        return btns;
     }
-
+    
     return (
         <ul className='flex gap-3'>
             {
