@@ -1,4 +1,4 @@
-import React,  { useEffect }  from 'react'
+import React,  { useEffect,useState }  from 'react'
 import Chart from 'react-apexcharts'
 import StatusCard from '../components/status-card'
 import { get_allRestaurant } from '../store/reducers/restaurantReducer';
@@ -72,18 +72,41 @@ const chartOptions = {
 
 const Dashboard = () => {
     const dispatch = useDispatch();
+        const [currentPage, setCurrentPage] = useState(1);
+        const [searchValue, setSearchValue] = useState('');
+        const [parPage, setParPage] = useState(5);
+        const [sortField, setSortField] = useState('');
+        const [sortOrder, setSortOrder] = useState('asc');
   const themeReducer = useSelector(state => state.ThemeReducer.mode)
-  const { restaurants, totalRestaurant } = useSelector(state => state.restaurant);
- const { drivers, totalDrivers } = useSelector(state => state.driver);
-   const orderState = useSelector((state) => state.order || {});
+  const restaurantState = useSelector((state) => state.restaurant || {});
+  const { restaurants, totalRestaurant } = restaurantState;
+  
+  const driverState = useSelector((state) => state.driver || {});
+  const { drivers, totalDrivers } = driverState;
+   
+ const orderState = useSelector((state) => state.order || {});
    const { orders, totalOrders } = orderState;
     useEffect(() => {
-        dispatch(get_allRestaurant());
-    }, []);
+           const obj = {
+               parPage: parseInt(parPage),
+               page: parseInt(currentPage),
+               search: searchValue,
+               sortField,
+               sortOrder
+           };
+           dispatch(get_allRestaurant(obj));
+       }, [searchValue, currentPage, parPage, sortField, sortOrder]);
 
-    useEffect(() => {
-        dispatch(get_allDriver());
-    }, []);
+       useEffect(() => {
+        const obj = {
+            parPage: parseInt(parPage),
+            page: parseInt(currentPage),
+            search: searchValue,
+            sortField,
+            sortOrder
+        };
+        dispatch(get_allDriver(obj));
+    }, [searchValue, currentPage, parPage, sortField, sortOrder]);
 
     useEffect(() => {
         dispatch(get_allOrder());
