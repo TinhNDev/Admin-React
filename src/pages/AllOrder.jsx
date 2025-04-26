@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Search from "../components/Search";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import { FaEye, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { get_allOrder } from "../store/reducers/orderReducer";
 import SortableHeader from "../components/SortableHeader";
-
 const AllOrder = () => {
   const dispatch = useDispatch();
 
@@ -30,7 +29,11 @@ const AllOrder = () => {
     };
     dispatch(get_allOrder(params));
   }, [dispatch, searchValue, currentPage, parPage, sortField, sortOrder]);
+  const navigate = useNavigate();
 
+  const handleViewDetail = (orderId) => {
+    navigate(`/admin/order/${orderId}`);
+  };
   const handleSort = (field) => {
     if (sortField === field) {
       setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -61,13 +64,13 @@ const AllOrder = () => {
   };
   const getSortedData = () => {
     let data = [...orders];
-  
+
     // Sắp xếp nếu có sortField
     if (sortField) {
       data.sort((a, b) => {
         let valueA = a[sortField];
         let valueB = b[sortField];
-  
+
         if (sortField === "id") {
           valueA = parseInt(valueA, 10);
           valueB = parseInt(valueB, 10);
@@ -75,19 +78,18 @@ const AllOrder = () => {
           valueA = valueA.toLowerCase();
           valueB = valueB.toLowerCase();
         }
-  
+
         if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
         if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
         return 0;
       });
     }
-  
+
     // Thêm phân trang frontend
     const startIndex = (currentPage - 1) * parPage;
     const endIndex = startIndex + parPage;
     return data.slice(startIndex, endIndex);
   };
-  
 
   const sortedOrders = getSortedData();
 
@@ -206,12 +208,18 @@ const AllOrder = () => {
                 </td>
                 <td className="py-2 px-4">
                   <div className="flex items-center gap-2">
-                    <Link
+                    {/* <Link
                       to={`/admin/order/details/${order.id}`}
                       className="p-[5px] bg-green-500 text-white rounded hover:shadow-lg hover:shadow-green-500/50"
                     >
                       <FaEye size={14} />
-                    </Link>
+                    </Link> */}
+                    <button
+                      onClick={() => handleViewDetail(order.id)}
+                      className="p-[5px] bg-green-500 text-white rounded hover:shadow-lg hover:shadow-green-500/50"
+                    >
+                      <FaEye size={14} />
+                    </button>
                     <button className="p-[5px] bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
                       <FaTrash size={14} />
                     </button>
