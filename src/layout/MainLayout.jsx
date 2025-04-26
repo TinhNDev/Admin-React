@@ -47,7 +47,7 @@ const MainLayout = () => {
                     toggleCollapsed={toggleCollapsed}
                 />
                 
-                <div className="layout__content-main pt-[110px] p-4">
+                <div className="layout__content-main px-4">
                     <Outlet />
                 </div>
             </div>

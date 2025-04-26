@@ -20,6 +20,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
 
     const [allNav, setAllNav] = useState([]);
     const [showSettingsMenu, setShowSettingsMenu] = useState(false); 
+    const dashboardLink = role === 'admin' ? '/admin/dashboard' : '/restaurant/dashboard';
     
 
     useEffect(() => {
@@ -51,7 +52,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
     {/* Header */}
     <div className='h-[70px] flex justify-between items-center border-b border-gray-200 px-4'>
         {!collapsed && (
-            <Link to='/' className='w-[180px] h-[50px]'>
+            <Link  to={dashboardLink} className='w-[180px] h-[50px]'>
                 <img className='w-full h-full' src={logo} alt="" />
             </Link>
         )}
