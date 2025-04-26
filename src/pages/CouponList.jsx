@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { get_coupons } from "../store/reducers/couponReducer";
+import { get_coupons, edit_coupon } from "../store/reducers/couponReducer";
 import { Link } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
 import moment from "moment";
 import Coupon from "./Coupon";
-// import toast from "react-hot-toast";
+import { checkCouponStatus } from "../utils/utils";
+import toast from "react-hot-toast";
 
 const CouponList = () => {
   const dispatch = useDispatch();
   const { coupons, loading } = useSelector((state) => state.coupon);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState(null);
   useEffect(() => {
-    // dispatch(get_coupons());
+    dispatch(get_coupons());
   }, [dispatch]);
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setEditingCoupon(null);
   };
   const filteredCoupons = coupons?.filter(
     (coupon) =>
       coupon.coupon_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       coupon.coupon_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  const handleEdit = (coupon) => {
+    setEditingCoupon(coupon);
+    setIsModalOpen(true);
+  };
   return (
     <div className="px-2 lg:px-7 pt-5">
       <div className="w-full p-4 bg-white rounded-md border border-gray-200 shadow-sm">
@@ -72,7 +78,7 @@ const CouponList = () => {
               <tbody>
                 {filteredCoupons?.map((coupon) => (
                   <tr
-                    key={coupon._id}
+                    key={coupon.id}
                     className="border-b border-gray-200 hover:bg-gray-50"
                   >
                     <td className="px-6 py-4">{coupon.coupon_name}</td>
@@ -100,21 +106,31 @@ const CouponList = () => {
                       </p>
                     </td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          coupon.is_active ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      >
-                        {coupon.is_active ? "Đang hoạt động" : "Đã khóa"}
-                      </span>
+                      {(() => {
+                        const status = checkCouponStatus(
+                          coupon.start_date,
+                          coupon.end_date,
+                          coupon.is_active
+                        );
+                        return (
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${status.className}`}
+                          >
+                            {status.text}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4">
-                      <button className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 mr-2">
+                      <button
+                        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 mr-2"
+                        onClick={() => handleEdit(coupon)}
+                      >
                         Sửa
                       </button>
-                      <button className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">
+                      {/* <button className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">
                         Xóa
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                 ))}
@@ -151,7 +167,11 @@ const CouponList = () => {
                 </button>
               </div>
               <div className="p-6">
-                <Coupon onClose={handleCloseModal} />
+                <Coupon
+                  onClose={handleCloseModal}
+                  editData={editingCoupon}
+                  isEditing={!!editingCoupon}
+                />
               </div>
             </div>
           </div>

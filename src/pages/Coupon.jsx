@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { create_coupon, messageClear } from "../store/reducers/couponReducer";
+import {
+  create_coupon,
+  messageClear,
+  edit_coupon,
+} from "../store/reducers/couponReducer";
 import toast from "react-hot-toast";
-
-const Coupon = ({ onClose }) => {
+const formatDateTimeForInput = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const offset = date.getTimezoneOffset();
+  const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
+  return adjustedDate.toISOString().slice(0, 16);
+};
+const Coupon = ({ onClose, editData, isEditing }) => {
   const dispatch = useDispatch();
   const { loader, errorMessage, successMessage } = useSelector(
     (state) => state.coupon
   );
   const { userInfo } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
+  const initialState = {
     coupon_name: "",
     coupon_code: "",
     discount_value: "",
@@ -22,17 +32,25 @@ const Coupon = ({ onClose }) => {
     end_date: "",
     is_active: true,
     coupon_type: "ONE_TIME",
-  });
+  };
 
+  const [formData, setFormData] = useState(initialState);
+  useEffect(() => {
+    if (editData) {
+      setFormData({
+        ...editData,
+        start_date: formatDateTimeForInput(editData.start_date),
+        end_date: formatDateTimeForInput(editData.end_date),
+      });
+    }
+  }, [editData]);
   // Monitor notifications from Redux store
   useEffect(() => {
     if (successMessage) {
-      toast.success(successMessage);
       dispatch(messageClear());
       onClose && onClose();
     }
     if (errorMessage) {
-      toast.error(errorMessage);
       dispatch(messageClear());
     }
   }, [successMessage, errorMessage, dispatch, onClose]);
@@ -125,7 +143,6 @@ const Coupon = ({ onClose }) => {
       return;
     }
 
-    // Check authentication
     const token = localStorage.getItem("userToken");
     const adminId = userInfo?.user_id || localStorage.getItem("adminId");
 
@@ -134,7 +151,6 @@ const Coupon = ({ onClose }) => {
       return;
     }
 
-    // Convert numeric values
     const body = {
       ...formData,
       discount_value: parseFloat(formData.discount_value),
@@ -148,28 +164,18 @@ const Coupon = ({ onClose }) => {
         ? parseInt(formData.max_uses_per_user)
         : undefined,
     };
-    // Call create_coupon action
-    dispatch(create_coupon({ body }));
-    setFormData({
-      coupon_name: "",
-      coupon_code: "",
-      discount_value: "",
-      discount_type: "PERCENTAGE",
-      max_discount_amount: "",
-      min_order_value: "",
-      max_uses_per_user: "",
-      start_date: "",
-      end_date: "",
-      is_active: true,
-      coupon_type: "ONE_TIME",
-    });
-    onClose && onClose();
+
+    if (isEditing) {
+      dispatch(edit_coupon({ body }));
+    } else {
+      dispatch(create_coupon({ body }));
+    }
   };
 
   return (
     <div className="bg-white rounded-lg">
       <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3 sticky top-0 bg-white z-10">
-        Tạo Mã Giảm Giá Mới
+        {isEditing ? "Chỉnh sửa mã giảm giá" : "Tạo mã giảm giá mới"}
       </h2>
 
       <form onSubmit={handleSubmit} className="px-1">
@@ -420,8 +426,6 @@ const Coupon = ({ onClose }) => {
 
         {/* Nút tạo mã */}
         <div className="flex justify-end mt-6 border-t pt-4">
-          {" "}
-          {/* Thêm border top và padding */}
           <button
             type="button"
             onClick={onClose}
@@ -462,6 +466,8 @@ const Coupon = ({ onClose }) => {
                 </svg>
                 Đang xử lý...
               </>
+            ) : isEditing ? (
+              "Cập nhật mã giảm giá"
             ) : (
               "Tạo mã giảm giá"
             )}
