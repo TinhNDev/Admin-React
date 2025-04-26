@@ -39,7 +39,7 @@ const MainLayout = () => {
             
             <div className={`layout__content ${
                 collapsed ? 'ml-0 lg:ml-[70px]' : 'ml-0 lg:ml-[260px]'
-            } transition-all duration-300`}>
+            }  transition-all duration-300`}>
                 <TopNav 
                     collapsed={collapsed}
                     showSidebar={showSidebar}
