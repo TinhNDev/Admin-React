@@ -83,7 +83,7 @@ const Restaurant = () => {
 
   return (
     <div className="px-2 lg:px-7 pt-5">
-      <h1 className="text-[#000000] font-semibold text-2xl mb-3">Restaurant</h1>
+      <h1 className="text-[#000000] font-semibold text-2xl mb-3">Nhà hàng</h1>
 
       <div className="w-full p-4 bg-white rounded-md shadow-sm">
         <Search
@@ -105,10 +105,10 @@ const Restaurant = () => {
                   className="w-14"
                 />
                 <th scope="col" className="py-3 px-4 w-16">
-                  Image
+                  Hình ảnh
                 </th>
                 <SortableHeader
-                  label="Name"
+                  label="Tên"
                   field="name"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -116,7 +116,7 @@ const Restaurant = () => {
                   className="w-1/5"
                 />
                 <SortableHeader
-                  label="Phone"
+                  label="Điện thoại"
                   field="phone_number"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -124,7 +124,7 @@ const Restaurant = () => {
                   className="w-1/6"
                 />
                 <SortableHeader
-                  label="Status"
+                  label="Trạng thái"
                   field="status"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -132,7 +132,7 @@ const Restaurant = () => {
                   className="w-1/6"
                 />
                 <SortableHeader
-                  label="Address"
+                  label="Địa chỉ"
                   field="address"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -140,7 +140,7 @@ const Restaurant = () => {
                   className="w-1/4"
                 />
                 <th scope="col" className="py-3 px-4 w-14 text-left">
-                  Action
+                  Chức năng
                 </th>
               </tr>
             </thead>

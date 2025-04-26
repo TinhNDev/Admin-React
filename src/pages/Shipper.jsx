@@ -107,10 +107,10 @@ const Shipper = () => {
                   className="w-14"
                 />
                 <th scope="col" className="py-3 px-4 w-16">
-                  Image
+                  Hình ảnh
                 </th>
                 <SortableHeader
-                  label="Name"
+                  label="Tên"
                   field="name"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -118,7 +118,7 @@ const Shipper = () => {
                   className="w-1/5"
                 />
                 <SortableHeader
-                  label="Status"
+                  label="Trạng thái"
                   field="status"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -126,7 +126,7 @@ const Shipper = () => {
                   className="w-1/5"
                 />
                 <SortableHeader
-                  label="Phone"
+                  label="Điện thoại"
                   field="phone_number"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -134,7 +134,7 @@ const Shipper = () => {
                   className="w-1/5"
                 />
                 <SortableHeader
-                  label="License plate"
+                  label="Biển số xe"
                   field="license_plate"
                   sortField={sortField}
                   sortOrder={sortOrder}
@@ -142,7 +142,7 @@ const Shipper = () => {
                   className="w-1/5"
                 />
                 <th scope="col" className="py-3 px-4 w-14 text-left">
-                  Action
+                  Hành động
                 </th>
               </tr>
             </thead>

@@ -113,57 +113,57 @@ const AllOrder = () => {
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
-                className="w-12"
+                className="w-1/12"
               />
               <SortableHeader
-                label="Receiver"
+                label="Người đặt"
                 field="receiver_name"
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
-                className="w-1/6"
+                className="w-1/10"
               />
               <SortableHeader
-                label="Address"
+                label="Địa chỉ"
                 field="address_receiver"
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
-                className="w-1/4"
+                className="w-1/10"
               />
               <SortableHeader
-                label="Phone"
+                label="Điện thoại"
                 field="phone_number"
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
-                className="w-1/6"
+                className="w-1/10"
               />
               <SortableHeader
-                label="Total Price"
+                label="Tổng tiền"
                 field="price"
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
-                className="w-1/6"
+                className="w-1/7"
               />
               <SortableHeader
-                label="Status"
+                label="Trạng thái"
                 field="order_status"
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
-                className="w-1/6"
+                className="w-1/7"
               />
               <SortableHeader
-                label="Order Date"
+                label="Ngày đặt"
                 field="order_date"
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
-                className="w-1/6"
+                className="w-1/10"
               />
-              <th className="py-3 px-4 w-20">Action</th>
+              <th className="py-3 px-4 w-25">Chức năng</th>
             </tr>
           </thead>
           <tbody>

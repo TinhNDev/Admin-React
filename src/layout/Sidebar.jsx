@@ -95,7 +95,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                     title="Setting"
                 >
                     <span><IoSettings /></span>
-                    {!collapsed && <span className="font-bold text-lg">Setting</span>}
+                    {!collapsed && <span className="font-bold text-lg">Cài đặt</span>}
                 </button>
                 {/* Menu Setting */}
                 {showSettingsMenu && (
@@ -106,7 +106,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                                 className="text-gray-700 hover:bg-gray-100 text-lg font-bold duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
                             >
                                 <MdPolicy size={20} />
-                                <span className="font-bold text-lg">Private Policy</span>
+                                <span className="font-bold text-lg">Chính sách bảo mật</span>
                             </Link>
                         </li>
                         <li>
@@ -115,7 +115,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                                 className="text-gray-700 hover:bg-gray-100 text-lg font-bold duration-200 px-[12px] py-[10px] rounded-lg flex items-center gap-2"
                             >
                                 <MdHelpCenter />
-                                <span className="font-bold text-lg">Help Center</span>
+                                <span className="font-bold text-lg">Hỗ trợ</span>
                             </Link>
                         </li>
                     </ul>
@@ -129,7 +129,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
                     title="Logout"
                 >
                     <span><BiLogOutCircle /></span>
-                    {!collapsed && <span className="font-bold text-lg">Logout</span>}
+                    {!collapsed && <span className="font-bold text-lg">Đăng xuất</span>}
                 </button>
             </li>
         </div>
