@@ -6,27 +6,40 @@ import {
   messageClear,
   change_shipper_status,
   get_allDriver,
+  get_shipper_orders,
+  get_driver_reviews,
 } from "../store/reducers/driverReducer";
 import toast from "react-hot-toast";
-
+import { FiArrowLeft } from "react-icons/fi";
+import OrderList from "./OrderList";
+import ReviewList from "./ReviewList";
 const DetailShipper = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { driver, successMessage, errorMessage, loader } = useSelector(
-    (state) => state.driver
-  );
+  const { driver, orders, reviews, successMessage, errorMessage, loader } =
+    useSelector((state) => state.driver);
   const { shipperId } = useParams();
-  console.log(driver);
 
   // Lấy dữ liệu shipper khi component mount
   useEffect(() => {
     if (shipperId) {
-      console.log("Dispatching get_driver with ID:", shipperId);
       dispatch(get_driver(shipperId));
     }
   }, [dispatch, shipperId]);
 
+  // Lấy danh sách đơn hàng của shipper
+  useEffect(() => {
+    if (shipperId) {
+      dispatch(get_shipper_orders(shipperId));
+    }
+  }, [dispatch, shipperId]);
+  useEffect(() => {
+    if (shipperId) {
+      dispatch(get_driver_reviews(shipperId));
+    }
+  }, [dispatch, shipperId]);
   const [status, setStatus] = useState("");
+  const [activeTab, setActiveTab] = useState("info");
 
   // Hiển thị thông báo khi có successMessage hoặc errorMessage
   useEffect(() => {
@@ -100,193 +113,278 @@ const DetailShipper = () => {
     };
   }, []);
 
+  const handleBack = () => {
+    navigate("/admin/shipper");
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-4 border-b">
-          <h1 className="text-[20px] font-bold">Thông tin chi tiết Shipper</h1>
+    <div className="px-2 lg:px-7 pt-5">
+      <div className="w-full p-4 bg-white rounded-lg shadow">
+        {/* Header with back button */}
+        <div className="flex items-center gap-4 mb-4">
           <button
-            onClick={closeOverlay}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
+            onClick={handleBack}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            &times;
+            <FiArrowLeft className="text-xl" />
+          </button>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Chi tiết Shipper
+          </h2>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex border-b mb-4">
+          <button
+            onClick={() => setActiveTab("info")}
+            className={`px-4 py-2 ${
+              activeTab === "info"
+                ? "border-b-2 border-orange-500 text-orange-600"
+                : "text-gray-600"
+            }`}
+          >
+            Thông tin
+          </button>
+          <button
+            onClick={() => setActiveTab("orders")}
+            className={`px-4 py-2 ${
+              activeTab === "orders"
+                ? "border-b-2 border-orange-500 text-orange-600"
+                : "text-gray-600"
+            }`}
+          >
+            Đơn hàng
           </button>
         </div>
 
         {loader ? (
-          <p className="text-center text-blue-500 py-4">Đang tải dữ liệu...</p>
-        ) : (
-          <div className="p-4 bg-white">
-            <div className="w-full flex flex-col md:flex-row gap-4">
-              {/* Ảnh và thông tin cơ bản */}
-              <div className="md:w-1/3">
-                <div className="space-y-4">
-                  {/* Ảnh đại diện */}
-                  {driver?.Profile?.image ? (
-                    <img
-                      className="w-full h-auto rounded-lg shadow"
-                      src={driver.Profile.image}
-                      alt={driver.Profile.name}
-                    />
-                  ) : (
-                    <div className="w-full h-[200px] bg-gray-200 flex items-center justify-center rounded-lg">
-                      <span>Chưa có ảnh</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Thông tin chi tiết */}
-              <div className="md:w-2/3 space-y-4">
-                {/* Thông tin cá nhân */}
-                <div className="bg-[#f8f9fa] p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                    Thông tin cá nhân
-                  </h2>
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="flex gap-2">
-                      <span className="font-medium text-gray-600 min-w-[120px]">
-                        Họ và tên:
-                      </span>
-                      <span>{driver?.Profile?.name || "N/A"}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="font-medium text-gray-600 min-w-[120px]">
-                        Số điện thoại:
-                      </span>
-                      <span>{driver?.Profile?.phone_number || "N/A"}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="font-medium text-gray-600 min-w-[120px]">
-                        Ngày sinh:
-                      </span>
-                      <span>
-                        {driver?.dob
-                          ? new Date(driver.dob).toLocaleDateString("vi-VN")
-                          : "N/A"}
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="font-medium text-gray-600 min-w-[120px]">
-                        CCCD:
-                      </span>
-                      <span>{driver?.cic || "N/A"}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-[#f8f9fa] p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                    Giấy tờ tùy thân
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <span className="font-medium text-gray-600 block mb-2">
-                        CCCD Mặt trước:
-                      </span>
-                      {driver?.cccdFront ? (
-                        <img
-                          src={driver.cccdFront}
-                          alt="CCCD mặt trước"
-                          className="w-full h-auto rounded-lg shadow cursor-pointer hover:opacity-90 transition"
-                          onClick={() =>
-                            window.open(driver.cccdFront, "_blank")
-                          }
-                        />
-                      ) : (
-                        <div className="w-full h-[120px] bg-gray-200 flex items-center justify-center rounded-lg">
-                          <span className="text-gray-500">Chưa có ảnh</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <span className="font-medium text-gray-600 block mb-2">
-                        CCCD Mặt sau:
-                      </span>
-                      {driver?.cccdBack ? (
-                        <img
-                          src={driver.cccdBack}
-                          alt="CCCD mặt sau"
-                          className="w-full h-auto rounded-lg shadow cursor-pointer hover:opacity-90 transition"
-                          onClick={() => window.open(driver.cccdBack, "_blank")}
-                        />
-                      ) : (
-                        <div className="w-full h-[120px] bg-gray-200 flex items-center justify-center rounded-lg">
-                          <span className="text-gray-500">Chưa có ảnh</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Thông tin phương tiện */}
-                <div className="bg-[#f8f9fa] p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                    Thông tin phương tiện
-                  </h2>
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="flex gap-2">
-                      <span className="font-medium text-gray-600 min-w-[120px]">
-                        Loại xe:
-                      </span>
-                      <span>{driver?.car_name || "N/A"}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="font-medium text-gray-600 min-w-[120px]">
-                        Biển số:
-                      </span>
-                      <span>{driver?.license_plate || "N/A"}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-[#f8f9fa] p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                    Giấy đăng ký xe
-                  </h2>
-                  <div className="space-y-2">
-                    {driver?.cavet ? (
-                      <img
-                        src={driver.cavet}
-                        alt="Cà vẹt xe"
-                        className="w-full h-auto rounded-lg shadow cursor-pointer hover:opacity-90 transition"
-                        onClick={() => window.open(driver.cavet, "_blank")}
-                      />
-                    ) : (
-                      <div className="w-full h-[200px] bg-gray-200 flex items-center justify-center rounded-lg">
-                        <span className="text-gray-500">Chưa có ảnh</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {/* Trạng thái và cập nhật */}
-                <div className="bg-[#f8f9fa] p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                    Trạng thái
-                  </h2>
-                  <form onSubmit={submit} className="space-y-4">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        className="px-4 py-2 focus:border-indigo-500 outline-none bg-white border border-slate-300 rounded-md flex-1"
-                        required
-                      >
-                        <option value="">Chọn trạng thái</option>
-                        <option value="ONLINE">ONLINE</option>
-                        <option value="OFFLINE">OFFLINE</option>
-                        <option value="BUSY">BUSY</option>
-                      </select>
-                      <button
-                        type="submit"
-                        className="bg-orange-500 hover:bg-orange-600 text-white rounded-md px-6 py-2 transition-colors duration-200"
-                      >
-                        Cập nhật trạng thái
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+          <div className="flex justify-center py-8">
+            <div className="animate-spin h-8 w-8 border-4 border-orange-500 border-t-transparent rounded-full"></div>
           </div>
+        ) : (
+          <>
+            {activeTab === "info" ? (
+              <div>
+                <div className="flex flex-col md:flex-row gap-6 mb-4">
+                  <div className="w-full flex flex-col md:flex-row gap-6">
+                    {/* Ảnh và thông tin cơ bản */}
+                    <div className="md:w-1/3">
+                      <div className="space-y-4">
+                        {/* Ảnh đại diện */}
+                        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                          <h3 className="text-lg font-medium mb-3 text-gray-800">
+                            Ảnh đại diện
+                          </h3>
+                          {driver?.Profile?.image ? (
+                            <img
+                              className="w-full h-auto rounded-lg shadow-sm"
+                              src={driver.Profile.image}
+                              alt={driver.Profile.name}
+                            />
+                          ) : (
+                            <div className="w-full h-[200px] bg-gray-100 flex items-center justify-center rounded-lg">
+                              <span className="text-gray-400">Chưa có ảnh</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Status Update Card */}
+                        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                          <h3 className="text-lg font-medium mb-3 text-gray-800">
+                            Cập nhật trạng thái
+                          </h3>
+                          <form onSubmit={submit} className="space-y-3">
+                            <select
+                              value={status}
+                              onChange={(e) => setStatus(e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 text-sm"
+                              required
+                            >
+                              <option value="">Chọn trạng thái</option>
+                              <option value="ONLINE">ONLINE</option>
+                              <option value="OFFLINE">OFFLINE</option>
+                              <option value="BUSY">BUSY</option>
+                            </select>
+                            <button
+                              type="submit"
+                              className="w-full py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors text-sm font-medium"
+                            >
+                              Cập nhật
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Thông tin chi tiết */}
+                    <div className="md:w-2/3 space-y-4">
+                      {/* Thông tin cá nhân */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-medium mb-3 text-gray-800">
+                          Thông tin cá nhân
+                        </h3>
+                        <div className="grid grid-cols-1 gap-3">
+                          <div className="flex gap-2">
+                            <span className="font-medium text-gray-600 min-w-[120px]">
+                              Họ và tên:
+                            </span>
+                            <span>{driver?.Profile?.name || "N/A"}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <span className="font-medium text-gray-600 min-w-[120px]">
+                              Số điện thoại:
+                            </span>
+                            <span>
+                              {driver?.Profile?.phone_number || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            <span className="font-medium text-gray-600 min-w-[120px]">
+                              Ngày sinh:
+                            </span>
+                            <span>
+                              {driver?.dob
+                                ? new Date(driver.dob).toLocaleDateString(
+                                    "vi-VN"
+                                  )
+                                : "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            <span className="font-medium text-gray-600 min-w-[120px]">
+                              CCCD:
+                            </span>
+                            <span>{driver?.cic || "N/A"}</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* CCCD Images */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-medium mb-3 text-gray-800">
+                          Căn cước công dân
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <span className="font-medium text-gray-600 block mb-2">
+                              Mặt trước:
+                            </span>
+                            {driver?.cccdFront ? (
+                              <img
+                                src={driver.cccdFront}
+                                alt="CCCD mặt trước"
+                                className="w-9/12 h-auto rounded-lg shadow cursor-pointer hover:opacity-90 transition"
+                                onClick={() =>
+                                  window.open(driver.cccdFront, "_blank")
+                                }
+                              />
+                            ) : (
+                              <div className="w-9/12 h-[120px] bg-gray-100 flex items-center justify-center rounded-lg">
+                                <span className="text-gray-400">
+                                  Chưa có ảnh
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <span className="font-medium text-gray-600 block mb-2">
+                              Mặt sau:
+                            </span>
+                            {driver?.cccdBack ? (
+                              <img
+                                src={driver.cccdBack}
+                                alt="CCCD mặt sau"
+                                className="w-9/12 h-auto rounded-lg shadow cursor-pointer hover:opacity-90 transition"
+                                onClick={() =>
+                                  window.open(driver.cccdBack, "_blank")
+                                }
+                              />
+                            ) : (
+                              <div className="w-9/12 h-[120px] bg-gray-100 flex items-center justify-center rounded-lg">
+                                <span className="text-gray-400">
+                                  Chưa có ảnh
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {/* Thông tin phương tiện */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-medium mb-3 text-gray-800">
+                          Thông tin phương tiện
+                        </h3>
+                        <div className="grid grid-cols-1 gap-3">
+                          <div className="flex gap-2">
+                            <span className="font-medium text-gray-600 min-w-[120px]">
+                              Loại xe:
+                            </span>
+                            <span>{driver?.car_name || "N/A"}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <span className="font-medium text-gray-600 min-w-[120px]">
+                              Biển số:
+                            </span>
+                            <span>{driver?.license_plate || "N/A"}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Vehicle Registration */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-medium mb-3 text-gray-800">
+                          Giấy đăng ký xe
+                        </h3>
+                        <div className="flex justify-center items-center">
+                          {driver?.cavet ? (
+                            <img
+                              src={driver.cavet}
+                              alt="Cà vẹt xe"
+                              className="w-6/12 h-auto rounded-lg shadow cursor-pointer hover:opacity-90 transition"
+                              onClick={() =>
+                                window.open(driver.cavet, "_blank")
+                              }
+                            />
+                          ) : (
+                            <div className="w-6/12 h-[120px] bg-gray-100 flex items-center justify-center rounded-lg">
+                              <span className="text-gray-400">Chưa có ảnh</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                  <ReviewList reviews={reviews} type="driver" />
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gray-50 rounded-lg p-4">
+                {orders?.length > 0 ? (
+                  <OrderList orders={orders} />
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.5"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
+                    </svg>
+                    <p className="mt-2 text-sm font-medium">
+                      Chưa có đơn hàng nào
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
