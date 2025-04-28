@@ -361,7 +361,7 @@ const DetailShipper = () => {
             ) : (
               <div className="bg-gray-50 rounded-lg p-4">
                 {orders?.length > 0 ? (
-                  <OrderList orders={orders} />
+                  <OrderList orders={orders} userType="shipper" />
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <svg
