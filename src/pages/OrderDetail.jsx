@@ -12,6 +12,8 @@ import {
   FiCreditCard,
   FiMapPin,
   FiFileText,
+  FiTag,
+  FiZap,
 } from "react-icons/fi";
 import { get_order_detail } from "../store/reducers/orderReducer";
 import moment from "moment";
@@ -40,6 +42,7 @@ const OrderDetail = () => {
       currency: "VND",
     }).format(amount);
   };
+
   const calculateSubtotal = (items) => {
     if (!items || !Array.isArray(items)) return 0;
 
@@ -50,6 +53,7 @@ const OrderDetail = () => {
       return total + itemTotal;
     }, 0);
   };
+
   const getStatusBadgeStyle = (status) => {
     const styles = {
       ORDER_CONFIRMED: "bg-blue-100 text-blue-800 border border-blue-200",
@@ -58,6 +62,7 @@ const OrderDetail = () => {
       COMPLETED: "bg-green-100 text-green-800 border border-green-200",
       PREPARING_ORDER: "bg-purple-100 text-purple-800 border border-purple-200",
       UNPAID: "bg-gray-100 text-gray-800 border border-gray-200",
+      PAID: "bg-green-100 text-green-800 border border-green-200",
     };
     return styles[status] || "bg-gray-100 text-gray-800 border border-gray-200";
   };
@@ -76,6 +81,8 @@ const OrderDetail = () => {
         return "👨‍🍳";
       case "UNPAID":
         return "₫";
+      case "PAID":
+        return "💰";
       default:
         return "•";
     }
@@ -89,6 +96,7 @@ const OrderDetail = () => {
       COMPLETED: "Hoàn thành",
       PREPARING_ORDER: "Đang chuẩn bị",
       UNPAID: "Chưa thanh toán",
+      PAID: "Đã thanh toán",
     };
     return statusMap[status] || status;
   };
@@ -361,9 +369,11 @@ const OrderDetail = () => {
                         toán:
                       </span>
                       <span className="font-medium">
-                        {orderDetail.order_pay === "CASH"
+                        {orderDetail.order?.order_pay === "CASH"
                           ? "Tiền mặt"
-                          : orderDetail.order.order_pay}
+                          : orderDetail.order?.order_pay === "ZALOPAY"
+                          ? "ZaloPay"
+                          : orderDetail.order?.order_pay}
                       </span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white rounded">
@@ -371,7 +381,7 @@ const OrderDetail = () => {
                         <FiClock className="mr-2" /> Thời gian đặt:
                       </span>
                       <span className="font-medium">
-                        {moment(orderDetail.order_date).format(
+                        {moment(orderDetail.order?.order_date).format(
                           "HH:mm - DD/MM/YYYY"
                         )}
                       </span>
@@ -381,7 +391,7 @@ const OrderDetail = () => {
                         <FiClock className="mr-2" /> Cập nhật lần cuối:
                       </span>
                       <span className="font-medium">
-                        {moment(orderDetail.updatedAt).format(
+                        {moment(orderDetail.order?.updatedAt).format(
                           "HH:mm - DD/MM/YYYY"
                         )}
                       </span>
@@ -402,13 +412,13 @@ const OrderDetail = () => {
                   </div>
                   <div className="p-3 bg-white rounded-lg">
                     <p className="text-gray-700">
-                      {orderDetail.order.address_receiver}
+                      {orderDetail.order?.address_receiver}
                     </p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Vị trí: [{orderDetail.order.latitude},{" "}
-                      {orderDetail.order.longtitude}]
+                      Vị trí: [{orderDetail.order?.latitude},{" "}
+                      {orderDetail.order?.longtitude}]
                     </p>
-                    {orderDetail.order.note && (
+                    {orderDetail.order?.note && (
                       <div className="mt-3 p-2 bg-yellow-50 border border-yellow-100 rounded-md">
                         <div className="flex items-center">
                           <FiFileText className="text-yellow-500 mr-2" />
@@ -417,12 +427,71 @@ const OrderDetail = () => {
                           </p>
                         </div>
                         <p className="text-sm text-gray-600 mt-1 italic pl-6">
-                          {orderDetail.order.note}
+                          {orderDetail.order?.note}
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
+
+                {/* Coupon Info - New section */}
+                {orderDetail.coupon && (
+                  <div className="bg-gray-50 p-4 rounded-lg border">
+                    <div className="flex items-center mb-3">
+                      <FiTag className="text-orange-500 mr-2" />
+                      <h2 className="text-lg font-semibold text-gray-800">
+                        Mã giảm giá đã áp dụng
+                      </h2>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <span className="font-medium text-orange-600 bg-orange-50 px-3 py-1 rounded border border-orange-100">
+                            {orderDetail.coupon.code}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-medium">
+                            {orderDetail.coupon.discount_type === "PERCENTAGE"
+                              ? `${orderDetail.coupon.discount_value}%`
+                              : formatCurrency(
+                                  parseFloat(orderDetail.coupon.discount_value)
+                                )}
+                          </span>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {orderDetail.coupon.discount_type === "PERCENTAGE"
+                              ? "Giảm theo phần trăm"
+                              : "Giảm trực tiếp"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Flash Sale Info - New section */}
+                {orderDetail.flash_sale && (
+                  <div className="bg-gray-50 p-4 rounded-lg border">
+                    <div className="flex items-center mb-3">
+                      <FiZap className="text-orange-500 mr-2" />
+                      <h2 className="text-lg font-semibold text-gray-800">
+                        Flash Sale
+                      </h2>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-700">
+                          Flash Sale giảm giá:
+                        </span>
+                        <span className="font-medium text-orange-600">
+                          {formatCurrency(
+                            parseFloat(orderDetail.flash_sale.amount)
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Order Items */}
                 <div className="bg-gray-50 p-4 rounded-lg border">
@@ -433,7 +502,7 @@ const OrderDetail = () => {
                     </h2>
                   </div>
                   <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {orderDetail.order.listCartItem?.map((item) => (
+                    {orderDetail.order?.listCartItem?.map((item) => (
                       <div
                         key={item.id}
                         className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm hover:shadow transition-shadow duration-200"
@@ -484,7 +553,7 @@ const OrderDetail = () => {
                       <span className="text-gray-600">Tạm tính:</span>
                       <span>
                         {formatCurrency(
-                          calculateSubtotal(orderDetail.order.listCartItem)
+                          calculateSubtotal(orderDetail.order?.listCartItem)
                         )}
                       </span>
                     </div>
@@ -492,14 +561,55 @@ const OrderDetail = () => {
                       <span className="text-gray-600">Phí vận chuyển:</span>
                       <span>
                         {formatCurrency(
-                          parseFloat(orderDetail.order.delivery_fee)
+                          parseFloat(orderDetail.order?.delivery_fee)
                         )}
                       </span>
                     </div>
+
+                    {/* Discount from coupon */}
+                    {orderDetail.coupon && (
+                      <div className="flex justify-between p-2 bg-white rounded">
+                        <span className="text-gray-600">
+                          Giảm giá (Mã {orderDetail.coupon.code}):
+                        </span>
+                        <span className="text-red-600">
+                          -{" "}
+                          {orderDetail.coupon.discount_type === "PERCENTAGE"
+                            ? formatCurrency(
+                                (calculateSubtotal(
+                                  orderDetail.order?.listCartItem
+                                ) *
+                                  parseFloat(
+                                    orderDetail.coupon.discount_value
+                                  )) /
+                                  100
+                              )
+                            : formatCurrency(
+                                parseFloat(orderDetail.coupon.discount_value)
+                              )}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Discount from flash sale */}
+                    {orderDetail.flash_sale && (
+                      <div className="flex justify-between p-2 bg-white rounded">
+                        <span className="text-gray-600">
+                          Giảm giá (Flash Sale):
+                        </span>
+                        <span className="text-red-600">
+                          -{" "}
+                          {formatCurrency(
+                            parseFloat(orderDetail.flash_sale.amount)
+                          )}
+                        </span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between p-3 bg-orange-50 rounded-lg mt-2 border border-orange-100">
                       <span className="font-medium">Tổng thanh toán:</span>
                       <span className="font-bold text-orange-600 text-lg">
-                        {formatCurrency(parseFloat(orderDetail.order.price))}
+                        {formatCurrency(parseFloat(orderDetail.order?.price))}
                       </span>
                     </div>
                   </div>
