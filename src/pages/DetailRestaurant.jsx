@@ -8,18 +8,20 @@ import {
   get_allRestaurant,
   get_restaurant_products,
   get_restaurant_reviews,
+  get_orderRes,
 } from "../store/reducers/restaurantReducer";
 import toast from "react-hot-toast";
 import { FiArrowLeft } from "react-icons/fi";
 import ProductList from "./ProductList";
 import ReviewList from "./ReviewList";
+import OrderList from "./OrderList";
 const DetailRestaurant = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     restaurant,
     products,
-    get_orderRes,
+    order,
     reviews,
     successMessage,
     errorMessage,
@@ -42,7 +44,7 @@ const DetailRestaurant = () => {
   }, [activeTab, restaurantId]);
   useEffect(() => {
     if (activeTab === "orders" && restaurantId) {
-      dispatch(get_orderRes({ restaurantId }));
+      dispatch(get_orderRes(restaurantId));
     }
   }, [activeTab, restaurantId, dispatch]);
   useEffect(() => {
@@ -287,7 +289,7 @@ const DetailRestaurant = () => {
               </>
             )}
           </>
-        ) : (
+        ) : activeTab === "products" ? (
           <div className="bg-gray-50 rounded-lg p-4">
             {loader ? (
               <div className="flex justify-center py-8">
@@ -295,6 +297,16 @@ const DetailRestaurant = () => {
               </div>
             ) : (
               <ProductList products={products} />
+            )}
+          </div>
+        ) : (
+          <div className="bg-gray-50 rounded-lg p-4">
+            {loader ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin h-8 w-8 border-4 border-orange-500 border-t-transparent rounded-full"></div>
+              </div>
+            ) : (
+              <OrderList orders={order} userType="restaurant" />
             )}
           </div>
         )}

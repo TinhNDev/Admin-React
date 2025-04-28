@@ -45,23 +45,24 @@ const AllOrder = () => {
   const getStatusText = (status) => {
     switch (status) {
       case "PAID":
-        return "Đã thanh toán";
-      case "UNPAID":
-        return "Chưa thanh toán";
+        return "Đơn hàng mới";
       case "PREPARING_ORDER":
         return "Đang chuẩn bị";
       case "ORDER_CANCELED":
-        return "Đã hủy";
+        return "Đơn bị hủy";
       case "ORDER_RECEIVED":
-        return "Đã nhận đơn";
+        return "Đã giao cho shipper";
       case "DELIVERING":
-        return "Đang giao hàng";
+        return "Shipper đang lấy đơn";
       case "ORDER_CONFIRMED":
-        return "Đã xác nhận";
+        return "Đã giao xong";
+      case "UNPAID":
+        return "Chưa thanh toán";
       default:
-        return status;
+        return "Không xác định";
     }
   };
+
   const getSortedData = () => {
     let data = [...orders];
 
@@ -184,20 +185,18 @@ const AllOrder = () => {
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
                       order.order_status === "PAID"
-                        ? "bg-green-100 text-green-800"
-                        : order.order_status === "UNPAID"
-                        ? "bg-red-100 text-red-800"
+                        ? "bg-[#FF6347] bg-opacity-10 text-[#FF6347] border border-[#FF6347]"
                         : order.order_status === "PREPARING_ORDER"
-                        ? "bg-blue-100 text-blue-800"
+                        ? "bg-[#FF9800] bg-opacity-10 text-[#FF9800] border border-[#FF9800]"
                         : order.order_status === "ORDER_CANCELED"
-                        ? "bg-red-100 text-red-800"
+                        ? "bg-[#FF0000] bg-opacity-10 text-[#FF0000] border border-[#FF0000]"
                         : order.order_status === "ORDER_RECEIVED"
-                        ? "bg-purple-100 text-purple-800"
+                        ? "bg-[#9C27B0] bg-opacity-10 text-[#9C27B0] border border-[#9C27B0]"
                         : order.order_status === "DELIVERING"
-                        ? "bg-yellow-100 text-yellow-800"
+                        ? "bg-[#2196F3] bg-opacity-10 text-[#2196F3] border border-[#2196F3]"
                         : order.order_status === "ORDER_CONFIRMED"
-                        ? "bg-indigo-100 text-indigo-800"
-                        : "bg-gray-100 text-gray-800"
+                        ? "bg-[#28a745] bg-opacity-10 text-[#28a745] border border-[#28a745]"
+                        : "bg-[#607D8B] bg-opacity-10 text-[#607D8B] border border-[#607D8B]"
                     }`}
                   >
                     {getStatusText(order.order_status)}

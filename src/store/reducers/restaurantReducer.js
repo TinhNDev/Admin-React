@@ -157,10 +157,7 @@ export const change_seller_detail = createAsyncThunk(
 //Lấy order nhà hàng
 export const get_orderRes = createAsyncThunk(
   "admin/get_orderRes",
-  async (
-    { parPage, page, searchValue },
-    { rejectWithValue, fulfillWithValue, getState }
-  ) => {
+  async (resID, { rejectWithValue, fulfillWithValue, getState }) => {
     try {
       const token = localStorage.getItem("userToken");
       const sellerID =
@@ -170,8 +167,7 @@ export const get_orderRes = createAsyncThunk(
         return rejectWithValue("Không có quyền truy cập, vui lòng đăng nhập.");
       }
 
-      const { data } = await api.get("/restaurant/order", {
-        params: { parPage, page, search: searchValue },
+      const { data } = await api.get(`admin/restaurant/${resID}`, {
         headers: {
           Authorization: token,
           "x-client-id": sellerID,
