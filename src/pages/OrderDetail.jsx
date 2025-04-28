@@ -523,18 +523,51 @@ const OrderDetail = () => {
                               {item.name}
                             </h3>
                             <p className="text-sm text-gray-500">
-                              {formatCurrency(item.price)}
+                              {formatCurrency(parseFloat(item.price))}
                             </p>
-                            {item.toppings?.length > 0 && (
-                              <p className="text-xs text-gray-500 mt-1 italic">
-                                + {item.toppings.join(", ")}
-                              </p>
+                            {item.toppings && item.toppings.length > 0 && (
+                              <div className="mt-1">
+                                <p className="text-xs text-gray-500">
+                                  Topping:
+                                </p>
+                                <ul className="mt-0.5 space-y-0.5">
+                                  {item.toppings.map((topping, index) => (
+                                    <li
+                                      key={topping.id}
+                                      className="text-xs text-gray-600 flex items-center justify-between"
+                                    >
+                                      <span>{topping.topping_name}</span>
+                                      <span className="text-orange-600">
+                                        +
+                                        {formatCurrency(
+                                          parseFloat(topping.price)
+                                        )}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
                             )}
                           </div>
                         </div>
-                        <span className="font-medium text-orange-600">
-                          {formatCurrency(item.price * item.quantity)}
-                        </span>
+                        <div className="text-right">
+                          <span className="font-medium text-orange-600">
+                            {formatCurrency(
+                              parseFloat(item.price) * item.quantity +
+                                (item.toppings?.reduce(
+                                  (acc, topping) =>
+                                    acc +
+                                    parseFloat(topping.price) * item.quantity,
+                                  0
+                                ) || 0)
+                            )}
+                          </span>
+                          {item.toppings && item.toppings.length > 0 && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Gồm topping
+                            </p>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
