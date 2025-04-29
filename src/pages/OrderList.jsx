@@ -19,6 +19,7 @@ const OrderList = ({ orders, userType = "restaurant" }) => {
   const getStatusColorClass = (status) => {
     const colorMap = {
       PAID: "bg-[#FF6347] text-[#FF6347] border-[#FF6347]",
+      UNPAID: "bg-[#FF6347] text-[#FF6347] border-[#FF6347]",
       PREPARING_ORDER: "bg-[#FF9800] text-[#FF9800] border-[#FF9800]",
       ORDER_CANCELED: "bg-[#FF0000] text-[#FF0000] border-[#FF0000]",
       DELIVERING: "bg-[#2196F3] text-[#2196F3] border-[#2196F3]",
@@ -37,6 +38,12 @@ const OrderList = ({ orders, userType = "restaurant" }) => {
   const getStatusInfo = (status) => {
     switch (status) {
       case "PAID":
+        return {
+          color: "#FF6347",
+          text: "Đơn hàng mới",
+          icon: "bell-ring",
+        };
+      case "UNPAID":
         return {
           color: "#FF6347",
           text: "Đơn hàng mới",

@@ -46,6 +46,8 @@ const AllOrder = () => {
     switch (status) {
       case "PAID":
         return "Đơn hàng mới";
+      case "UNPAID":
+        return "Đơn hàng mới";
       case "PREPARING_ORDER":
         return "Đang chuẩn bị";
       case "ORDER_CANCELED":
