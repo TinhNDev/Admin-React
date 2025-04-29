@@ -1,105 +1,250 @@
-import React, { useEffect, useState } from 'react'
-import Chart from 'react-apexcharts'
-import StatusCard from '../components/status-card'
-import { get_allRestaurant } from '../store/reducers/restaurantReducer';
-import { get_allDriver } from '../store/reducers/driverReducer';
+import React, { useEffect, useState } from "react";
+import Chart from "react-apexcharts";
+import StatusCard from "../components/status-card";
+import { get_allRestaurant } from "../store/reducers/restaurantReducer";
+import { get_allDriver } from "../store/reducers/driverReducer";
 import { get_allOrder } from "../store/reducers/orderReducer";
-import { Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-
-// Tạo dữ liệu mẫu doanh thu theo ngày cho từng tháng
-const dailyRevenueByMonth = {
-  0: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 1
-  1: Array.from({ length: 28 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 2
-  2: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 3
-  3: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 4
-  4: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 5
-  5: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 6
-  6: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 7
-  7: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 8
-  8: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 9
-  9: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 10
-  10: Array.from({ length: 30 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 11
-  11: Array.from({ length: 31 }, () => Math.floor(Math.random() * 1000) + 500), // Tháng 12
-};
-
-const monthLabels = [
-    'Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu',
-    'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'
-  ];
-const monthlyRevenue = [
-  15000, 18000, 21000, 24000, 20000, 23000, 26000, 28000, 30000, 32000, 29000, 35000
-];
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  calculateDailyRevenue,
+  formatCurrency,
+  getMonthlyRevenueArray,
+} from "../utils/utils";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [parPage, setParPage] = useState(5);
-  const [sortField, setSortField] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const themeReducer = useSelector(state => state.ThemeReducer.mode)
-  const restaurantState = useSelector((state) => state.restaurant || {});
-  const { restaurants, totalRestaurant } = restaurantState;
-  const driverState = useSelector((state) => state.driver || {});
-  const { drivers, totalDrivers } = driverState;
-  const orderState = useSelector((state) => state.order || {});
-  const { orders, totalOrders } = orderState;
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
-  // --- Biểu đồ doanh thu ---
-  const [view, setView] = useState('month'); // 'month' hoặc 'day'
+  const themeReducer = useSelector((state) => state.ThemeReducer.mode);
+  const { totalRestaurant = 0 } = useSelector(
+    (state) => state.restaurant || {}
+  );
+  const { totalDrivers = 0 } = useSelector((state) => state.driver || {});
+  const { orders = [], totalOrders = 0 } = useSelector(
+    (state) => state.order || {}
+  );
+  const monthlyRevenueData = getMonthlyRevenueArray(orders);
+
+  // Extract data for chart
+  const monthLabels = monthlyRevenueData.map((item) => item.shortMonth);
+  const revenueValues = monthlyRevenueData.map((item) => item.revenue);
+
+  // Biểu đồ doanh thu
+  const [view, setView] = useState("month");
   const [selectedMonth, setSelectedMonth] = useState(null);
+  const [dailyRevenueData, setDailyRevenueData] = useState([]);
+
+  useEffect(() => {
+    if (selectedMonth !== null) {
+      const selectedMonthData = monthlyRevenueData[selectedMonth];
+      if (selectedMonthData) {
+        const monthIndex = new Date(
+          Date.parse(`${selectedMonthData.month} 1, ${selectedMonthData.year}`)
+        ).getMonth();
+        const year = selectedMonthData.year;
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+        const monthOrders = orders.filter((order) => {
+          const orderDate = new Date(order.createdAt);
+          return (
+            orderDate.getMonth() === monthIndex &&
+            orderDate.getFullYear() === year
+          );
+        });
+        const dailyRevenue = {};
+        monthOrders.forEach((order) => {
+          const orderDate = new Date(order.createdAt);
+          const day = orderDate.getDate();
+          dailyRevenue[day] =
+            (dailyRevenue[day] || 0) + parseFloat(order.price || 0);
+        });
+        const dailyData = Array.from({ length: daysInMonth }, (_, i) => {
+          const day = i + 1;
+          return {
+            day: `Ngày ${day}`,
+            value: dailyRevenue[day] || 0,
+          };
+        });
+
+        setDailyRevenueData(dailyData);
+      }
+    }
+  }, [selectedMonth, monthlyRevenueData, orders]);
 
   // Chart options cho doanh thu theo tháng
   const monthChartOptions = {
     chart: {
-      type: 'bar',
-      background: 'transparent',
-      toolbar: { show: true },
+      type: "bar",
+      background: "transparent",
+      toolbar: { show: false },
+      fontFamily: "'Roboto', sans-serif",
       events: {
-        dataPointSelection: function(event, chartContext, config) {
+        dataPointSelection: function (event, chartContext, config) {
           setSelectedMonth(config.dataPointIndex);
-          setView('day');
-        }
-      }
+          setView("day");
+        },
+      },
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        columnWidth: "65%",
+        distributed: false,
+        dataLabels: {
+          position: "top",
+        },
+      },
+    },
+    states: {
+      hover: {
+        filter: {
+          type: "darken",
+          value: 0.85,
+        },
+      },
+      active: {
+        allowMultipleDataPointsSelection: false,
+        filter: {
+          type: "darken",
+          value: 0.85,
+        },
+      },
     },
     xaxis: {
       categories: monthLabels,
-      title: { text: 'Doanh thu theo Tháng' },
       labels: {
-        offsetY: 8 // hoặc giá trị lớn hơn nếu cần
-      }
-      
+        style: {
+          fontSize: "12px",
+          fontFamily: "'Roboto', sans-serif",
+        },
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
     },
     yaxis: {
-      title: { text: 'Doanh thu (VND)' }
+      title: {
+        text: "Doanh thu (VND)",
+        style: {
+          fontSize: "13px",
+          fontFamily: "'Roboto', sans-serif",
+          fontWeight: 500,
+        },
+      },
+      labels: {
+        formatter: function (val) {
+          return val.toLocaleString() + " đ";
+        },
+        style: {
+          fontSize: "12px",
+        },
+      },
     },
-    colors: ['#3b82f6'],
+    colors: ["#4F46E5"],
+    dataLabels: {
+      enabled: false,
+    },
+    grid: {
+      borderColor: "#f1f1f1",
+      strokeDashArray: 4,
+    },
     tooltip: {
       y: {
-        formatter: function(val) { return `${val.toLocaleString()} VND`; }
-      }
-    }
+        formatter: function (val) {
+          return `${val.toLocaleString()} VND`;
+        },
+      },
+      theme: themeReducer === "theme-mode-dark" ? "dark" : "light",
+    },
   };
 
-  // Chart options cho doanh thu theo ngày của một tháng
+  // Chart options cho doanh thu theo ngày
   const dayChartOptions = {
-    chart: { type: 'bar', background: 'transparent', toolbar: { show: true } },
+    chart: {
+      type: "area",
+      background: "transparent",
+      toolbar: { show: false },
+      fontFamily: "'Roboto', sans-serif",
+    },
+    stroke: {
+      curve: "smooth",
+      width: 3,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.2,
+        stops: [0, 90, 100],
+      },
+    },
     xaxis: {
-      categories: selectedMonth !== null
-        ? Array.from({ length: dailyRevenueByMonth[selectedMonth].length }, (_, i) => `Ngày ${i + 1}`)
-        : [],
-      title: { text: selectedMonth !== null ? `Doanh thu của ${monthLabels[selectedMonth]}` : '' }
+      categories: dailyRevenueData.map((item) => item.day),
+      labels: {
+        style: {
+          fontSize: "12px",
+          fontFamily: "'Roboto', sans-serif",
+        },
+        rotate: -45,
+        rotateAlways: false,
+        hideOverlappingLabels: true,
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
     },
     yaxis: {
-      title: { text: 'Doanh thu (VND)' }
+      title: {
+        text: "Doanh thu (VND)",
+        style: {
+          fontSize: "13px",
+          fontFamily: "'Roboto', sans-serif",
+          fontWeight: 500,
+        },
+      },
+      labels: {
+        formatter: function (val) {
+          return val.toLocaleString() + " đ";
+        },
+        style: {
+          fontSize: "12px",
+        },
+      },
     },
-    colors: ['#f59e42'],
+    colors: ["#f59e0b"],
+    dataLabels: {
+      enabled: false,
+    },
+    grid: {
+      borderColor: "#f1f1f1",
+      strokeDashArray: 4,
+    },
     tooltip: {
       y: {
-        formatter: function(val) { return `${val.toLocaleString()} VND`; }
-      }
-    }
+        formatter: function (val) {
+          return `${val.toLocaleString()} VND`;
+        },
+      },
+      theme: themeReducer === "theme-mode-dark" ? "dark" : "light",
+    },
+    markers: {
+      size: 3,
+      strokeWidth: 0,
+      hover: {
+        size: 5,
+      },
+    },
   };
 
   useEffect(() => {
@@ -108,10 +253,10 @@ const Dashboard = () => {
       page: parseInt(currentPage),
       search: searchValue,
       sortField,
-      sortOrder
+      sortOrder,
     };
     dispatch(get_allRestaurant(obj));
-  }, [searchValue, currentPage, parPage, sortField, sortOrder]);
+  }, [searchValue, currentPage, parPage, sortField, sortOrder, dispatch]);
 
   useEffect(() => {
     const obj = {
@@ -119,278 +264,294 @@ const Dashboard = () => {
       page: parseInt(currentPage),
       search: searchValue,
       sortField,
-      sortOrder
+      sortOrder,
     };
     dispatch(get_allDriver(obj));
-  }, [searchValue, currentPage, parPage, sortField, sortOrder]);
+  }, [searchValue, currentPage, parPage, sortField, sortOrder, dispatch]);
 
   useEffect(() => {
     dispatch(get_allOrder());
-  }, []);
+  }, [dispatch]);
 
-  const topRestaurants = restaurants.slice(0, 5);
-  const topDrivers = drivers.slice(0, 5);
   const topOrders = orders.slice(0, 5);
-
+  const getRevenue = calculateDailyRevenue(orders);
   const statusCards = [
     {
-      "icon": "bx bx-shopping-bag",
-      "count": "1,995",
-      "title": "Total sales"
+      icon: "bx bx-shopping-bag",
+      count: formatCurrency(getRevenue.totalRevenue),
+      title: "Doanh thu hôm nay",
+      color: "text-blue-500",
+      bgColor: "bg-blue-100",
+      borderColor: "border-blue-200",
     },
     {
       icon: "bx bx-home",
-      count: totalRestaurant ?? 0,
-      title: "Tổng nhà hàng"
+      count: totalRestaurant,
+      title: "Tổng nhà hàng",
+      color: "text-green-500",
+      bgColor: "bg-green-100",
+      borderColor: "border-green-200",
     },
     {
       icon: "bx bx-user",
-      count: totalDrivers ?? 0,
-      title: "Tổng shipper"
+      count: totalDrivers,
+      title: "Tổng shipper",
+      color: "text-amber-500",
+      bgColor: "bg-amber-100",
+      borderColor: "border-amber-200",
     },
     {
       icon: "bx bx-receipt",
-      count: totalOrders ?? 0,
-      title: "Tổng đơn hàng"
+      count: totalOrders,
+      title: "Tổng đơn hàng",
+      color: "text-rose-500",
+      bgColor: "bg-rose-100",
+      borderColor: "border-rose-200",
+    },
+  ];
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PAID":
+        return "Đơn hàng mới";
+      case "PREPARING_ORDER":
+        return "Đang chuẩn bị";
+      case "ORDER_CANCELED":
+        return "Đơn bị hủy";
+      case "ORDER_RECEIVED":
+        return "Đã giao cho shipper";
+      case "DELIVERING":
+        return "Shipper đang lấy đơn";
+      case "ORDER_CONFIRMED":
+        return "Đã giao xong";
+      case "UNPAID":
+        return "Chưa thanh toán";
+      default:
+        return "Không xác định";
     }
-  ]
+  };
+  // Hàm lấy trạng thái class dựa trên order_status
+  const getStatusClassName = (status) => {
+    switch (status) {
+      case "PAID":
+        return "bg-green-100 text-green-800";
+      case "UNPAID":
+        return "bg-red-100 text-red-800";
+      case "PREPARING_ORDER":
+        return "bg-blue-100 text-blue-800";
+      case "ORDER_CANCELED":
+        return "bg-red-100 text-red-800";
+      case "ORDER_RECEIVED":
+        return "bg-purple-100 text-purple-800";
+      case "DELIVERING":
+        return "bg-yellow-100 text-yellow-800";
+      case "ORDER_CONFIRMED":
+        return "bg-indigo-100 text-indigo-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
 
   return (
-    <div>
-      <h2 className="page-header text-2xl font-bold">
-        Dashboard
-      </h2>
-      <div className="row">
-        <div className="col-6">
-          <div className="row">
-            {statusCards.map((item, index) => (
-              <div className="col-6" key={index}>
-                <StatusCard
-                  icon={item.icon}
-                  count={item.count}
-                  title={item.title}
-                />
-              </div>
-            ))}
-          </div>
+    <div className="p-6 bg-gray-50">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+        <div className="text-sm text-gray-500">
+          {new Date().toLocaleDateString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}
         </div>
-        <div className="col-6 flex items-stretch">
-          <div className='w-full flex'>
-            <div className='w-full'>
-              <div className=' bg-[#e5e4eb] p-4 rounded-md'>
-                {view === 'month' && (
-                  <div>
-                    <div className="flex gap-4 mb-4">
-                      <button
-                        className="px-4 py-2 rounded bg-blue-500 text-white"
-                        disabled
-                      >
-                        Theo tháng
-                      </button>
-                    </div>
-                    <Chart
-                      options={monthChartOptions}
-                      series={[{ name: 'Doanh thu', data: monthlyRevenue }]}
-                      type="bar"
-                      height={300}
-                    />
-                    <p className="text-sm text-gray-500">
-                      * Bấm vào cột tháng để xem chi tiết doanh thu từng ngày
-                    </p>
-                  </div>
-                )}
-                {view === 'day' && selectedMonth !== null && (
-                  <div>
-                    <button
-                      className="mb-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                      onClick={() => setView('month')}
-                    >
-                      ← Quay lại
-                    </button>
-                    <Chart
-                      options={dayChartOptions}
-                      series={[{ name: `Doanh thu ${monthLabels[selectedMonth]}`, data: dailyRevenueByMonth[selectedMonth] }]}
-                      type="bar"
-                      height={320}
-                    />
-                  </div>
-                )}
+      </div>
+
+      {/* Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        {statusCards.map((item, index) => (
+          <div
+            key={index}
+            className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
+          >
+            <div className={`${item.bgColor} px-4 py-2`}>
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-700">{item.title}</h3>
+                <i className={`${item.icon} text-xl ${item.color}`}></i>
+              </div>
+            </div>
+            <div className="px-4 py-3">
+              <div className="text-2xl font-bold text-gray-800">
+                {item.count}
               </div>
             </div>
           </div>
-        </div>
-              <div className="col-3">
-                    <div className="card">
-                        <div className="card__header px-4 py-3 border-b border-gray-200">
-                        <h3 className='text-lg font-bold text-gray-700'>Nhà Hàng</h3>
-                        </div>
-                        <div className="card__body p-4">
-                        <table className="w-full text-base table-fixed">
-                            <colgroup>
-                            <col className="w-1/6" />
-                            <col className="w-2/5" />
-                            <col className="w-2/5" />
-                            </colgroup>
-                            <thead>
-                            <tr>
-                                <th className="px-3 py-2 text-left font-semibold">ID</th>
-                                <th className="px-3 py-2 text-left font-semibold">Tên</th>
-                                <th className="px-3 py-2 text-left font-semibold">Trạng thái</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {topRestaurants.map((res, idx) => (
-                                <tr key={res.id || idx} className="hover:bg-gray-50">
-                                <td className="px-3 py-2">{idx + 1}</td>
-                                <td className="px-3 py-2">{res.name}</td>
-                                <td className="px-3 py-2">
-                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                    res.status === 'active'
-                                        ? 'bg-green-100 text-green-800'
-                                        : res.status === 'pending'
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : 'bg-red-100 text-red-800'
-                                    }`}>
-                                    {res.status || 'N/A'}
-                                    </span>
-                                </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                        {topRestaurants.length === 0 && (
-                            <div className="text-gray-500 text-center py-2">Không có dữ liệu</div>
-                        )}
-                        </div>
-                        <div className="card__footer px-4 py-3 border-t border-gray-200">
-                        <Link to='/admin/restaurant' className="text-blue-600 hover:underline">
-                            View All!
-                        </Link>
-                        </div>
-                    </div>
-                </div>
-              <div className="col-3">
-                  <div className="card">
-                      <div className="card__header">
-                          <h3 className='text-xl font-bold'>Tài xế</h3>
-                      </div>
-                      <div className="card__body p-4">
-                        <table className="w-full text-base table-fixed">
-                            <colgroup>
-                            <col className="w-1/6" />
-                            <col className="w-2/5" />
-                            <col className="w-2/5" />
-                            </colgroup>
-                            <thead>
-                            <tr>
-                                <th className="px-3 py-2 text-left font-semibold">ID</th>
-                                <th className="px-3 py-2 text-left font-semibold">Tên</th>
-                                <th className="px-3 py-2 text-left font-semibold">Trạng thái</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {topDrivers.map((dri, idx) => (
-                                <tr key={dri.id || idx} className="hover:bg-gray-50">
-                                <td className="px-3 py-2">{idx + 1}</td>
-                                <td className="px-3 py-2">{dri.Profile.name}</td>
-                                <td className="px-3 py-2">
-                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                        dri.status === 'BUSY'
-                                        ? 'bg-green-100 text-green-800'
-                                        : dri.status === 'PROCESSING'
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : dri.status === 'ONLINE'
-                                        ? 'bg-blue-100 text-blue-600'
-                                        : 'bg-red-100 text-red-800'
-                                    }`}>
-                                        {dri.status || 'N/A'}
-                                    </span>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                        {topRestaurants.length === 0 && (
-                            <div className="text-gray-500 text-center py-2">Không có dữ liệu</div>
-                        )}
-                        </div>
-                        <div className="card__footer px-4 py-3 border-t border-gray-200">
-                        <Link to='/admin/shipper' className="text-blue-600 hover:underline">
-                            View All!
-                        </Link>
-                        </div>
-                    </div>
-              </div>
-              <div className="col-6">
-              <div className="card">
-                      <div className="card__header">
-                          <h3 className='text-xl font-bold'>Đơn hàng gần nhất</h3>
-                      </div>
-                      <div className="card__body p-4">
-                        <table className="w-full text-base table-fixed">
-                            <colgroup>
-                            <col className="w-1/5" />
-                            <col className="w-1/5" />
-                            <col className="w-1/5" />
-                            <col className="w-1/5" />
-                            <col className="w-1/5" />
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th className="px-3 py-2 text-left font-semibold">ID</th>
-                                    <th className="px-3 py-2 text-left font-semibold">Tên</th>
-                                    <th className="px-3 py-2 text-left font-semibold">Trạng thái</th>
-                                    <th className="px-3 py-2 text-left font-semibold">Tiền</th>
-                                    <th className="px-3 py-2 text-left font-semibold">Điện thoại</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {topOrders.map((order, idx) => (
-                                    <tr key={order.id || idx} className="hover:bg-gray-50">
-                                    <td className="px-3 py-2">{idx + 1}</td>
-                                    <td className="px-3 py-2">{order.receiver_name}</td>
-                                    <td className="px-3 py-2">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                            order.order_status === "PAID"
-                                            ? "bg-green-100 text-green-800"
-                                            : order.order_status === "UNPAID"
-                                            ? "bg-red-100 text-red-800"
-                                            : order.order_status === "PREPARING_ORDER"
-                                            ? "bg-blue-100 text-blue-800"
-                                            : order.order_status === "ORDER_CANCELED"
-                                            ? "bg-red-100 text-red-800"
-                                            : order.order_status === "ORDER_RECEIVED"
-                                            ? "bg-purple-100 text-purple-800"
-                                            : order.order_status === "DELIVERING"
-                                            ? "bg-yellow-100 text-yellow-800"
-                                            : order.order_status === "ORDER_CONFIRMED"
-                                            ? "bg-indigo-100 text-indigo-800"
-                                            : "bg-gray-100 text-gray-800"
-                                        }`}>
-                                            {order.order_status || 'N/A'}
-                                        </span>
-                                        </td>
-                                    <td className="px-3 py-2">{order.price}</td>
-                                    <td className="px-3 py-2">{order.phone_number}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-
-                        </table>
-                        {topRestaurants.length === 0 && (
-                            <div className="text-gray-500 text-center py-2">Không có dữ liệu</div>
-                        )}
-                        </div>
-                        <div className="card__footer px-4 py-3 border-t border-gray-200">
-                        <Link to='/admin/all-order' className="text-blue-600 hover:underline">
-                            View All!
-                        </Link>
-                        </div>
-                    </div>
-              </div>
-          </div>
+        ))}
       </div>
-  )
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Chart Section */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="border-b border-gray-200 px-5 py-4">
+            <h3 className="text-lg font-semibold text-gray-800">
+              Biểu đồ doanh thu
+            </h3>
+          </div>
+          <div className="p-5">
+            {view === "month" && (
+              <div>
+                <div className="flex gap-4 mb-4">
+                  <button
+                    className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    disabled
+                  >
+                    Theo tháng
+                  </button>
+                </div>
+                <Chart
+                  options={monthChartOptions}
+                  series={[{ name: "Doanh thu", data: revenueValues }]}
+                  type="bar"
+                  height={320}
+                />
+                <p className="text-sm text-gray-500 mt-4 text-center">
+                  * Bấm vào cột tháng để xem chi tiết doanh thu từng ngày
+                </p>
+              </div>
+            )}
+
+            {view === "day" && selectedMonth !== null && (
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <button
+                    className="px-4 py-2 rounded-md bg-gray-100 text-gray-700 text-sm font-medium transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 flex items-center"
+                    onClick={() => setView("month")}
+                  >
+                    <i className="bx bx-arrow-back mr-1"></i>
+                    Quay lại
+                  </button>
+                  <h4 className="text-lg font-medium text-gray-700">
+                    {monthlyRevenueData[selectedMonth]?.month}{" "}
+                    {monthlyRevenueData[selectedMonth]?.year}
+                  </h4>
+                </div>
+
+                {dailyRevenueData.length > 0 ? (
+                  <Chart
+                    options={dayChartOptions}
+                    series={[
+                      {
+                        name: `Doanh thu ${monthlyRevenueData[selectedMonth]?.month}`,
+                        data: dailyRevenueData.map((item) => item.value),
+                      },
+                    ]}
+                    type="area"
+                    height={320}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-80">
+                    <i className="bx bx-line-chart text-4xl text-gray-300 mb-3"></i>
+                    <p className="text-gray-500">
+                      Không có dữ liệu doanh thu cho tháng này
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Recent Orders */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="border-b border-gray-200 px-5 py-4 flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-800">
+              Đơn hàng gần đây
+            </h3>
+            <Link
+              to="/admin/all-order"
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center"
+            >
+              Xem tất cả
+              <i className="bx bx-chevron-right ml-1"></i>
+            </Link>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Người nhận
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Trạng thái
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Giá trị
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Liên hệ
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {topOrders.length > 0 ? (
+                  topOrders.map((order, idx) => (
+                    <tr
+                      key={order.id || idx}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-5 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #{idx + 1}
+                      </td>
+                      <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {order.receiver_name}
+                      </td>
+                      <td className="px-5 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClassName(
+                            order.order_status
+                          )}`}
+                        >
+                          {getStatusText(order.order_status) || "N/A"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {parseInt(order.price).toLocaleString("vi-VN")} đ
+                      </td>
+                      <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <div className="flex items-center">
+                          <i className="bx bx-phone mr-2 text-gray-500"></i>
+                          {order.phone_number}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="px-5 py-8 text-center">
+                      <div className="flex flex-col items-center">
+                        <i className="bx bx-package text-3xl text-gray-300 mb-2"></i>
+                        <span className="text-gray-500">
+                          Không có dữ liệu đơn hàng
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {topOrders.length > 0 && (
+            <div className="px-5 py-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-500">
+              Hiển thị {topOrders.length} trong tổng số {totalOrders} đơn hàng
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;
