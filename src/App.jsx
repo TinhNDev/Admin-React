@@ -12,9 +12,10 @@ function App() {
     const [allRoutes, setAllRoutes] = useState([...publicRoutes]);
 
     useEffect(() => {
-
-        const routes = getRoutes();
-        setAllRoutes([...allRoutes, routes]);
+        // Lấy routes từ hàm getRoutes
+        const protectedRoutes = getRoutes();
+        // Kết hợp public routes và protected routes
+        setAllRoutes([...publicRoutes, protectedRoutes]);
     }, []);
 
     return <Router allRoutes={allRoutes} />;
