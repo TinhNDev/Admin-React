@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
-import StatusCard from "../components/status-card";
-import { get_allRestaurant } from "../store/reducers/restaurantReducer";
-import { get_allDriver } from "../store/reducers/driverReducer";
 import { get_allOrder } from "../store/reducers/orderReducer";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,13 +9,30 @@ import {
   getMonthlyRevenueArray,
 } from "../utils/utils";
 
+// Số lượng người truy cập từng ngày trong từng tháng
+const dailyVisitorsByMonth = {
+  0: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 1
+  1: Array.from({ length: 28 }, () => Math.floor(Math.random() * 101)), // Tháng 2
+  2: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 3
+  3: Array.from({ length: 30 }, () => Math.floor(Math.random() * 101)), // Tháng 4
+  4: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 5
+  5: Array.from({ length: 30 }, () => Math.floor(Math.random() * 101)), // Tháng 6
+  6: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 7
+  7: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 8
+  8: Array.from({ length: 30 }, () => Math.floor(Math.random() * 101)), // Tháng 9
+  9: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 10
+  10: Array.from({ length: 30 }, () => Math.floor(Math.random() * 101)), // Tháng 11
+  11: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 12
+};
+
+
+// Số lượng người truy cập theo tháng
+const monthlyVisitors = Array.from({ length: 12 }, () => Math.floor(Math.random() * 101));
+
+
+
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchValue, setSearchValue] = useState("");
-  const [parPage, setParPage] = useState(5);
-  const [sortField, setSortField] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
 
   const themeReducer = useSelector((state) => state.ThemeReducer.mode);
   const { totalRestaurant = 0 } = useSelector(
@@ -89,14 +103,14 @@ const Dashboard = () => {
         },
       },
     },
+    dataLabels: {
+      enabled: false,
+    },
     plotOptions: {
       bar: {
         borderRadius: 4,
         columnWidth: "65%",
-        distributed: false,
-        dataLabels: {
-          position: "top",
-        },
+        distributed: false
       },
     },
     states: {
@@ -129,42 +143,64 @@ const Dashboard = () => {
         show: false,
       },
     },
-    yaxis: {
-      title: {
-        text: "Doanh thu (VND)",
-        style: {
-          fontSize: "13px",
-          fontFamily: "'Roboto', sans-serif",
-          fontWeight: 500,
+    yaxis: [
+      {
+        title: {
+          text: "Doanh thu (VND)",
+          style: {
+            fontSize: "13px",
+            fontFamily: "'Roboto', sans-serif",
+            fontWeight: 500,
+          },
+        },
+        labels: {
+          formatter: function (val) {
+            return val.toLocaleString() + " đ";
+          },
+          style: {
+            fontSize: "12px",
+          },
         },
       },
-      labels: {
-        formatter: function (val) {
-          return val.toLocaleString() + " đ";
+      {
+        opposite: true, // Hiển thị bên phải
+        title: {
+          text: "Số lượng truy cập",
+          style: {
+            fontSize: "13px",
+            fontFamily: "'Roboto', sans-serif",
+            fontWeight: 500,
+          },
         },
-        style: {
-          fontSize: "12px",
+        labels: {
+          formatter: function (val) {
+            return val.toLocaleString();
+          },
+          style: {
+            fontSize: "12px",
+          },
         },
       },
-    },
-    colors: ["#4F46E5"],
-    dataLabels: {
-      enabled: false,
-    },
-    grid: {
-      borderColor: "#f1f1f1",
-      strokeDashArray: 4,
-    },
+    ],
+    colors: ["#4F46E5", "#22c55e"], // Thêm màu cho cột thứ 2
     tooltip: {
-      y: {
-        formatter: function (val) {
-          return `${val.toLocaleString()} VND`;
+      shared: true,
+      intersect: false,
+      y: [
+        {
+          formatter: function (val) {
+            return `${val.toLocaleString()} VND`;
+          },
         },
-      },
+        {
+          formatter: function (val) {
+            return `${val.toLocaleString()} lượt`;
+          },
+        },
+      ],
       theme: themeReducer === "theme-mode-dark" ? "dark" : "light",
     },
   };
-
   // Chart options cho doanh thu theo ngày
   const dayChartOptions = {
     chart: {
@@ -172,6 +208,9 @@ const Dashboard = () => {
       background: "transparent",
       toolbar: { show: false },
       fontFamily: "'Roboto', sans-serif",
+    },
+    dataLabels: {
+      enabled: false,
     },
     stroke: {
       curve: "smooth",
@@ -204,70 +243,64 @@ const Dashboard = () => {
         show: false,
       },
     },
-    yaxis: {
-      title: {
-        text: "Doanh thu (VND)",
-        style: {
-          fontSize: "13px",
-          fontFamily: "'Roboto', sans-serif",
-          fontWeight: 500,
+    yaxis: [
+      {
+        title: {
+          text: "Doanh thu (VND)",
+          style: {
+            fontSize: "13px",
+            fontFamily: "'Roboto', sans-serif",
+            fontWeight: 500,
+          },
+        },
+        labels: {
+          formatter: function (val) {
+            return val.toLocaleString() + " đ";
+          },
+          style: {
+            fontSize: "12px",
+          },
         },
       },
-      labels: {
-        formatter: function (val) {
-          return val.toLocaleString() + " đ";
+      {
+        opposite: true, // Hiển thị bên phải
+        title: {
+          text: "Số lượng truy cập",
+          style: {
+            fontSize: "13px",
+            fontFamily: "'Roboto', sans-serif",
+            fontWeight: 500,
+          },
         },
-        style: {
-          fontSize: "12px",
+        labels: {
+          formatter: function (val) {
+            return val.toLocaleString();
+          },
+          style: {
+            fontSize: "12px",
+          },
         },
       },
-    },
-    colors: ["#f59e0b"],
-    dataLabels: {
-      enabled: false,
-    },
-    grid: {
-      borderColor: "#f1f1f1",
-      strokeDashArray: 4,
-    },
+    ],
+    colors: ["#f59e0b", "#22c55e"], 
     tooltip: {
-      y: {
-        formatter: function (val) {
-          return `${val.toLocaleString()} VND`;
+      shared: true,
+      intersect: false,
+      y: [
+        {
+          formatter: function (val) {
+            return `${val.toLocaleString()} VND`;
+          },
         },
-      },
+        {
+          formatter: function (val) {
+            return `${val.toLocaleString()} lượt`;
+          },
+        },
+      ],
       theme: themeReducer === "theme-mode-dark" ? "dark" : "light",
     },
-    markers: {
-      size: 3,
-      strokeWidth: 0,
-      hover: {
-        size: 5,
-      },
-    },
   };
-
-  useEffect(() => {
-    const obj = {
-      parPage: parseInt(parPage),
-      page: parseInt(currentPage),
-      search: searchValue,
-      sortField,
-      sortOrder,
-    };
-    dispatch(get_allRestaurant(obj));
-  }, [searchValue, currentPage, parPage, sortField, sortOrder, dispatch]);
-
-  useEffect(() => {
-    const obj = {
-      parPage: parseInt(parPage),
-      page: parseInt(currentPage),
-      search: searchValue,
-      sortField,
-      sortOrder,
-    };
-    dispatch(get_allDriver(obj));
-  }, [searchValue, currentPage, parPage, sortField, sortOrder, dispatch]);
 
   useEffect(() => {
     dispatch(get_allOrder());
@@ -407,7 +440,10 @@ const Dashboard = () => {
                 </div>
                 <Chart
                   options={monthChartOptions}
-                  series={[{ name: "Doanh thu", data: revenueValues }]}
+                  series={[
+                    { name: "Doanh thu", data: revenueValues, type: "column" },
+                    { name: "Số lượng truy cập", data: monthlyVisitors, type: "column" },
+                  ]}
                   type="bar"
                   height={320}
                 />
@@ -420,13 +456,16 @@ const Dashboard = () => {
             {view === "day" && selectedMonth !== null && (
               <div>
                 <div className="flex justify-between items-center mb-4">
-                  <button
-                    className="px-4 py-2 rounded-md bg-gray-100 text-gray-700 text-sm font-medium transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 flex items-center"
-                    onClick={() => setView("month")}
-                  >
-                    <i className="bx bx-arrow-back mr-1"></i>
-                    Quay lại
-                  </button>
+                <button
+                  className="px-4 py-2 rounded-md bg-gray-100 text-gray-700 text-sm font-medium transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 flex items-center"
+                  onClick={() => {
+                    setView("month");
+                    setSelectedMonth(null); 
+                  }}
+                >
+                  <i className="bx bx-arrow-back mr-1"></i>
+                  Quay lại
+                </button>
                   <h4 className="text-lg font-medium text-gray-700">
                     {monthlyRevenueData[selectedMonth]?.month}{" "}
                     {monthlyRevenueData[selectedMonth]?.year}
@@ -440,6 +479,12 @@ const Dashboard = () => {
                       {
                         name: `Doanh thu ${monthlyRevenueData[selectedMonth]?.month}`,
                         data: dailyRevenueData.map((item) => item.value),
+                        type: "area",
+                      },
+                      {
+                        name: "Số lượng truy cập",
+                        data: dailyVisitorsByMonth[selectedMonth] || [],
+                        type: "area",
                       },
                     ]}
                     type="area"
