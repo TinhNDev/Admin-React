@@ -189,12 +189,12 @@ const Dashboard = () => {
       y: [
         {
           formatter: function (val) {
-            return `${val.toLocaleString()} VND`;
+            return `${val?.toLocaleString() ?? '0'} VND`; // Xử lý undefined
           },
         },
         {
           formatter: function (val) {
-            return `${val.toLocaleString()} lượt`;
+            return `${val?.toLocaleString() ?? '0'} lượt`; // Xử lý undefined
           },
         },
       ],
