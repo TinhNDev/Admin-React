@@ -98,7 +98,7 @@ const AllOrder = () => {
 
   return (
     <div className="px-2 lg:px-7 pt-5">
-      <h1 className="text-black font-semibold text-lg mb-3">All Orders</h1>
+      <h1 className="text-black font-semibold text-lg mb-3">Tổng đơn hàng</h1>
 
       <Search
         setParPage={setParPage}
@@ -107,33 +107,35 @@ const AllOrder = () => {
       />
 
       <div className="relative overflow-x-auto mt-5">
-        <table className="w-full text-sm text-left text-gray-700 bg-white">
+        <table className="w-full text-lg text-left text-gray-700 bg-white">
           <thead className="text-xs text-gray-700 uppercase bg-gray-100 border-b">
             <tr>
-              <SortableHeader
-                label="No"
-                field="id"
-                sortField={sortField}
-                sortOrder={sortOrder}
-                onSort={handleSort}
-                className="w-1/12"
-              />
-              <SortableHeader
-                label="Người đặt"
-                field="receiver_name"
-                sortField={sortField}
-                sortOrder={sortOrder}
-                onSort={handleSort}
-                className="w-1/10"
-              />
-              <SortableHeader
-                label="Địa chỉ"
-                field="address_receiver"
-                sortField={sortField}
-                sortOrder={sortOrder}
-                onSort={handleSort}
-                className="w-1/10"
-              />
+            <SortableHeader
+              label="No"
+              field="id"
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={handleSort}
+              className="w-1/24" 
+            />
+            <SortableHeader
+              label="Người đặt"
+              field="receiver_name"
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={handleSort}
+              className="w-1/6" 
+            />
+
+            <SortableHeader
+              label="Địa chỉ"
+              field="address_receiver"
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={handleSort}
+              className="w-1/3" 
+            />
+
               <SortableHeader
                 label="Điện thoại"
                 field="phone_number"
@@ -166,12 +168,15 @@ const AllOrder = () => {
                 onSort={handleSort}
                 className="w-1/10"
               />
-              <th className="py-3 px-4 w-25">Chức năng</th>
             </tr>
           </thead>
           <tbody>
             {sortedOrders.map((order, index) => (
-              <tr key={order.id} className="bg-white border-b hover:bg-gray-50">
+              <tr
+                key={order.id}
+                className="bg-white border-b hover:bg-gray-50 cursor-pointer"
+                onClick={() => handleViewDetail(order.id)}
+              >
                 <td className="py-2 px-4">
                   {(currentPage - 1) * parPage + index + 1}
                 </td>
@@ -184,47 +189,26 @@ const AllOrder = () => {
                   {parseInt(order.price, 10)?.toLocaleString()}₫
                 </td>
                 <td className="py-2 px-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      order.order_status === "PAID"
-                        ? "bg-[#FF6347] bg-opacity-10 text-[#FF6347] border border-[#FF6347]"
-                        : order.order_status === "PREPARING_ORDER"
-                        ? "bg-[#FF9800] bg-opacity-10 text-[#FF9800] border border-[#FF9800]"
-                        : order.order_status === "ORDER_CANCELED"
-                        ? "bg-[#FF0000] bg-opacity-10 text-[#FF0000] border border-[#FF0000]"
-                        : order.order_status === "ORDER_RECEIVED"
-                        ? "bg-[#9C27B0] bg-opacity-10 text-[#9C27B0] border border-[#9C27B0]"
-                        : order.order_status === "DELIVERING"
-                        ? "bg-[#2196F3] bg-opacity-10 text-[#2196F3] border border-[#2196F3]"
-                        : order.order_status === "ORDER_CONFIRMED"
-                        ? "bg-[#28a745] bg-opacity-10 text-[#28a745] border border-[#28a745]"
-                        : "bg-[#607D8B] bg-opacity-10 text-[#607D8B] border border-[#607D8B]"
-                    }`}
-                  >
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    order.order_status === "PAID"
+                      ? "bg-[#FF6347] bg-opacity-10 text-[#FF6347] border border-[#FF6347]"
+                      : order.order_status === "PREPARING_ORDER"
+                      ? "bg-[#FF9800] bg-opacity-10 text-[#FF9800] border border-[#FF9800]"
+                      : order.order_status === "ORDER_CANCELED"
+                      ? "bg-[#FF0000] bg-opacity-10 text-[#FF0000] border border-[#FF0000]"
+                      : order.order_status === "ORDER_RECEIVED"
+                      ? "bg-[#9C27B0] bg-opacity-10 text-[#9C27B0] border border-[#9C27B0]"
+                      : order.order_status === "DELIVERING"
+                      ? "bg-[#2196F3] bg-opacity-10 text-[#2196F3] border border-[#2196F3]"
+                      : order.order_status === "ORDER_CONFIRMED"
+                      ? "bg-[#28a745] bg-opacity-10 text-[#28a745] border border-[#28a745]"
+                      : "bg-[#607D8B] bg-opacity-10 text-[#607D8B] border border-[#607D8B]"
+                  }`}>
                     {getStatusText(order.order_status)}
                   </span>
                 </td>
                 <td className="py-2 px-4">
                   {new Date(order.order_date).toLocaleDateString()}
-                </td>
-                <td className="py-2 px-4">
-                  <div className="flex items-center gap-2">
-                    {/* <Link
-                      to={`/admin/order/details/${order.id}`}
-                      className="p-[5px] bg-green-500 text-white rounded hover:shadow-lg hover:shadow-green-500/50"
-                    >
-                      <FaEye size={14} />
-                    </Link> */}
-                    <button
-                      onClick={() => handleViewDetail(order.id)}
-                      className="p-[5px] bg-green-500 text-white rounded hover:shadow-lg hover:shadow-green-500/50"
-                    >
-                      <FaEye size={14} />
-                    </button>
-                    <button className="p-[5px] bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
-                      <FaTrash size={14} />
-                    </button>
-                  </div>
                 </td>
               </tr>
             ))}
