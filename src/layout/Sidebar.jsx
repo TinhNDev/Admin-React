@@ -70,20 +70,23 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
         <ul className={`${collapsed ? 'flex flex-col items-center' : 'w-full'}`}>
             {allNav.map((n, i) => (
                 <li key={i} className={collapsed ? 'w-10' : 'w-full'}>
-                    <Link 
-                        to={n.path} 
-                        className={`${pathname === n.path 
-                        ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' 
-                        : 'text-gray-700 hover:bg-gray-100 duration-200'} 
-                        text-lg font-bold px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
-                        title={n.title}
-                    >
-                        <span>{n.icon}</span>
-                        {!collapsed && <span className="font-bold text-lg">{n.title}</span>}
-                    </Link>
+                <Link 
+                    to={n.path} 
+                    className={`${
+                    pathname.startsWith(n.path)
+                        ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500'
+                        : 'text-gray-700 hover:bg-gray-100 duration-200'
+                    } 
+                    text-lg font-bold px-[12px] py-[15px] rounded-lg flex ${collapsed ? 'justify-center' : 'justify-start'} items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                    title={n.title}
+                >
+                    <span>{n.icon}</span>
+                    {!collapsed && <span className="font-bold text-lg">{n.title}</span>}
+                </Link>
                 </li>
             ))}
-        </ul>
+            </ul>
+
 
         {/* Footer: Setting, Policy, Help, Logout */}
         <div className={`flex flex-col ${collapsed ? 'items-center' : ''} w-full`}>

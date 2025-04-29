@@ -85,6 +85,6 @@ export const allNav = [
     title: "Danh sách đặt hàng",
     icon: <IoIosListBox />,
     role: "admin",
-    path: "/admin/all-order",
+    path: "/admin/order",
   },
 ];
