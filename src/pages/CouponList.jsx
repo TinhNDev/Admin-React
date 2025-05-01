@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { get_coupons, edit_coupon } from "../store/reducers/couponReducer";
-import { Link } from "react-router-dom";
+import { get_coupons } from "../store/reducers/couponReducer";
 import { FiPlus } from "react-icons/fi";
 import moment from "moment";
 import Coupon from "./Coupon";
 import { checkCouponStatus } from "../utils/utils";
-import toast from "react-hot-toast";
 
 const CouponList = () => {
   const dispatch = useDispatch();
@@ -14,132 +12,111 @@ const CouponList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
+
   useEffect(() => {
     dispatch(get_coupons());
   }, [dispatch]);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCoupon(null);
   };
+
   const filteredCoupons = coupons?.filter(
     (coupon) =>
       coupon.coupon_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       coupon.coupon_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const handleEdit = (coupon) => {
     setEditingCoupon(coupon);
     setIsModalOpen(true);
   };
+
   return (
     <div className="px-2 lg:px-7 pt-5">
-      <div className="w-full p-4 bg-white rounded-md border border-gray-200 shadow-sm">
-        <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Danh Sách Mã Giảm Giá
-          </h2>
-
-          <div className="flex items-center gap-4">
-            <input
-              type="text"
-              placeholder="Tìm kiếm mã..."
-              className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-all"
-            >
-              <FiPlus className="text-xl" />
-              <span>Thêm Mã Giảm Giá</span>
-            </button>
-          </div>
-        </div>
-
+      <h1 className="text-[#000000] font-semibold text-4xl mb-3">
+        Mã Giảm Giá
+      </h1>
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-all"
+        >
+          <FiPlus className="text-xl" />
+          <span>Thêm Mã Giảm Giá</span>
+        </button>
+      </div>
+      <div className="relative overflow-x-auto mt-5">
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin h-8 w-8 border-4 border-orange-500 border-t-transparent rounded-full mx-auto"></div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left text-gray-600">
-              <thead className="text-xs uppercase bg-gray-100">
-                <tr>
-                  <th className="px-6 py-3">Tên mã</th>
-                  <th className="px-6 py-3">Mã giảm giá</th>
-                  <th className="px-6 py-3">Loại</th>
-                  <th className="px-6 py-3">Giá trị</th>
-                  <th className="px-6 py-3">Thời gian</th>
-                  <th className="px-6 py-3">Trạng thái</th>
-                  <th className="px-6 py-3">Thao tác</th>
+          <table className="w-full text-base text-left text-gray-700 bg-white">
+            <thead className="text-sm text-gray-700 uppercase bg-gray-100 border-b">
+              <tr>
+                <th className="py-3 px-4">Tên mã</th>
+                <th className="py-3 px-4">Mã giảm giá</th>
+                <th className="py-3 px-4">Loại</th>
+                <th className="py-3 px-4">Giá trị</th>
+                <th className="py-3 px-4">Thời gian</th>
+                <th className="py-3 px-4">Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCoupons?.map((coupon) => (
+                <tr
+                  key={coupon.id}
+                  className="bg-white border-b hover:bg-blue-200 cursor-pointer transition"
+                  onClick={() => handleEdit(coupon)}
+                >
+                  <td className="py-2 px-4 font-medium text-xl">
+                    {coupon.coupon_name}
+                  </td>
+                  <td className="py-2 px-4 font-medium text-xl">
+                    {coupon.coupon_code}
+                  </td>
+                  <td className="py-2 px-4 font-medium text-xl">
+                    {coupon.discount_type === "PERCENTAGE"
+                      ? "Phần trăm"
+                      : "Số tiền"}
+                  </td>
+                  <td className="py-2 px-4 font-medium text-xl">
+                    {coupon.discount_type === "PERCENTAGE"
+                      ? `${coupon.discount_value}%`
+                      : `${Number(coupon.discount_value).toLocaleString()}đ`}
+                  </td>
+                  <td className="py-2 px-4 font-medium text-sm">
+                    <p>
+                      Từ: {moment(coupon.start_date).format("DD/MM/YYYY HH:mm")}
+                    </p>
+                    <p>
+                      Đến: {moment(coupon.end_date).format("DD/MM/YYYY HH:mm")}
+                    </p>
+                  </td>
+                  <td className="py-2 px-4 font-medium text-xl">
+                    {(() => {
+                      const status = checkCouponStatus(
+                        coupon.start_date,
+                        coupon.end_date,
+                        coupon.is_active
+                      );
+                      return (
+                        <span
+                          className={`px-2 py-1 rounded-full text-sm ${status.className}`}
+                        >
+                          {status.text}
+                        </span>
+                      );
+                    })()}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredCoupons?.map((coupon) => (
-                  <tr
-                    key={coupon.id}
-                    className="border-b border-gray-200 hover:bg-gray-50"
-                  >
-                    <td className="px-6 py-4">{coupon.coupon_name}</td>
-                    <td className="px-6 py-4 font-medium">
-                      {coupon.coupon_code}
-                    </td>
-                    <td className="px-6 py-4">
-                      {coupon.discount_type === "PERCENTAGE"
-                        ? "Phần trăm"
-                        : "Số tiền"}
-                    </td>
-                    <td className="px-6 py-4">
-                      {coupon.discount_type === "PERCENTAGE"
-                        ? `${coupon.discount_value}%`
-                        : `${Number(coupon.discount_value).toLocaleString()}đ`}
-                    </td>
-                    <td className="px-6 py-4 text-xs">
-                      <p>
-                        Từ:{" "}
-                        {moment(coupon.start_date).format("DD/MM/YYYY HH:mm")}
-                      </p>
-                      <p>
-                        Đến:{" "}
-                        {moment(coupon.end_date).format("DD/MM/YYYY HH:mm")}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4">
-                      {(() => {
-                        const status = checkCouponStatus(
-                          coupon.start_date,
-                          coupon.end_date,
-                          coupon.is_active
-                        );
-                        return (
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs ${status.className}`}
-                          >
-                            {status.text}
-                          </span>
-                        );
-                      })()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 mr-2"
-                        onClick={() => handleEdit(coupon)}
-                      >
-                        Sửa
-                      </button>
-                      {/* <button className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">
-                        Xóa
-                      </button> */}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
