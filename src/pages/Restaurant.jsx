@@ -78,7 +78,12 @@ const Restaurant = () => {
 
   return (
     <div className="px-2 lg:px-7 pt-5">
-      <h1 className="text-[#000000] font-semibold text-4xl mb-3">Nhà hàng</h1>
+      <h1 className="text-[#000000] font-semibold text-4xl mb-3">Danh sách nhà hàng</h1>
+      <Search
+          setParPage={setParPage}
+          setSearchValue={setSearchValue}
+          searchValue={searchValue}
+        />
       <div className="relative overflow-x-auto mt-5">
         <table className="w-full text-base text-left text-gray-700 bg-white">
           <thead className="text-sm text-gray-700 uppercase bg-gray-100 border-b">
@@ -172,6 +177,15 @@ const Restaurant = () => {
         </table>
       </div>
       <Outlet />
+      <div className="w-full flex justify-end mt-4 bottom-4 right-4">
+          <Pagination
+            pageNumber={currentPage}
+            setPageNumber={setCurrentPage}
+            totalItem={totalRestaurant}
+            parPage={parPage}
+            showItem={3}
+          />
+        </div>
     </div>
   );
 };

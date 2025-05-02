@@ -3,12 +3,12 @@ import "./TopNav.scss";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetch_feedbacks } from "../../store/reducers/feedbackReducer";
-import user_img from "../../data/avatar.png";
+import user_img from "../../data/admin.png";
 import ThemeMenu from "../../components/thememenu";
 import Dropdown from "../../components/Dropdown";
 
 const curr_user = {
-  display_name: "Thanh Tịnh",
+  display_name: "Admin",
   image: user_img,
 };
 
@@ -78,7 +78,7 @@ const TopNav = ({ collapsed }) => {
             <Dropdown
               className=""
               icon="bx bx-bell"
-              badge={checkedFeedbacksCount.toString()} // Số lượng đã check
+              badge={checkedFeedbacksCount.toString()} 
               contentData={displayedFeedbacks}
               renderItems={(item, index) => renderNotificationItem(item, index)}
               renderFooter={() => (

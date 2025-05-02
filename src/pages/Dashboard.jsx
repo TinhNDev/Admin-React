@@ -416,7 +416,7 @@ const Dashboard = () => {
   return (
     <div className="p-6 bg-gray-50">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+        <h2 className="text-4xl font-bold text-gray-800">Dashboard</h2>
         <div className="text-sm text-gray-500">
           {new Date().toLocaleDateString("vi-VN", {
             day: "2-digit",
