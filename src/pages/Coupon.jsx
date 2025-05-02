@@ -36,6 +36,18 @@ const Coupon = ({ onClose, editData, isEditing }) => {
 
   const [formData, setFormData] = useState(initialState);
   useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage); // Hiện toast thành công
+      dispatch(messageClear());
+      onClose && onClose(); // Đóng form nếu có
+
+    }
+    if (errorMessage) {
+      toast.error(errorMessage); // Hiện toast lỗi
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch, onClose]);
+  useEffect(() => {
     if (editData) {
       setFormData({
         ...editData,

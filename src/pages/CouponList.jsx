@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { get_coupons } from "../store/reducers/couponReducer";
+import { get_coupons, messageClear } from "../store/reducers/couponReducer";
 import { FiPlus } from "react-icons/fi";
 import moment from "moment";
 import Coupon from "./Coupon";
@@ -13,31 +13,40 @@ const CouponList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
 
+  // Load danh sách coupon khi khởi tạo
   useEffect(() => {
     dispatch(get_coupons());
   }, [dispatch]);
 
+  // Hàm reload danh sách
+  const reloadCoupons = () => {
+    dispatch(get_coupons());
+  };
+
+  // Xử lý đóng modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCoupon(null);
   };
 
+  // Xử lý khi click vào coupon để chỉnh sửa
+  const handleEdit = (coupon) => {
+    setEditingCoupon(coupon);
+    setIsModalOpen(true);
+  };
+
+  // Lọc coupon theo search term
   const filteredCoupons = coupons?.filter(
     (coupon) =>
       coupon.coupon_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       coupon.coupon_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEdit = (coupon) => {
-    setEditingCoupon(coupon);
-    setIsModalOpen(true);
-  };
-
   return (
     <div className="px-2 lg:px-7 pt-5">
-      <h1 className="text-[#000000] font-semibold text-4xl mb-3">
-        Mã Giảm Giá
-      </h1>
+      <h1 className="text-[#000000] font-semibold text-4xl mb-3">Mã Giảm Giá</h1>
+      
+      {/* Nút thêm coupon */}
       <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
         <button
           onClick={() => setIsModalOpen(true)}
@@ -47,6 +56,8 @@ const CouponList = () => {
           <span>Thêm Mã Giảm Giá</span>
         </button>
       </div>
+
+      {/* Bảng hiển thị danh sách */}
       <div className="relative overflow-x-auto mt-5">
         {loading ? (
           <div className="text-center py-8">
@@ -54,6 +65,7 @@ const CouponList = () => {
           </div>
         ) : (
           <table className="w-full text-base text-left text-gray-700 bg-white">
+            {/* Phần header của bảng */}
             <thead className="text-sm text-gray-700 uppercase bg-gray-100 border-b">
               <tr>
                 <th className="py-3 px-4">Tên mã</th>
@@ -64,6 +76,8 @@ const CouponList = () => {
                 <th className="py-3 px-4">Trạng thái</th>
               </tr>
             </thead>
+
+            {/* Phần body của bảng */}
             <tbody>
               {filteredCoupons?.map((coupon) => (
                 <tr
@@ -71,16 +85,11 @@ const CouponList = () => {
                   className="bg-white border-b hover:bg-blue-200 cursor-pointer transition"
                   onClick={() => handleEdit(coupon)}
                 >
+                  {/* Các cột dữ liệu */}
+                  <td className="py-2 px-4 font-medium text-xl">{coupon.coupon_name}</td>
+                  <td className="py-2 px-4 font-medium text-xl">{coupon.coupon_code}</td>
                   <td className="py-2 px-4 font-medium text-xl">
-                    {coupon.coupon_name}
-                  </td>
-                  <td className="py-2 px-4 font-medium text-xl">
-                    {coupon.coupon_code}
-                  </td>
-                  <td className="py-2 px-4 font-medium text-xl">
-                    {coupon.discount_type === "PERCENTAGE"
-                      ? "Phần trăm"
-                      : "Số tiền"}
+                    {coupon.discount_type === "PERCENTAGE" ? "Phần trăm" : "Số tiền"}
                   </td>
                   <td className="py-2 px-4 font-medium text-xl">
                     {coupon.discount_type === "PERCENTAGE"
@@ -88,28 +97,13 @@ const CouponList = () => {
                       : `${Number(coupon.discount_value).toLocaleString()}đ`}
                   </td>
                   <td className="py-2 px-4 font-medium text-sm">
-                    <p>
-                      Từ: {moment(coupon.start_date).format("DD/MM/YYYY HH:mm")}
-                    </p>
-                    <p>
-                      Đến: {moment(coupon.end_date).format("DD/MM/YYYY HH:mm")}
-                    </p>
+                    <p>Từ: {moment(coupon.start_date).format("DD/MM/YYYY HH:mm")}</p>
+                    <p>Đến: {moment(coupon.end_date).format("DD/MM/YYYY HH:mm")}</p>
                   </td>
                   <td className="py-2 px-4 font-medium text-xl">
-                    {(() => {
-                      const status = checkCouponStatus(
-                        coupon.start_date,
-                        coupon.end_date,
-                        coupon.is_active
-                      );
-                      return (
-                        <span
-                          className={`px-2 py-1 rounded-full text-sm ${status.className}`}
-                        >
-                          {status.text}
-                        </span>
-                      );
-                    })()}
+                    <span className={`px-2 py-1 rounded-full text-sm ${checkCouponStatus(coupon.start_date, coupon.end_date, coupon.is_active).className}`}>
+                      {checkCouponStatus(coupon.start_date, coupon.end_date, coupon.is_active).text}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -117,6 +111,8 @@ const CouponList = () => {
           </table>
         )}
       </div>
+
+      {/* Modal thêm/chỉnh sửa coupon */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
@@ -128,24 +124,18 @@ const CouponList = () => {
                   className="text-gray-400 hover:text-gray-500 focus:outline-none"
                 >
                   <span className="sr-only">Đóng</span>
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
               <div className="p-6">
                 <Coupon
-                  onClose={handleCloseModal}
+                  onClose={handleCloseModal} // Chỉ đóng modal
+                  onSuccess={() => {
+                    reloadCoupons(); // Gọi reload trước
+                    handleCloseModal(); // Đóng modal sau
+                  }}
                   editData={editingCoupon}
                   isEditing={!!editingCoupon}
                 />
