@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import { get_allOrder } from "../store/reducers/orderReducer";
+import { get_allRestaurant } from "../store/reducers/restaurantReducer";
+import { get_allDriver } from "../store/reducers/driverReducer";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -33,6 +35,10 @@ const monthlyVisitors = Array.from({ length: 12 }, () => Math.floor(Math.random(
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+    const [currentPage] = useState(1);
+    const [parPage] = useState(5);
+    const [sortField] = useState("");
+    const [sortOrder] = useState("asc");
 
   const themeReducer = useSelector((state) => state.ThemeReducer.mode);
   const { totalRestaurant = 0 } = useSelector(
@@ -305,6 +311,25 @@ const Dashboard = () => {
   useEffect(() => {
     dispatch(get_allOrder());
   }, [dispatch]);
+  useEffect(() => {
+    const obj = {
+      parPage: parseInt(parPage),
+      page: parseInt(currentPage),
+      sortField,
+      sortOrder,
+    };
+    dispatch(get_allRestaurant(obj));
+  },[parPage, currentPage, sortField, sortOrder, dispatch]);
+
+  useEffect(() => {
+    const obj = {
+      parPage: parseInt(parPage),
+      page: parseInt(currentPage),
+      sortField,
+      sortOrder,
+    };
+    dispatch(get_allDriver(obj));
+  },[parPage, currentPage, sortField, sortOrder, dispatch]);
 
   const topOrders = orders.slice(0, 5);
   const getRevenue = calculateDailyRevenue(orders);
@@ -324,6 +349,7 @@ const Dashboard = () => {
       color: "text-green-500",
       bgColor: "bg-green-100",
       borderColor: "border-green-200",
+      path: "/admin/restaurant", 
     },
     {
       icon: "bx bx-user",
@@ -332,6 +358,7 @@ const Dashboard = () => {
       color: "text-amber-500",
       bgColor: "bg-amber-100",
       borderColor: "border-amber-200",
+      path: "/admin/shipper", // Thêm path
     },
     {
       icon: "bx bx-receipt",
@@ -340,8 +367,10 @@ const Dashboard = () => {
       color: "text-rose-500",
       bgColor: "bg-rose-100",
       borderColor: "border-rose-200",
+      path: "/admin/order", // Thêm path
     },
   ];
+  
   const getStatusText = (status) => {
     switch (status) {
       case "PAID":
@@ -396,28 +425,58 @@ const Dashboard = () => {
           })}
         </div>
       </div>
+        {/* Status Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          {statusCards.map((item, index) => {
+            // Thêm path cho các card cần chuyển trang
+            const cardWithLink = item.path ? (
+              <Link 
+                key={index}
+                to={item.path}
+                style={{ textDecoration: 'none' }}
+              >
+                <div
+                  className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
+                >
+                  {/* Nội dung card giữ nguyên */}
+                  <div className={`${item.bgColor} px-4 py-2`}>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-gray-700">{item.title}</h3>
+                      <i className={`${item.icon} text-xl ${item.color}`}></i>
+                    </div>
+                  </div>
+                  <div className="px-4 py-3">
+                    <div className="text-2xl font-bold text-gray-800">
+                      {item.count}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              // Card không có chức năng click
+              <div
+                key={index}
+                className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
+              >
+                {/* Nội dung card giữ nguyên */}
+                <div className={`${item.bgColor} px-4 py-2`}>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium text-gray-700">{item.title}</h3>
+                    <i className={`${item.icon} text-xl ${item.color}`}></i>
+                  </div>
+                </div>
+                <div className="px-4 py-3">
+                  <div className="text-2xl font-bold text-gray-800">
+                    {item.count}
+                  </div>
+                </div>
+              </div>
+            );
 
-      {/* Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        {statusCards.map((item, index) => (
-          <div
-            key={index}
-            className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
-          >
-            <div className={`${item.bgColor} px-4 py-2`}>
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-gray-700">{item.title}</h3>
-                <i className={`${item.icon} text-xl ${item.color}`}></i>
-              </div>
-            </div>
-            <div className="px-4 py-3">
-              <div className="text-2xl font-bold text-gray-800">
-                {item.count}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            return cardWithLink;
+          })}
+        </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Chart Section */}
@@ -510,7 +569,7 @@ const Dashboard = () => {
               Đơn hàng gần đây
             </h3>
             <Link
-              to="/admin/all-order"
+              to="/admin/order"
               className="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center"
             >
               Xem tất cả

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Search from "../components/Search";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import {  Outlet, useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
-import { FaEye, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { get_allRestaurant } from "../store/reducers/restaurantReducer";
 import SortableHeader from "../components/SortableHeader";
@@ -29,7 +28,7 @@ const Restaurant = () => {
       sortOrder,
     };
     dispatch(get_allRestaurant(obj));
-  }, [searchValue, currentPage, parPage, sortField, sortOrder]);
+  }, [ currentPage, parPage, sortField, sortOrder]);
 
   useEffect(() => {
     setCurrentPage(1);

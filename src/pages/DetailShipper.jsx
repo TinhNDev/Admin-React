@@ -202,7 +202,8 @@ const DetailShipper = () => {
                             >
                               <option value="">Chọn trạng thái</option>
                               <option value="ONLINE">ONLINE</option>
-                              <option value="OFFLINE">OFFLINE</option>
+                              <option value="LOCKED">LOCKED</option>
+                              <option value="PROCESSING">PROCESSING</option>
                               <option value="BUSY">BUSY</option>
                             </select>
                             <button

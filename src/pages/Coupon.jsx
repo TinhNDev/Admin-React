@@ -105,16 +105,39 @@ const Coupon = ({ onClose, editData, isEditing }) => {
     }
 
     // Check numeric values
-    if (
-      formData.max_discount_amount &&
-      parseFloat(formData.max_discount_amount) <= 0
-    ) {
-      toast.error("Giá trị giảm tối đa phải lớn hơn 0");
-      return false;
+    // Kiểm tra giảm tối đa (max_discount_amount)
+    if (formData.max_discount_amount) {
+      const maxDiscount = Number(formData.max_discount_amount);
+      if (maxDiscount <= 1000) {
+        toast.error("Giá trị giảm tối đa phải lớn hơn 1000");
+        return false;
+      }
+      if (maxDiscount % 1000 !== 0) {
+        // Gợi ý 2 giá trị gần nhất
+        const lower = Math.floor(maxDiscount / 1000) * 1000;
+        const higher = lower + 1000;
+        toast.error(
+          `Vui lòng nhập bội số của 1000. Hai giá trị gần nhất là ${lower.toLocaleString()} và ${higher.toLocaleString()}`
+        );
+        return false;
+      }
     }
-    if (formData.min_order_value && parseFloat(formData.min_order_value) <= 0) {
-      toast.error("Giá trị đơn hàng tối thiểu phải lớn hơn 0");
-      return false;
+
+    // Kiểm tra giá trị đơn hàng tối thiểu (min_order_value)
+    if (formData.min_order_value) {
+      const minOrder = Number(formData.min_order_value);
+      if (minOrder <= 0) {
+        toast.error("Giá trị đơn hàng tối thiểu phải lớn hơn 0");
+        return false;
+      }
+      if (minOrder % 1000 !== 0) {
+        const lower = Math.floor(minOrder / 1000) * 1000;
+        const higher = lower + 1000;
+        toast.error(
+          `Vui lòng nhập bội số của 1000. Hai giá trị gần nhất là ${lower.toLocaleString()} và ${higher.toLocaleString()}`
+        );
+        return false;
+      }
     }
     if (
       formData.max_uses_per_user &&
@@ -279,7 +302,7 @@ const Coupon = ({ onClose, editData, isEditing }) => {
                 className="block text-gray-700 text-lg font-semibold"
                 htmlFor="max_discount_amount"
               >
-                Giảm tối đa
+                Giảm tối đa (VNĐ)
               </label>
               <input
                 type="number"
@@ -304,7 +327,7 @@ const Coupon = ({ onClose, editData, isEditing }) => {
               className="block text-gray-700 text-lg font-semibold"
               htmlFor="min_order_value"
             >
-              Giá trị đơn hàng tối thiểu
+              Giá trị đơn hàng tối thiểu (VNĐ)
             </label>
             <input
               type="number"
