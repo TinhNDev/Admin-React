@@ -1,61 +1,84 @@
-import React from 'react';
-import './TopNav.scss';
-import { Link } from 'react-router-dom';
-import user_img from '../../data/avatar.png';
-import ThemeMenu from '../../components/thememenu';
-import Dropdown from  '../../components/Dropdown'
-
-
-import notifications from '../../data/JsonData/notification.json' //mock data
+import React, { useEffect } from "react";
+import "./TopNav.scss";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetch_feedbacks } from "../../store/reducers/feedbackReducer";
+import user_img from "../../data/avatar.png";
+import ThemeMenu from "../../components/thememenu";
+import Dropdown from "../../components/Dropdown";
 
 const curr_user = {
-    display_name: 'Thanh Tinh',
-    image: user_img
+  display_name: "Thanh Tịnh",
+  image: user_img,
 };
 
-const renderNotificationItem = (item,index) => (
+const TopNav = ({ collapsed }) => {
+  const dispatch = useDispatch();
+  const { feedbacks, loader, errorMessage } = useSelector(
+    (state) => state.feedback
+  );
+
+  useEffect(() => {
+    dispatch(fetch_feedbacks());
+  }, [dispatch]);
+
+  const renderNotificationItem = (item, index) => (
     <div className="notification-item" key={index}>
-        <i className={item.icon}></i>
-        <span>{item.content}</span>
+      <div className="notification-item__header">
+        <strong>{item.name}</strong>
+      </div>
+      <div className="notification-item__content">
+        {item.content}
+        {item.order && (
+          <div className="notification-item__order">
+            <span>Đơn hàng #{item.order.id}</span>
+          </div>
+        )}
+      </div>
     </div>
-)
+  );
 
+  const unreadFeedbacks = feedbacks.filter((item) => !item.is_checked);
 
-
-function TopNav({ collapsed }) {
-    return (
-        <div className={`topnav ${collapsed ? 'collapsed' : ''}`}>
-            <div className="topnav__right">
-                {/* User info hiển thị */}
-                <div className="topnav__right-item">
-                    <div className="topnav__right-user">
-                        <div className="topnav__right-user__image">
-                            <img src={curr_user.image} alt="User" />
-                        </div>
-                        <div className="topnav__right-user__name">
-                            {curr_user.display_name}
-                        </div>
-                    </div>
-                </div>
-                <div className="topnav__right-item">
-                    <Dropdown className="" 
-                        icon = "bx bx-bell"
-                        badge='5'
-                        contentData={notifications}
-                        renderItems={(item,index) => renderNotificationItem(item, index)}
-                        renderFooter={()=>
-                            <Link to="/admin/feedback">View All</Link>
-                        }
-                     />
-                </div>
-
-                {/* Hiển thị ThemeMenu */}
-                <div className="topnav__right-item">
-                    <ThemeMenu />
-                </div>
+  return (
+    <div className={`topnav ${collapsed ? "collapsed" : ""}`}>
+      <div className="topnav__right">
+        {/* User info */}
+        <div className="topnav__right-item">
+          <div className="topnav__right-user">
+            <div className="topnav__right-user__image">
+              <img src={curr_user.image} alt="User" />
             </div>
+            <div className="topnav__right-user__name">
+              {curr_user.display_name}
+            </div>
+          </div>
         </div>
-    );
-}
+
+        {/* Notifications */}
+        <div className="topnav__right-item">
+          {loader ? (
+            <div>Loading...</div>
+          ) : errorMessage ? (
+            <div>Error: {errorMessage}</div>
+          ) : (
+            <Dropdown
+              className=""
+              icon="bx bx-bell"
+              badge={unreadFeedbacks.length.toString()}
+              contentData={unreadFeedbacks}
+              renderItems={(item, index) => renderNotificationItem(item, index)}
+              renderFooter={() => <Link to="/admin/feedback">Xem tất cả</Link>}
+            />
+          )}
+        </div>
+
+        <div className="topnav__right-item">
+          <ThemeMenu />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default TopNav;
