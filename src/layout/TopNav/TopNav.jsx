@@ -22,23 +22,36 @@ const TopNav = ({ collapsed }) => {
     dispatch(fetch_feedbacks());
   }, [dispatch]);
 
+  // Lấy 5 feedbacks mới nhất (index cao nhất)
+  const displayedFeedbacks = feedbacks.slice(-5).reverse();
+
+  // Đếm số lượng feedback đã check (is_checked = true)
+  const checkedFeedbacksCount = feedbacks.filter(item => !item.is_checked).length;
+
   const renderNotificationItem = (item, index) => (
-    <div className="notification-item" key={index}>
-      <div className="notification-item__header">
-        <strong>{item.name}</strong>
+    <div
+      className={`notification-item${item.is_checked ? " notification-item--checked" : ""}`}
+      key={item.id || index}
+    >
+      <div className="notification-item__avatar">
+        <i className="bx bx-user"></i>
       </div>
-      <div className="notification-item__content">
-        {item.content}
-        {item.order && (
-          <div className="notification-item__order">
-            <span>Đơn hàng #{item.order.id}</span>
-          </div>
-        )}
+      <div className="notification-item__info">
+        <div className="notification-item__header">
+          <span className="notification-item__name">{item.name}</span>
+        </div>
+        <div className="notification-item__content">
+          {item.content}
+          {item.order && (
+            <div className="notification-item__order">
+              <span>Đơn hàng #{item.order.id}</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
-
-  const unreadFeedbacks = feedbacks.filter((item) => !item.is_checked);
+  
 
   return (
     <div className={`topnav ${collapsed ? "collapsed" : ""}`}>
@@ -65,10 +78,12 @@ const TopNav = ({ collapsed }) => {
             <Dropdown
               className=""
               icon="bx bx-bell"
-              badge={unreadFeedbacks.length.toString()}
-              contentData={unreadFeedbacks}
+              badge={checkedFeedbacksCount.toString()} // Số lượng đã check
+              contentData={displayedFeedbacks}
               renderItems={(item, index) => renderNotificationItem(item, index)}
-              renderFooter={() => <Link to="/admin/feedback">Xem tất cả</Link>}
+              renderFooter={() => (
+                <Link to="/admin/feedback">Xem tất cả ({feedbacks.length})</Link>
+              )}
             />
           )}
         </div>
