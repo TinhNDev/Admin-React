@@ -23,12 +23,11 @@ const Feedback = () => {
     dispatch(fetch_feedbacks());
   }, [dispatch]);
 
-  // Reset về trang 1 khi đổi số lượng/trường tìm kiếm
   useEffect(() => {
     setCurrentPage(1);
   }, [parPage, searchValue]);
 
-  // Search và sort trên FE (nếu muốn)
+  // Search & sort
   const getFilteredSortedFeedbacks = () => {
     let data = [...feedbacks];
 
@@ -41,7 +40,7 @@ const Feedback = () => {
       );
     }
 
-    // Sort
+    // Sort nếu có
     if (sortField) {
       data.sort((a, b) => {
         let valueA = a[sortField];
@@ -66,10 +65,13 @@ const Feedback = () => {
 
   const filteredSortedFeedbacks = getFilteredSortedFeedbacks();
 
-  // Phân trang trên FE
+  // ĐẢO NGƯỢC: feedback mới nhất lên đầu
+  const reversedFeedbacks = [...filteredSortedFeedbacks].reverse();
+
+  // PHÂN TRANG
   const startIndex = (currentPage - 1) * parPage;
   const endIndex = startIndex + parPage;
-  const displayedFeedbacks = filteredSortedFeedbacks.slice(startIndex, endIndex);
+  const displayedFeedbacks = reversedFeedbacks.slice(startIndex, endIndex);
 
   const handleViewDetail = (feedbackId) => {
     navigate(`/admin/feedback/${feedbackId}`);
@@ -160,14 +162,14 @@ const Feedback = () => {
                   onClick={() => handleViewDetail(fb._id)}
                 >
                   <td className="py-2 px-4 font-medium text-xl">
-                    {(currentPage - 1) * parPage + index + 1}
+                    {startIndex + index + 1}
                   </td>
                   <td className="py-2 px-4 font-medium text-xl">
                     {fb.name || "Khách hàng"}
                   </td>
                   <td className="py-2 px-4 font-medium text-xl truncate max-w-xs">
                     {fb.content}
-                    </td>
+                  </td>
                   <td className="py-2 px-4 font-medium text-xl">
                     <span
                       className={`px-2 py-1 rounded-full text-sm ${
@@ -195,7 +197,7 @@ const Feedback = () => {
         <Pagination
           pageNumber={currentPage}
           setPageNumber={setCurrentPage}
-          totalItem={filteredSortedFeedbacks.length} // <-- Dùng feedbacks.length (hoặc filtered nếu có search)
+          totalItem={filteredSortedFeedbacks.length}
           parPage={parPage}
           showItem={3}
         />
