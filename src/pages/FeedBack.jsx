@@ -5,6 +5,7 @@ import Pagination from "../components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { fetch_feedbacks } from "../store/reducers/feedbackReducer";
 import SortableHeader from "../components/SortableHeader";
+import Order from "./RestaurantDashboard/Order";
 
 const Feedback = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,6 @@ const Feedback = () => {
   const { feedbacks, loader, errorMessage } = useSelector(
     (state) => state.feedback
   );
-
   useEffect(() => {
     dispatch(fetch_feedbacks());
   }, [dispatch]);
@@ -34,9 +34,11 @@ const Feedback = () => {
     // Search
     if (searchValue) {
       data = data.filter(
-        fb =>
-          (fb.name && fb.name.toLowerCase().includes(searchValue.toLowerCase())) ||
-          (fb.content && fb.content.toLowerCase().includes(searchValue.toLowerCase()))
+        (fb) =>
+          (fb.name &&
+            fb.name.toLowerCase().includes(searchValue.toLowerCase())) ||
+          (fb.content &&
+            fb.content.toLowerCase().includes(searchValue.toLowerCase()))
       );
     }
 
@@ -73,8 +75,8 @@ const Feedback = () => {
   const endIndex = startIndex + parPage;
   const displayedFeedbacks = reversedFeedbacks.slice(startIndex, endIndex);
 
-  const handleViewDetail = (feedbackId) => {
-    navigate(`/admin/feedback/${feedbackId}`);
+  const handleViewDetail = (orderId) => {
+    navigate(`/admin/order/${orderId}`);
   };
 
   const handleSort = (field) => {
@@ -88,7 +90,9 @@ const Feedback = () => {
 
   return (
     <div className="px-2 lg:px-7 pt-5">
-      <h1 className="text-[#000000] font-semibold text-4xl mb-3">Danh sách Phản hồi</h1>
+      <h1 className="text-[#000000] font-semibold text-4xl mb-3">
+        Danh sách Phản hồi
+      </h1>
       <Search
         setParPage={setParPage}
         setSearchValue={setSearchValue}
@@ -159,7 +163,7 @@ const Feedback = () => {
                 <tr
                   key={fb._id}
                   className="bg-white border-b hover:bg-blue-100 cursor-pointer"
-                  onClick={() => handleViewDetail(fb._id)}
+                  onClick={() => handleViewDetail(fb.order.id)}
                 >
                   <td className="py-2 px-4 font-medium text-xl">
                     {startIndex + index + 1}
