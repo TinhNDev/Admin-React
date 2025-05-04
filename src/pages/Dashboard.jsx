@@ -3,7 +3,7 @@ import Chart from "react-apexcharts";
 import { get_allOrder } from "../store/reducers/orderReducer";
 import { get_allRestaurant } from "../store/reducers/restaurantReducer";
 import { get_allDriver } from "../store/reducers/driverReducer";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   calculateDailyRevenue,
@@ -27,18 +27,18 @@ const dailyVisitorsByMonth = {
   11: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 12
 };
 
-
 // Số lượng người truy cập theo tháng
-const monthlyVisitors = Array.from({ length: 12 }, () => Math.floor(Math.random() * 101));
-
-
+const monthlyVisitors = Array.from({ length: 12 }, () =>
+  Math.floor(Math.random() * 101)
+);
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-    const [currentPage] = useState(1);
-    const [parPage] = useState(5);
-    const [sortField] = useState("");
-    const [sortOrder] = useState("asc");
+  const [currentPage] = useState(1);
+  const [parPage] = useState(5);
+  const [sortField] = useState("");
+  const [sortOrder] = useState("asc");
 
   const themeReducer = useSelector((state) => state.ThemeReducer.mode);
   const { totalRestaurant = 0 } = useSelector(
@@ -116,7 +116,7 @@ const Dashboard = () => {
       bar: {
         borderRadius: 4,
         columnWidth: "65%",
-        distributed: false
+        distributed: false,
       },
     },
     states: {
@@ -195,18 +195,23 @@ const Dashboard = () => {
       y: [
         {
           formatter: function (val) {
-            return `${val?.toLocaleString() ?? '0'} VND`; // Xử lý undefined
+            return `${val?.toLocaleString() ?? "0"} VND`; // Xử lý undefined
           },
         },
         {
           formatter: function (val) {
-            return `${val?.toLocaleString() ?? '0'} lượt`; // Xử lý undefined
+            return `${val?.toLocaleString() ?? "0"} lượt`; // Xử lý undefined
           },
         },
       ],
       theme: themeReducer === "theme-mode-dark" ? "dark" : "light",
     },
   };
+
+  const handleOrderClick = (orderId) => {
+    navigate(`/admin/order/${orderId}`);
+  };
+
   // Chart options cho doanh thu theo ngày
   const dayChartOptions = {
     chart: {
@@ -288,7 +293,7 @@ const Dashboard = () => {
         },
       },
     ],
-    colors: ["#f59e0b", "#22c55e"], 
+    colors: ["#f59e0b", "#22c55e"],
     tooltip: {
       shared: true,
       intersect: false,
@@ -319,7 +324,7 @@ const Dashboard = () => {
       sortOrder,
     };
     dispatch(get_allRestaurant(obj));
-  },[parPage, currentPage, sortField, sortOrder, dispatch]);
+  }, [parPage, currentPage, sortField, sortOrder, dispatch]);
 
   useEffect(() => {
     const obj = {
@@ -329,7 +334,7 @@ const Dashboard = () => {
       sortOrder,
     };
     dispatch(get_allDriver(obj));
-  },[parPage, currentPage, sortField, sortOrder, dispatch]);
+  }, [parPage, currentPage, sortField, sortOrder, dispatch]);
 
   const topOrders = orders.slice(0, 5);
   const getRevenue = calculateDailyRevenue(orders);
@@ -349,7 +354,7 @@ const Dashboard = () => {
       color: "text-green-500",
       bgColor: "bg-green-100",
       borderColor: "border-green-200",
-      path: "/admin/restaurant", 
+      path: "/admin/restaurant",
     },
     {
       icon: "bx bx-user",
@@ -370,7 +375,7 @@ const Dashboard = () => {
       path: "/admin/order", // Thêm path
     },
   ];
-  
+
   const getStatusText = (status) => {
     switch (status) {
       case "PAID":
@@ -425,37 +430,13 @@ const Dashboard = () => {
           })}
         </div>
       </div>
-        {/* Status Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-          {statusCards.map((item, index) => {
-            // Thêm path cho các card cần chuyển trang
-            const cardWithLink = item.path ? (
-              <Link 
-                key={index}
-                to={item.path}
-                style={{ textDecoration: 'none' }}
-              >
-                <div
-                  className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
-                >
-                  {/* Nội dung card giữ nguyên */}
-                  <div className={`${item.bgColor} px-4 py-2`}>
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-700">{item.title}</h3>
-                      <i className={`${item.icon} text-xl ${item.color}`}></i>
-                    </div>
-                  </div>
-                  <div className="px-4 py-3">
-                    <div className="text-2xl font-bold text-gray-800">
-                      {item.count}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ) : (
-              // Card không có chức năng click
+      {/* Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        {statusCards.map((item, index) => {
+          // Thêm path cho các card cần chuyển trang
+          const cardWithLink = item.path ? (
+            <Link key={index} to={item.path} style={{ textDecoration: "none" }}>
               <div
-                key={index}
                 className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
               >
                 {/* Nội dung card giữ nguyên */}
@@ -471,12 +452,31 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-            );
+            </Link>
+          ) : (
+            // Card không có chức năng click
+            <div
+              key={index}
+              className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
+            >
+              {/* Nội dung card giữ nguyên */}
+              <div className={`${item.bgColor} px-4 py-2`}>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-gray-700">{item.title}</h3>
+                  <i className={`${item.icon} text-xl ${item.color}`}></i>
+                </div>
+              </div>
+              <div className="px-4 py-3">
+                <div className="text-2xl font-bold text-gray-800">
+                  {item.count}
+                </div>
+              </div>
+            </div>
+          );
 
-            return cardWithLink;
-          })}
-        </div>
-
+          return cardWithLink;
+        })}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Chart Section */}
@@ -501,7 +501,11 @@ const Dashboard = () => {
                   options={monthChartOptions}
                   series={[
                     { name: "Doanh thu", data: revenueValues, type: "column" },
-                    { name: "Số lượng truy cập", data: monthlyVisitors, type: "column" },
+                    {
+                      name: "Số lượng truy cập",
+                      data: monthlyVisitors,
+                      type: "column",
+                    },
                   ]}
                   type="bar"
                   height={320}
@@ -515,16 +519,16 @@ const Dashboard = () => {
             {view === "day" && selectedMonth !== null && (
               <div>
                 <div className="flex justify-between items-center mb-4">
-                <button
-                  className="px-4 py-2 rounded-md bg-gray-100 text-gray-700 text-sm font-medium transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 flex items-center"
-                  onClick={() => {
-                    setView("month");
-                    setSelectedMonth(null); 
-                  }}
-                >
-                  <i className="bx bx-arrow-back mr-1"></i>
-                  Quay lại
-                </button>
+                  <button
+                    className="px-4 py-2 rounded-md bg-gray-100 text-gray-700 text-sm font-medium transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 flex items-center"
+                    onClick={() => {
+                      setView("month");
+                      setSelectedMonth(null);
+                    }}
+                  >
+                    <i className="bx bx-arrow-back mr-1"></i>
+                    Quay lại
+                  </button>
                   <h4 className="text-lg font-medium text-gray-700">
                     {monthlyRevenueData[selectedMonth]?.month}{" "}
                     {monthlyRevenueData[selectedMonth]?.year}
@@ -604,9 +608,10 @@ const Dashboard = () => {
                     <tr
                       key={order.id || idx}
                       className="hover:bg-gray-50 transition-colors"
+                      onClick={() => handleOrderClick(order.id)}
                     >
                       <td className="px-5 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        #{idx + 1}
+                        #{order.id}
                       </td>
                       <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-700">
                         {order.receiver_name}
