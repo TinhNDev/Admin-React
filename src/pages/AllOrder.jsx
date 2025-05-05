@@ -5,7 +5,9 @@ import { get_allOrder } from "../store/reducers/orderReducer";
 import Pagination from "../components/Pagination";
 import SortableHeader from "../components/SortableHeader";
 import { useNavigate, Outlet } from "react-router-dom";
-
+import moment from "moment";
+import "moment/locale/vi";
+import { FiFilter, FiX } from "react-icons/fi";
 const AllOrder = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -15,7 +17,46 @@ const AllOrder = () => {
   const [parPage, setParPage] = useState(5);
   const [sortField, setSortField] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [filters, setFilters] = useState({
+    status: "",
+    startDate: "",
+    endDate: "",
+    paymentMethod: "",
+    searchTerm: "",
+  });
 
+  const statusOptions = [
+    { value: "", label: "Tất cả trạng thái" },
+    { value: "PAID", label: "Đơn hàng mới" },
+    { value: "PREPARING_ORDER", label: "Đang chuẩn bị" },
+    { value: "DELIVERING", label: "Đang giao" },
+    { value: "ORDER_CONFIRMED", label: "Đã hoàn thành" },
+    { value: "ORDER_CANCELED", label: "Đã hủy" },
+  ];
+
+  const paymentOptions = [
+    { value: "", label: "Tất cả PTTT" },
+    { value: "COD", label: "Tiền mặt" },
+    { value: "ZALOPAY", label: "ZaloPay" },
+  ];
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      status: "",
+      startDate: "",
+      endDate: "",
+      paymentMethod: "",
+      searchTerm: "",
+    });
+  };
   const { orders = [], totalOrders = 0 } = useSelector(
     (state) => state.order || {}
   );
@@ -70,6 +111,38 @@ const AllOrder = () => {
 
   const getSortedData = () => {
     let data = [...orders];
+
+    // Apply filters
+    if (filters.status) {
+      data = data.filter((order) => order.order_status === filters.status);
+    }
+
+    if (filters.paymentMethod) {
+      data = data.filter((order) => order.order_pay === filters.paymentMethod);
+    }
+
+    if (filters.startDate && filters.endDate) {
+      data = data.filter((order) => {
+        const orderDate = moment(order.order_date);
+        return orderDate.isBetween(
+          filters.startDate,
+          filters.endDate,
+          "day",
+          "[]"
+        );
+      });
+    }
+
+    if (filters.searchTerm) {
+      const searchLower = filters.searchTerm.toLowerCase();
+      data = data.filter(
+        (order) =>
+          order.receiver_name.toLowerCase().includes(searchLower) ||
+          order.phone_number.toString().includes(searchLower) ||
+          order.id.toString().includes(searchLower)
+      );
+    }
+
     if (sortField) {
       data.sort((a, b) => {
         let valueA = a[sortField];
@@ -96,6 +169,101 @@ const AllOrder = () => {
     currentPage * parPage
   );
 
+  const FilterSection = () => (
+    <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
+      <div className="flex flex-wrap gap-4 items-end">
+        {/* Search Input */}
+        <div className="flex-1 min-w-[200px]">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tìm kiếm
+          </label>
+          <input
+            type="text"
+            name="searchTerm"
+            value={filters.searchTerm}
+            onChange={handleFilterChange}
+            placeholder="Tìm theo tên, SĐT, mã đơn..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+        </div>
+
+        {/* Status Filter */}
+        <div className="w-40">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Trạng thái
+          </label>
+          <select
+            name="status"
+            value={filters.status}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Payment Method Filter */}
+        <div className="w-40">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phương thức TT
+          </label>
+          <select
+            name="paymentMethod"
+            value={filters.paymentMethod}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            {paymentOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Date Range Filters */}
+        <div className="w-40">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Từ ngày
+          </label>
+          <input
+            type="date"
+            name="startDate"
+            value={filters.startDate}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div className="w-40">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Đến ngày
+          </label>
+          <input
+            type="date"
+            name="endDate"
+            value={filters.endDate}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+        </div>
+
+        {/* Reset Button */}
+        <button
+          onClick={resetFilters}
+          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+        >
+          <FiX className="w-4 h-4" />
+          Xóa bộ lọc
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="px-2 lg:px-7 pt-5">
       <h1 className="text-4xl font-semibold text-gray-800 mb-4">
@@ -107,6 +275,7 @@ const AllOrder = () => {
         setSearchValue={setSearchValue}
         searchValue={searchValue}
       />
+      <FilterSection />
 
       <div className="overflow-x-auto mt-4 bg-white shadow rounded-lg">
         <table className="w-full text-left text-sm text-gray-700">
