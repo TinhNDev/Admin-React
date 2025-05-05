@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getNav } from '../navigation/index';
 import { BiLogOutCircle } from "react-icons/bi";
 import { useSelector, useDispatch } from "react-redux";
-import logo from '../data/avatar4.jpg';
+import logo from '../data/logoBee.png';
 import { IoSettings } from "react-icons/io5";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
 import toast from 'react-hot-toast';
 import { messageClear } from '../store/reducers/authReducer';
 import {  MdPolicy,MdHelpCenter  } from "react-icons/md";
@@ -52,15 +52,18 @@ const Sidebar = ({ showSidebar, setShowSidebar, collapsed, toggleCollapsed }) =>
     {/* Header */}
     <div className='h-[70px] flex justify-between items-center border-b border-gray-200 px-4'>
         {!collapsed && (
-            <Link  to={dashboardLink} className='w-[180px] h-[50px]'>
+            <Link  to={dashboardLink} className='w-[180px] h-[180px]'>
                 <img className='w-full h-full' src={logo} alt="" />
             </Link>
         )}
         <button 
             onClick={toggleCollapsed} 
-            className={`flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full w-8 h-8 ${collapsed ? 'ml-auto' : ''}`}
+            className={`flex items-center justify-center rounded-full w-8 h-8 ${collapsed ? 'ml-auto' : ''}`}
         >
-            {collapsed ? <MdKeyboardArrowRight size={20} /> : <MdKeyboardArrowLeft size={20} />}
+            {collapsed 
+                ? <FiArrowRightCircle size={24} color="black" /> 
+                : <FiArrowLeftCircle size={24} color="black" />
+            }
         </button>
     </div>
 
