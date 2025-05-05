@@ -1,39 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { get_coupons, messageClear } from "../store/reducers/couponReducer";
+import { get_coupons } from "../store/reducers/couponReducer";
 import { FiPlus } from "react-icons/fi";
 import moment from "moment";
 import Coupon from "./Coupon";
 import { checkCouponStatus } from "../utils/utils";
+import Search from "../components/Search";
+import Pagination from "../components/Pagination";
 
 const CouponList = () => {
   const dispatch = useDispatch();
-  const { coupons, loading } = useSelector((state) => state.coupon);
-  const [searchTerm, setSearchTerm] = useState("");
+  const { coupons, loader } = useSelector((state) => state.coupon);
+
+  // State cho modal, search, phân trang
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [parPage, setParPage] = useState(5);
 
-  // Load danh sách coupon khi khởi tạo
+  // Lấy danh sách coupon khi load trang
   useEffect(() => {
     dispatch(get_coupons());
   }, [dispatch]);
 
-  // Hàm reload danh sách
-  const reloadCoupons = () => {
-    dispatch(get_coupons());
-  };
-
-  // Xử lý đóng modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingCoupon(null);
-  };
-
-  // Xử lý khi click vào coupon để chỉnh sửa
-  const handleEdit = (coupon) => {
-    setEditingCoupon(coupon);
-    setIsModalOpen(true);
-  };
+  // Reset về trang 1 khi search hoặc đổi số lượng/trang
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, parPage]);
 
   // Lọc coupon theo search term
   const filteredCoupons = coupons?.filter(
@@ -42,30 +36,58 @@ const CouponList = () => {
       coupon.coupon_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Phân trang client
+  const totalCoupons = filteredCoupons.length;
+  const indexOfLastCoupon = currentPage * parPage;
+  const indexOfFirstCoupon = indexOfLastCoupon - parPage;
+  const currentCoupons = filteredCoupons.slice(indexOfFirstCoupon, indexOfLastCoupon);
+
+  // Xử lý modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingCoupon(null);
+  };
+
+  const handleEdit = (coupon) => {
+    setEditingCoupon(coupon);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="px-2 lg:px-7 pt-5">
       <h1 className="text-[#000000] font-semibold text-4xl mb-3">Mã Giảm Giá</h1>
-      
-      {/* Nút thêm coupon */}
-      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-all"
-        >
-          <FiPlus className="text-xl" />
-          <span>Thêm Mã Giảm Giá</span>
-        </button>
+
+      <div className='flex justify-between items-center'>
+          {/* Search + chọn số lượng/trang */}
+          <div className="mb-4 flex items-center gap-4">
+            <Search
+              setParPage={setParPage}
+              setSearchValue={setSearchTerm}
+              searchValue={searchTerm}
+              placeholder="Tìm kiếm mã giảm giá..."
+            />
+          </div>
+
+          {/* Nút thêm coupon */}
+          <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-all"
+            >
+              <FiPlus className="text-xl" />
+              <span>Thêm Mã Giảm Giá</span>
+            </button>
+          </div>
       </div>
 
-      {/* Bảng hiển thị danh sách */}
+      {/* Bảng hiển thị */}
       <div className="relative overflow-x-auto mt-5">
-        {loading ? (
+        {loader ? (
           <div className="text-center py-8">
             <div className="animate-spin h-8 w-8 border-4 border-orange-500 border-t-transparent rounded-full mx-auto"></div>
           </div>
         ) : (
           <table className="w-full text-base text-left text-gray-700 bg-white">
-            {/* Phần header của bảng */}
             <thead className="text-sm text-gray-700 uppercase bg-gray-100 border-b">
               <tr>
                 <th className="py-3 px-4">Tên mã</th>
@@ -76,16 +98,13 @@ const CouponList = () => {
                 <th className="py-3 px-4">Trạng thái</th>
               </tr>
             </thead>
-
-            {/* Phần body của bảng */}
             <tbody>
-              {filteredCoupons?.map((coupon) => (
+              {currentCoupons.map((coupon) => (
                 <tr
                   key={coupon.id}
                   className="bg-white border-b hover:bg-blue-200 cursor-pointer transition"
                   onClick={() => handleEdit(coupon)}
                 >
-                  {/* Các cột dữ liệu */}
                   <td className="py-2 px-4 font-medium text-xl">{coupon.coupon_name}</td>
                   <td className="py-2 px-4 font-medium text-xl">{coupon.coupon_code}</td>
                   <td className="py-2 px-4 font-medium text-xl">
@@ -112,6 +131,17 @@ const CouponList = () => {
         )}
       </div>
 
+      {/* Pagination */}
+      <div className="w-full flex justify-end mt-4 bottom-4 right-4">
+        <Pagination
+          pageNumber={currentPage}
+          setPageNumber={setCurrentPage}
+          totalItem={totalCoupons}
+          parPage={parPage}
+          showItem={3}
+        />
+      </div>
+
       {/* Modal thêm/chỉnh sửa coupon */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -131,10 +161,10 @@ const CouponList = () => {
               </div>
               <div className="p-6">
                 <Coupon
-                  onClose={handleCloseModal} // Chỉ đóng modal
+                  onClose={handleCloseModal}
                   onSuccess={() => {
-                    reloadCoupons(); // Gọi reload trước
-                    handleCloseModal(); // Đóng modal sau
+                    dispatch(get_coupons());
+                    handleCloseModal();
                   }}
                   editData={editingCoupon}
                   isEditing={!!editingCoupon}
