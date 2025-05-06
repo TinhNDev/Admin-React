@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./TopNav.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Thêm useNavigate
 import { useDispatch, useSelector } from "react-redux";
 import { fetch_feedbacks } from "../../store/reducers/feedbackReducer";
 import user_img from "../../data/admin.png";
@@ -14,6 +14,7 @@ const curr_user = {
 
 const TopNav = ({ collapsed }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Thêm hook navigate
   const { feedbacks, loader, errorMessage } = useSelector(
     (state) => state.feedback
   );
@@ -22,16 +23,21 @@ const TopNav = ({ collapsed }) => {
     dispatch(fetch_feedbacks());
   }, [dispatch]);
 
-  // Lấy 5 feedbacks mới nhất (index cao nhất)
   const displayedFeedbacks = feedbacks.slice(-5).reverse();
-
-  // Đếm số lượng feedback đã check (is_checked = true)
   const checkedFeedbacksCount = feedbacks.filter(item => !item.is_checked).length;
 
+  // Thêm handle click để chuyển trang
+  const handleNotificationClick = (feedbackId) => {
+    navigate(`/admin/feedback/${feedbackId}`);
+  };
+
+  // Sửa lại render function để thêm onClick
   const renderNotificationItem = (item, index) => (
     <div
       className={`notification-item${item.is_checked ? " notification-item--checked" : ""}`}
       key={item.id || index}
+      onClick={() => handleNotificationClick(item.id)} // Thêm sự kiện click
+      style={{ cursor: "pointer" }} // Thêm hiệu ứng cursor
     >
       <div className="notification-item__avatar">
         <i className="bx bx-user"></i>
@@ -51,7 +57,6 @@ const TopNav = ({ collapsed }) => {
       </div>
     </div>
   );
-  
 
   return (
     <div className={`topnav ${collapsed ? "collapsed" : ""}`}>
@@ -78,7 +83,7 @@ const TopNav = ({ collapsed }) => {
             <Dropdown
               className=""
               icon="bx bx-bell"
-              badge={checkedFeedbacksCount.toString()} 
+              badge={checkedFeedbacksCount.toString()}
               contentData={displayedFeedbacks}
               renderItems={(item, index) => renderNotificationItem(item, index)}
               renderFooter={() => (
