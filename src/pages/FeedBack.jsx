@@ -5,7 +5,6 @@ import Pagination from "../components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { fetch_feedbacks } from "../store/reducers/feedbackReducer";
 import SortableHeader from "../components/SortableHeader";
-import Order from "./RestaurantDashboard/Order";
 
 const Feedback = () => {
   const dispatch = useDispatch();
@@ -19,6 +18,7 @@ const Feedback = () => {
   const { feedbacks, loader, errorMessage } = useSelector(
     (state) => state.feedback
   );
+
   useEffect(() => {
     dispatch(fetch_feedbacks());
   }, [dispatch]);
@@ -29,7 +29,7 @@ const Feedback = () => {
 
   // Search & sort
   const getFilteredSortedFeedbacks = () => {
-    let data = [...feedbacks];
+    let data = Array.isArray(feedbacks) ? [...feedbacks] : [];
 
     // Search
     if (searchValue) {
@@ -75,8 +75,9 @@ const Feedback = () => {
   const endIndex = startIndex + parPage;
   const displayedFeedbacks = reversedFeedbacks.slice(startIndex, endIndex);
 
-  const handleViewDetail = (orderId) => {
-    navigate(`/admin/order/${orderId}`);
+  // Điều hướng đến trang chi tiết feedback sử dụng id
+  const handleViewDetail = (feedbackId) => {
+    navigate(`/admin/feedback/${feedbackId}`);
   };
 
   const handleSort = (field) => {
@@ -161,9 +162,9 @@ const Feedback = () => {
             ) : (
               displayedFeedbacks.map((fb, index) => (
                 <tr
-                  key={fb._id}
+                  key={fb.id}
                   className="bg-white border-b hover:bg-blue-100 cursor-pointer"
-                  onClick={() => handleViewDetail(fb.order.id)}
+                  onClick={() => handleViewDetail(fb.id)}
                 >
                   <td className="py-2 px-4 font-medium text-xl">
                     {startIndex + index + 1}

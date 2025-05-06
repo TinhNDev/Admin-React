@@ -9,6 +9,7 @@ const DetailRestaurant = lazy(() => import("../../pages/DetailRestaurant"));
 const DetailShipper = lazy(() => import("../../pages/DetailShipper"));
 const AllOrder = lazy(() => import("../../pages/AllOrder"));
 const OrderDetail = lazy(() => import("../../pages/OrderDetail"));
+const DetailFeedback = lazy(() => import("../../pages/DetailFeedBack"));
 export const adminRoutes = [
   {
     path: "admin/dashboard",
@@ -53,6 +54,11 @@ export const adminRoutes = [
   {
     path: "admin/order/:orderId",
     element: <OrderDetail />,
+    role: "admin",
+  },
+  {
+    path: "admin/feedback/:feedbackID",
+    element: <DetailFeedback />,
     role: "admin",
   },
 ];
