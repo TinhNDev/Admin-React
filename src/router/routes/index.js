@@ -1,4 +1,4 @@
-import {publicRoutes} from "./publicRoutes";
+
 import { privateRoutes } from "./privateRoutes";
 import ProtectRoutes from "./ProtectRoutes";
 import MainLayout from "../../layout/MainLayout";

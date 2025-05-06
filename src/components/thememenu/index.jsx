@@ -65,7 +65,6 @@ function ThemeMenu() {
 
     const closeMenu = () => menu_ref.current.classList.remove('active')
 
-    const [currMode, setCurrMode] = useState('light')
 
     const [currColor,setCurrColor] = useState('blue');
 
@@ -77,11 +76,6 @@ function ThemeMenu() {
         dispatch(ThemeAction.setColor(color.class))
     }
 
-    const setMode = (mode) => {
-        setCurrMode(mode.id)
-        localStorage.setItem('themeMode', mode.class)
-        dispatch(ThemeAction.setMode(mode.class))
-    }
     
     useEffect(() => {
 

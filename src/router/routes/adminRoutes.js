@@ -3,7 +3,6 @@ const Dashboard = lazy(() => import("../../pages/Dashboard"));
 const Restaurant = lazy(() => import("../../pages/Restaurant"));
 const Shipper = lazy(() => import("../../pages/Shipper"));
 const FeedBack = lazy(() => import("../../pages/FeedBack"));
-const Coupon = lazy(() => import("../../pages/Coupon"));
 const CouponList = lazy(() => import("../../pages/CouponList"));
 const DetailRestaurant = lazy(() => import("../../pages/DetailRestaurant"));
 const DetailShipper = lazy(() => import("../../pages/DetailShipper"));
