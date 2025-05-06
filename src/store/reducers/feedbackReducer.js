@@ -19,7 +19,6 @@ export const fetch_feedbacks = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
-      console.log(data);
       return data.metadata; // Assuming metadata contains the feedback list
     } catch (error) {
       return rejectWithValue(

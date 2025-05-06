@@ -2,18 +2,24 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetch_feedback_detail, clearFeedbackDetail } from "../store/reducers/feedbackReducer";
-import { HiUserCircle, HiBuildingStorefront, HiOutlineChatBubbleLeftRight as HiChat } from "react-icons/hi2";
+import {
+  HiUserCircle,
+  HiBuildingStorefront,
+  HiOutlineChatBubbleLeftRight as HiChat,
+  HiArrowLongRight
+} from "react-icons/hi2";
+import { FaRegEnvelope } from "react-icons/fa";
 import { RotatingLines } from "react-loader-spinner";
 
 const DetailFeedback = () => {
   const { feedbackID } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const { 
+
+  const {
     feedbackDetail,
     detailLoader,
-    detailErrorMessage 
+    detailErrorMessage
   } = useSelector((state) => state.feedback);
 
   useEffect(() => {
@@ -45,19 +51,19 @@ const DetailFeedback = () => {
     );
   }
 
-  if (!feedbackDetail?.metadata) return null;
+  if (!feedbackDetail || !feedbackDetail.feedback) return null;
 
-  const { 
+  const {
     feedback,
     customer_info,
     restaurant_info
-  } = feedbackDetail.metadata;
+  } = feedbackDetail;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
+    <div className="max-w-4xl mx-auto p-10 bg-white min-h-screen">
       {/* Header với nút quay lại */}
-      <div className="flex items-center justify-between mb-8">
-        <button 
+      <div className="flex items-center justify-between mb-6">
+        <button
           onClick={() => navigate(-1)}
           className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
         >
@@ -66,70 +72,80 @@ const DetailFeedback = () => {
           </svg>
           <span>Quay lại</span>
         </button>
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-3xl font-bold text-gray-900">
           Phản hồi #{feedback.feedback_id}
         </h1>
       </div>
 
       {/* Nội dung phản hồi */}
-      <div className="bg-white rounded-lg p-6 shadow-md mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <HiChat className="text-2xl text-blue-600" />
-          <h2 className="text-xl font-semibold">Nội dung phản hồi</h2>
+      <div className="bg-white rounded-lg p-8 shadow-lg mb-6">
+        <div className="flex items-center gap-4 mb-6">
+          <HiChat className="text-3xl text-blue-700" />
+          <h2 className="text-2xl font-semibold">Nội dung phản hồi</h2>
         </div>
-        <p className="text-gray-700 text-lg leading-relaxed border-l-4 border-blue-200 pl-4">
+        <p className="text-gray-800 text-xl leading-relaxed border-l-8 border-blue-400 pl-6">
           {feedback.content}
         </p>
       </div>
 
-      {/* Grid thông tin */}
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* Grid thông tin với icon mũi tên ở giữa */}
+      <div className="grid md:grid-cols-3 gap-8 items-center">
         {/* Thông tin người gửi */}
-        <div className="bg-white rounded-lg p-6 shadow-md">
-          <div className="flex items-center gap-3 mb-4 border-b pb-3">
-            <HiUserCircle className="text-3xl text-green-600" />
-            <h2 className="text-xl font-semibold">Thông tin người gửi</h2>
+        <div className="bg-white rounded-lg p-8 shadow-lg">
+          <div className="flex items-center gap-4 mb-6 border-b pb-4">
+            <HiUserCircle className="text-4xl text-green-700" />
+            <h2 className="text-2xl font-semibold">Thông tin người gửi</h2>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4 text-lg">
             <div>
-              <label className="text-gray-500">Tên:</label>
-              <p className="font-medium">{customer_info.customer_name}</p>
+              <label className="text-gray-600">Tên:</label>
+              <p className="font-semibold text-gray-900">{customer_info?.customer_name}</p>
             </div>
             <div>
-              <label className="text-gray-500">Số điện thoại:</label>
-              <p className="font-medium">{customer_info.customer_phone}</p>
+              <label className="text-gray-600">Số điện thoại:</label>
+              <p className="font-semibold text-gray-900">{customer_info?.customer_phone}</p>
             </div>
-            {customer_info.customer_image && (
+            {customer_info?.customer_image && (
               <div>
-                <label className="text-gray-500">Hình ảnh:</label>
-                <img 
-                  src={customer_info.customer_image} 
-                  alt="Avatar" 
-                  className="w-20 h-20 rounded-full object-cover mt-2"
+                <label className="text-gray-600">Hình ảnh:</label>
+                <img
+                  src={customer_info.customer_image}
+                  alt="Avatar"
+                  className="w-24 h-24 rounded-full object-cover mt-3"
                 />
               </div>
             )}
           </div>
         </div>
 
-        {/* Thông tin nhà hàng */}
-        <div className="bg-white rounded-lg p-6 shadow-md">
-          <div className="flex items-center gap-3 mb-4 border-b pb-3">
-            <HiBuildingStorefront className="text-3xl text-orange-600" />
-            <h2 className="text-xl font-semibold">Nhà hàng liên quan</h2>
+        {/* Icon lá thư trên mũi tên dài */}
+        <div className="hidden md:flex flex-col items-center justify-center relative min-h-[120px] w-full">
+          <FaRegEnvelope size={48} className="text-blue-600 mb-3 z-10 bg-white rounded-full p-2 shadow-lg" />
+          <div className="flex flex-col items-center w-full">
+            <div className="w-32 h-1 bg-blue-300 rounded-full" />
+            <HiArrowLongRight className="text-8xl text-blue-600 -mt-5" />
+            <div className="w-32 h-1 bg-blue-300 rounded-full -mt-5" />
           </div>
-          <div className="space-y-3">
+        </div>
+
+        {/* Thông tin nhà hàng */}
+        <div className="bg-white rounded-lg p-8 shadow-lg">
+          <div className="flex items-center gap-4 mb-6 border-b pb-4">
+            <HiBuildingStorefront className="text-4xl text-orange-700" />
+            <h2 className="text-2xl font-semibold">Nhà hàng liên quan</h2>
+          </div>
+          <div className="space-y-4 text-lg">
             <div>
-              <label className="text-gray-500">Tên nhà hàng:</label>
-              <p className="font-medium">{restaurant_info.restaurant_name}</p>
+              <label className="text-gray-600">Tên nhà hàng:</label>
+              <p className="font-semibold text-gray-900">{restaurant_info?.restaurant_name}</p>
             </div>
             <div>
-              <label className="text-gray-500">Địa chỉ:</label>
-              <p className="font-medium">{restaurant_info.restaurant_address}</p>
+              <label className="text-gray-600">Địa chỉ:</label>
+              <p className="font-semibold text-gray-900">{restaurant_info?.restaurant_address}</p>
             </div>
             <div>
-              <label className="text-gray-500">Liên hệ:</label>
-              <p className="font-medium">{restaurant_info.restaurant_phone}</p>
+              <label className="text-gray-600">Liên hệ:</label>
+              <p className="font-semibold text-gray-900">{restaurant_info?.restaurant_phone}</p>
             </div>
           </div>
         </div>
