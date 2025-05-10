@@ -59,6 +59,59 @@ const Dashboard = () => {
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [dailyRevenueData, setDailyRevenueData] = useState([]);
 
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  // Tìm dữ liệu tháng này và tháng trước
+  const thisMonthData = monthlyRevenueData.find(
+    (item) => item.month === now.toLocaleString("vi-VN", { month: "long" }) && item.year === currentYear
+  );
+
+  const prevMonthDate = new Date(currentYear, currentMonth - 1, 1);
+  const prevMonthData = monthlyRevenueData.find(
+    (item) => item.month === prevMonthDate.toLocaleString("vi-VN", { month: "long" }) && item.year === prevMonthDate.getFullYear()
+  );
+
+// Giá trị doanh thu
+const revenueThisMonth = thisMonthData?.revenue || 0;
+const revenuePrevMonth = prevMonthData?.revenue || 0;
+
+// Lấy ngày hôm nay và hôm qua theo định dạng YYYY-MM-DD
+const today = new Date();
+const yesterday = new Date(today);
+yesterday.setDate(today.getDate() - 1);
+
+const todayStr = today.toISOString().split("T")[0];
+const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+// Lọc đơn hàng hôm nay
+const ordersToday = orders.filter(order => {
+  const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
+  return orderDate === todayStr;
+});
+
+// Lọc đơn hàng hôm qua
+const ordersYesterday = orders.filter(order => {
+  const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
+  return orderDate === yesterdayStr;
+});
+
+// Tính tổng doanh thu hôm nay và hôm qua
+const revenueToday = ordersToday.reduce(
+  (sum, order) => sum + parseFloat(order.price || 0),
+  0
+);
+
+const revenueYesterday = ordersYesterday.reduce(
+  (sum, order) => sum + parseFloat(order.price || 0),
+  0
+);
+
+
+
+
+
   useEffect(() => {
     if (selectedMonth !== null) {
       const selectedMonthData = monthlyRevenueData[selectedMonth];
@@ -422,61 +475,119 @@ const Dashboard = () => {
     <div className="p-6 bg-gray-50">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-4xl font-bold text-gray-800">Dashboard</h2>
-        <div className="text-sm text-gray-500">
-          {new Date().toLocaleDateString("vi-VN", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })}
-        </div>
+          <div className="flex items-center justify-end text-base font-semibold text-gray-800 bg-blue-50 rounded px-3 py-1 shadow w-fit ml-auto">
+            {/* Icon lịch */}
+            <svg className="w-5 h-5 text-blue-400 mr-2" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+            {/* Ngày tháng */}
+            {new Date().toLocaleDateString("vi-VN", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </div>
       </div>
       {/* Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        {statusCards.map((item, index) => {
-          // Thêm path cho các card cần chuyển trang
-          const cardWithLink = item.path ? (
-            <Link key={index} to={item.path} style={{ textDecoration: "none" }}>
-              <div
-                className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
-              >
-                {/* Nội dung card giữ nguyên */}
-                <div className={`${item.bgColor} px-4 py-2`}>
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-700">{item.title}</h3>
-                    <i className={`${item.icon} text-xl ${item.color}`}></i>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        {/* Cột trái: 4 status card (2x2) */}
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-2 gap-5 h-full">
+            {statusCards.map((item, index) => {
+              const cardWithLink = item.path ? (
+                <Link key={index} to={item.path} style={{ textDecoration: "none" }}>
+                  <div
+                    className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md h-full`}
+                  >
+                    <div className={`${item.bgColor} px-4 py-2`}>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium text-gray-700">{item.title}</h3>
+                        <i className={`${item.icon} text-xl ${item.color}`}></i>
+                      </div>
+                    </div>
+                    <div className="px-4 py-3">
+                      <div className="text-2xl font-bold text-gray-800">
+                        {item.count}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ) : (
+                <div
+                  key={index}
+                  className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md h-full`}
+                >
+                  <div className={`${item.bgColor} px-4 py-2`}>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-gray-700">{item.title}</h3>
+                      <i className={`${item.icon} text-xl ${item.color}`}></i>
+                    </div>
+                  </div>
+                  <div className="px-4 py-3">
+                    <div className="text-2xl font-bold text-gray-800">
+                      {item.count}
+                    </div>
                   </div>
                 </div>
-                <div className="px-4 py-3">
-                  <div className="text-2xl font-bold text-gray-800">
-                    {item.count}
-                  </div>
-                </div>
+              );
+              return cardWithLink;
+            })}
+          </div>
+        </div>
+        {/* Cột phải: 2 card doanh thu */}
+       <div className="flex gap-6">
+          {/* Card doanh thu tháng trước & tháng này */}
+          <div className="bg-white rounded-lg shadow border flex-1 flex flex-col items-start p-5">
+            <div className="flex items-center mb-4">
+              <div className="bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
-            </Link>
-          ) : (
-            // Card không có chức năng click
-            <div
-              key={index}
-              className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md`}
-            >
-              {/* Nội dung card giữ nguyên */}
-              <div className={`${item.bgColor} px-4 py-2`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-gray-700">{item.title}</h3>
-                  <i className={`${item.icon} text-xl ${item.color}`}></i>
-                </div>
-              </div>
-              <div className="px-4 py-3">
-                <div className="text-2xl font-bold text-gray-800">
-                  {item.count}
-                </div>
+              <div>
+                <div className="font-medium text-gray-700 text-lg">Doanh thu tháng</div>
               </div>
             </div>
-          );
+            <div className="flex flex-col w-full gap-2">
+              <div className="flex justify-between items-center w-full">
+                <span className="text-gray-500 text-base font-semibold">{`${now.toLocaleString("vi-VN", { month: "long" })}/${currentYear}`}</span>
+                <span className="text-3xl font-extrabold text-green-600">{revenueThisMonth.toLocaleString("vi-VN")} ₫</span>
+              </div>
+              <div className="flex justify-between items-center w-full">
+                <span className="text-gray-500 text-base font-semibold">{`${prevMonthDate.toLocaleString("vi-VN", { month: "long" })}/${prevMonthDate.getFullYear()}`}</span>
+                <span className="text-2xl font-bold text-gray-700">{revenuePrevMonth.toLocaleString("vi-VN")} ₫</span>
+              </div>
+            </div>
+          </div>
+          {/* Card doanh thu hôm qua & hôm nay */}
+          <div className="bg-white rounded-lg shadow border flex-1 flex flex-col items-start p-5">
+            <div className="flex items-center mb-4">
+              <div className="bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                <svg className="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <div className="font-medium text-gray-700 text-lg">Doanh thu ngày</div>
+              </div>
+            </div>
+            <div className="flex flex-col w-full gap-2">
+              <div className="flex justify-between items-center w-full">
+                <span className="text-gray-500 text-base font-semibold">Hôm nay</span>
+                <span className="text-3xl font-extrabold text-blue-600">{revenueToday.toLocaleString("vi-VN")} ₫</span>
+              </div>
+              <div className="flex justify-between items-center w-full">
+                <span className="text-gray-500 text-base font-semibold">Hôm qua</span>
+                <span className="text-2xl font-bold text-gray-700">{revenueYesterday.toLocaleString("vi-VN")} ₫</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          return cardWithLink;
-        })}
       </div>
+
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Chart Section */}
