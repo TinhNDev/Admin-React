@@ -490,102 +490,102 @@ const revenueYesterday = ordersYesterday.reduce(
           </div>
       </div>
       {/* Status Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        {/* Cột trái: 4 status card (2x2) */}
-        <div className="lg:col-span-2">
-          <div className="grid grid-cols-2 gap-5 h-full">
-            {statusCards.map((item, index) => {
-              const cardWithLink = item.path ? (
-                <Link key={index} to={item.path} style={{ textDecoration: "none" }}>
-                  <div
-                    className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md h-full`}
-                  >
-                    <div className={`${item.bgColor} px-4 py-2`}>
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-gray-700">{item.title}</h3>
-                        <i className={`${item.icon} text-xl ${item.color}`}></i>
-                      </div>
-                    </div>
-                    <div className="px-4 py-3">
-                      <div className="text-2xl font-bold text-gray-800">
-                        {item.count}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ) : (
-                <div
-                  key={index}
-                  className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md h-full`}
-                >
-                  <div className={`${item.bgColor} px-4 py-2`}>
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-700">{item.title}</h3>
-                      <i className={`${item.icon} text-xl ${item.color}`}></i>
-                    </div>
-                  </div>
-                  <div className="px-4 py-3">
-                    <div className="text-2xl font-bold text-gray-800">
-                      {item.count}
-                    </div>
-                  </div>
+     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+  {/* Cột trái: 4 status card dọc (chiếm 1/3 màn hình) */}
+  <div className="lg:col-span-1">
+    <div className="grid grid-cols-2 gap-5 h-full">
+      {statusCards.map((item, index) => {
+        const cardWithLink = item.path ? (
+          <Link key={index} to={item.path} style={{ textDecoration: "none" }}>
+            <div
+              className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md h-full`}
+            >
+              <div className={`${item.bgColor} px-4 py-2`}>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-gray-700">{item.title}</h3>
+                  <i className={`${item.icon} text-xl ${item.color}`}></i>
                 </div>
-              );
-              return cardWithLink;
-            })}
+              </div>
+              <div className="px-4 py-3">
+                <div className="text-2xl font-bold text-gray-800">
+                  {item.count}
+                </div>
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <div
+            key={index}
+            className={`bg-white rounded-lg shadow-sm border ${item.borderColor} overflow-hidden transition-all duration-300 hover:shadow-md h-full`}
+          >
+            <div className={`${item.bgColor} px-4 py-2`}>
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-700">{item.title}</h3>
+                <i className={`${item.icon} text-xl ${item.color}`}></i>
+              </div>
+            </div>
+            <div className="px-4 py-3">
+              <div className="text-2xl font-bold text-gray-800">
+                {item.count}
+              </div>
+            </div>
           </div>
+        );
+        return cardWithLink;
+      })}
+    </div>
+  </div>
+  {/* Cột phải: 2 card doanh thu (chiếm 2/3 màn hình) */}
+  <div className="lg:col-span-2 flex gap-6">
+    {/* Card doanh thu tháng trước & tháng này */}
+    <div className="bg-white rounded-lg shadow border flex-1 flex flex-col items-start p-5">
+      <div className="flex items-center mb-4">
+        <div className="bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+          <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
-        {/* Cột phải: 2 card doanh thu */}
-       <div className="flex gap-6">
-          {/* Card doanh thu tháng trước & tháng này */}
-          <div className="bg-white rounded-lg shadow border flex-1 flex flex-col items-start p-5">
-            <div className="flex items-center mb-4">
-              <div className="bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
-                <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <div className="font-medium text-gray-700 text-lg">Doanh thu tháng</div>
-              </div>
-            </div>
-            <div className="flex flex-col w-full gap-2">
-              <div className="flex justify-between items-center w-full">
-                <span className="text-gray-500 text-base font-semibold">{`${now.toLocaleString("vi-VN", { month: "long" })}/${currentYear}`}</span>
-                <span className="text-3xl font-extrabold text-green-600">{revenueThisMonth.toLocaleString("vi-VN")} ₫</span>
-              </div>
-              <div className="flex justify-between items-center w-full">
-                <span className="text-gray-500 text-base font-semibold">{`${prevMonthDate.toLocaleString("vi-VN", { month: "long" })}/${prevMonthDate.getFullYear()}`}</span>
-                <span className="text-2xl font-bold text-gray-700">{revenuePrevMonth.toLocaleString("vi-VN")} ₫</span>
-              </div>
-            </div>
-          </div>
-          {/* Card doanh thu hôm qua & hôm nay */}
-          <div className="bg-white rounded-lg shadow border flex-1 flex flex-col items-start p-5">
-            <div className="flex items-center mb-4">
-              <div className="bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
-                <svg className="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <div className="font-medium text-gray-700 text-lg">Doanh thu ngày</div>
-              </div>
-            </div>
-            <div className="flex flex-col w-full gap-2">
-              <div className="flex justify-between items-center w-full">
-                <span className="text-gray-500 text-base font-semibold">Hôm nay</span>
-                <span className="text-3xl font-extrabold text-blue-600">{revenueToday.toLocaleString("vi-VN")} ₫</span>
-              </div>
-              <div className="flex justify-between items-center w-full">
-                <span className="text-gray-500 text-base font-semibold">Hôm qua</span>
-                <span className="text-2xl font-bold text-gray-700">{revenueYesterday.toLocaleString("vi-VN")} ₫</span>
-              </div>
-            </div>
-          </div>
+        <div>
+          <div className="font-medium text-gray-700 text-lg">Doanh thu tháng</div>
         </div>
-
       </div>
+      <div className="flex flex-col w-full gap-2">
+        <div className="flex justify-between items-center w-full">
+          <span className="text-gray-500 text-base font-semibold">{`${now.toLocaleString("vi-VN", { month: "long" })}/${currentYear}`}</span>
+          <span className="text-3xl font-extrabold text-green-600">{revenueThisMonth.toLocaleString("vi-VN")} ₫</span>
+        </div>
+        <div className="flex justify-between items-center w-full">
+          <span className="text-gray-500 text-base font-semibold">{`${prevMonthDate.toLocaleString("vi-VN", { month: "long" })}/${prevMonthDate.getFullYear()}`}</span>
+          <span className="text-2xl font-bold text-gray-700">{revenuePrevMonth.toLocaleString("vi-VN")} ₫</span>
+        </div>
+      </div>
+    </div>
+    {/* Card doanh thu hôm qua & hôm nay */}
+    <div className="bg-white rounded-lg shadow border flex-1 flex flex-col items-start p-5">
+      <div className="flex items-center mb-4">
+        <div className="bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+          <svg className="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <div className="font-medium text-gray-700 text-lg">Doanh thu ngày</div>
+        </div>
+      </div>
+      <div className="flex flex-col w-full gap-2">
+        <div className="flex justify-between items-center w-full">
+          <span className="text-gray-500 text-base font-semibold">Hôm nay</span>
+          <span className="text-3xl font-extrabold text-blue-600">{revenueToday.toLocaleString("vi-VN")} ₫</span>
+        </div>
+        <div className="flex justify-between items-center w-full">
+          <span className="text-gray-500 text-base font-semibold">Hôm qua</span>
+          <span className="text-2xl font-bold text-gray-700">{revenueYesterday.toLocaleString("vi-VN")} ₫</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 
