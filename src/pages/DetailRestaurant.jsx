@@ -9,12 +9,15 @@ import {
   get_restaurant_products,
   get_restaurant_reviews,
   get_orderRes,
+  get_coupons_by_restaurant,
 } from "../store/reducers/restaurantReducer";
 import toast from "react-hot-toast";
 import { FiArrowLeft } from "react-icons/fi";
 import ProductList from "./ProductList";
 import ReviewList from "./ReviewList";
 import OrderList from "./OrderList";
+import CouponResList from "./CouponResList";
+
 const DetailRestaurant = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,6 +26,7 @@ const DetailRestaurant = () => {
     products,
     order,
     reviews,
+    coupons,
     successMessage,
     errorMessage,
     loader,
@@ -59,6 +63,11 @@ const DetailRestaurant = () => {
       })
     );
   }, [dispatch]);
+  useEffect(() => {
+    if (activeTab === "coupons" && restaurantId) {
+      dispatch(get_coupons_by_restaurant({ restaurant_id: restaurantId }));
+    }
+  }, [activeTab, restaurantId, dispatch]);
   const [status, setStatus] = useState("");
 
   // Hiển thị thông báo khi có successMessage hoặc errorMessage
@@ -163,6 +172,16 @@ const DetailRestaurant = () => {
             }`}
           >
             Đơn hàng
+          </button>
+          <button
+            onClick={() => setActiveTab("coupons")}
+            className={`px-4 py-2 ${
+              activeTab === "coupons"
+                ? "border-b-2 border-orange-500 text-orange-600"
+                : "text-gray-600"
+            }`}
+          >
+            Mã giảm giá
           </button>
         </div>
         {activeTab === "info" ? (
@@ -299,7 +318,7 @@ const DetailRestaurant = () => {
               <ProductList products={products} />
             )}
           </div>
-        ) : (
+        ) : activeTab === "orders" ? (
           <div className="bg-gray-50 rounded-lg p-4">
             {loader ? (
               <div className="flex justify-center py-8">
@@ -309,7 +328,11 @@ const DetailRestaurant = () => {
               <OrderList orders={order} userType="restaurant" />
             )}
           </div>
-        )}
+        ) : activeTab === "coupons" ? (
+          <div className="bg-gray-50 rounded-lg p-4">
+            <CouponResList coupons={coupons} />
+          </div>
+        ) : null}
       </div>
     </div>
   );

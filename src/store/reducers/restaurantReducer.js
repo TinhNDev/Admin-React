@@ -241,6 +241,37 @@ export const get_restaurant_reviews = createAsyncThunk(
     }
   }
 );
+// Lấy coupon của nhà hàng
+export const get_coupons_by_restaurant = createAsyncThunk(
+  "restaurant/get_coupons_by_restaurant",
+  async ({ restaurant_id }, { rejectWithValue, fulfillWithValue, getState }) => {
+    try {
+      const token = localStorage.getItem("userToken");
+      const adminId =
+        getState().auth.userInfo?.user_id || localStorage.getItem("adminId");
+
+      if (!token || !adminId) {
+        throw new Error("Thiếu thông tin xác thực (token hoặc adminId).");
+      }
+
+      const { data } = await api.get(
+        `/coupon/${restaurant_id}/restaurant`,
+        {
+          headers: {
+            Authorization: token,
+            "x-client-id": adminId,
+          },
+        }
+      );
+      return fulfillWithValue(data.metadata);
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Lỗi từ server (500). Kiểm tra lại API."
+      );
+    }
+  }
+);
 // Restaurant Reducer
 const restaurantReducer = createSlice({
   name: "restaurant",
@@ -255,6 +286,7 @@ const restaurantReducer = createSlice({
     restaurant: null, // Lưu chi tiết một nhà hàng
     totalRestaurant: 0,
     totalOrder: 0,
+    coupons: [], // Thêm coupons vào state
   },
   reducers: {
     messageClear: (state) => {
@@ -373,6 +405,20 @@ const restaurantReducer = createSlice({
         state.loader = false;
         state.errorMessage = payload;
         state.reviews = [];
+      })
+      // Lấy coupon của nhà hàng
+      .addCase(get_coupons_by_restaurant.pending, (state) => {
+        state.loader = true;
+        state.errorMessage = "";
+      })
+      .addCase(get_coupons_by_restaurant.fulfilled, (state, { payload }) => {
+        state.loader = false;
+        state.coupons = payload || [];
+      })
+      .addCase(get_coupons_by_restaurant.rejected, (state, { payload }) => {
+        state.loader = false;
+        state.errorMessage = payload || "Không thể lấy danh sách mã giảm giá.";
+        state.coupons = [];
       });
   },
 });
