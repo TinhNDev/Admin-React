@@ -23,6 +23,20 @@ export const get_admin_dashboard_data = createAsyncThunk(
   }
 );
 
+
+export const fetchVisitorData = createAsyncThunk(
+  "dashboard/fetchVisitorData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/traffic/total");
+      return response.data.metadata;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
 export const dashboardReducer = createSlice({
   name: 'dashboard',
   initialState: {
@@ -37,6 +51,18 @@ export const dashboardReducer = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchVisitorData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchVisitorData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.rawVisitorData = action.payload;
+      })
+      .addCase(fetchVisitorData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(get_admin_dashboard_data.fulfilled, (state, { payload }) => {
         if (payload) {
           state.totalProduct = payload.totalProduct ;

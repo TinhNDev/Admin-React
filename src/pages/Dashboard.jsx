@@ -11,6 +11,8 @@ import {
   getMonthlyRevenueArray,
 } from "../utils/utils";
 
+import { fetchVisitorData } from "../store/reducers/dashboardReducer";
+
 // Số lượng người truy cập từng ngày trong từng tháng
 const dailyVisitorsByMonth = {
   0: Array.from({ length: 31 }, () => Math.floor(Math.random() * 101)), // Tháng 1
@@ -36,6 +38,8 @@ const Dashboard = () => {
   const [sortOrder] = useState("asc");
 
   const themeReducer = useSelector((state) => state.ThemeReducer.mode);
+  const { visitorData } = useSelector((state) => state.dashboard);
+
   const { totalRestaurant = 0 } = useSelector(
     (state) => state.restaurant || {}
   );
@@ -44,6 +48,8 @@ const Dashboard = () => {
     (state) => state.order || {}
   );
   const monthlyRevenueData = getMonthlyRevenueArray(orders);
+
+  
 
   // Extract data for chart
   const monthLabels = monthlyRevenueData.map((item) => item.shortMonth);
@@ -106,40 +112,26 @@ const Dashboard = () => {
     (sum, order) => sum + parseFloat(order.price || 0),
     0
   );
-  const [monthlyVisitors, setMonthlyVisitors] = useState(new Array(12).fill(0));
-
-  useEffect(() => {
-    async function fetchVisitorData() {
-      try {
-        const res = await fetch("http://localhost:8080/v1/api/traffic/total", {
-          method: "GET",
-          headers: {
-            "x-api-key": "123",
-          },
-        });
-        const json = await res.json();
-
-        if (json.status === 200 && json.metadata) {
-          const visitorsArray = new Array(12).fill(0);
-          for (const [monthStr, count] of Object.entries(json.metadata)) {
-            const parts = monthStr.split("-");
-            if (parts.length === 2) {
-              const monthIndex = parseInt(parts[1], 10) - 1;
-              if (monthIndex >= 0 && monthIndex < 12) {
-                visitorsArray[monthIndex] = count;
-              }
-            }
+  const monthlyVisitors = React.useMemo(() => {
+    const arr = new Array(12).fill(0);
+    if (visitorData) {
+      for (const [monthStr, count] of Object.entries(visitorData)) {
+        const parts = monthStr.split("-");
+        if (parts.length === 2) {
+          const monthIndex = parseInt(parts[1], 10) - 1;
+          if (monthIndex >= 0 && monthIndex < 12) {
+            arr[monthIndex] = count;
           }
-          console.log("====", visitorsArray);
-          setMonthlyVisitors(visitorsArray);
         }
-      } catch (error) {
-        console.error("Lấy dữ liệu visitor lỗi:", error);
       }
     }
+    return arr;
+  }, [visitorData]);
 
-    fetchVisitorData();
-  }, []);
+  // Gọi API lấy visitorData qua Redux khi mount
+  useEffect(() => {
+    dispatch(fetchVisitorData());
+  }, [dispatch]);
 
   useEffect(() => {
     if (selectedMonth !== null) {
