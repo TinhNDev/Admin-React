@@ -38,7 +38,7 @@ const Dashboard = () => {
   const [sortOrder] = useState("asc");
 
   const themeReducer = useSelector((state) => state.ThemeReducer.mode);
-  const { visitorData } = useSelector((state) => state.dashboard);
+  const { rawVisitorData } = useSelector((state) => state.dashboard);
 
   const { totalRestaurant = 0 } = useSelector(
     (state) => state.restaurant || {}
@@ -52,8 +52,16 @@ const Dashboard = () => {
   
 
   // Extract data for chart
-  const monthLabels = monthlyRevenueData.map((item) => item.shortMonth);
-  const revenueValues = monthlyRevenueData.map((item) => item.revenue);
+  const monthLabels = [
+    "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", 
+    "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
+    "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+  ];
+    const revenueValues = new Array(12).fill(0);
+  monthlyRevenueData.forEach((item) => {
+    const monthIndex = new Date(`${item.month} 1, ${item.year}`).getMonth();
+    revenueValues[monthIndex] = item.revenue;
+  });
 
   // Biểu đồ doanh thu
   const [view, setView] = useState("month");
@@ -112,23 +120,24 @@ const Dashboard = () => {
     (sum, order) => sum + parseFloat(order.price || 0),
     0
   );
-  const monthlyVisitors = React.useMemo(() => {
-    const arr = new Array(12).fill(0);
-    if (visitorData) {
-      for (const [monthStr, count] of Object.entries(visitorData)) {
-        const parts = monthStr.split("-");
-        if (parts.length === 2) {
-          const monthIndex = parseInt(parts[1], 10) - 1;
-          if (monthIndex >= 0 && monthIndex < 12) {
-            arr[monthIndex] = count;
-          }
+const monthlyVisitors = React.useMemo(() => {
+  const arr = new Array(12).fill(0);
+  if (rawVisitorData) {
+    for (const [monthStr, count] of Object.entries(rawVisitorData)) {
+      const parts = monthStr.split("-");
+      if (parts.length === 2) {
+        const monthIndex = parseInt(parts[1], 10) - 1;
+        if (monthIndex >= 0 && monthIndex < 12) {
+          arr[monthIndex] = count;
         }
       }
     }
-    return arr;
-  }, [visitorData]);
+  }
+  return arr;
+}, [rawVisitorData]);
 
-  // Gọi API lấy visitorData qua Redux khi mount
+
+  // Gọi API lấy rawVisitorData qua Redux khi mount
   useEffect(() => {
     dispatch(fetchVisitorData());
   }, [dispatch]);
@@ -168,6 +177,14 @@ const Dashboard = () => {
       }
     }
   }, [selectedMonth, monthlyRevenueData, orders]);
+
+  console.log("Dữ liệu visitor từ API:", rawVisitorData);
+// Kết quả ví dụ: { "2025-05": 100, "2025-10": 200 }
+  console.log("Mảng monthlyVisitors sau xử lý:", monthlyVisitors);
+// Kết quả mong đợi: [0, 0, 0, 0, 100, 0, 0, 0, 0, 200, 0, 0]
+// Chỉ số 4 (tháng 5) = 100, chỉ số 9 (tháng 10) = 200
+
+
 
   // Chart options cho doanh thu theo tháng
   const monthChartOptions = {
