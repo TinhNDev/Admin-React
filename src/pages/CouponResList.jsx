@@ -11,6 +11,14 @@ const formatDate = (dateString) => {
     minute: "2-digit",
   });
 };
+const getCouponTypeLabel = (type) => {
+  const typeMap = {
+    ONE_TIME: "Sử dụng một lần",
+    ONE_TIME_EVERY_DAY: "Sử dụng mỗi ngày một lần"
+  };
+  return typeMap[type] || type;
+};
+
 
 const CouponResList = ({ coupons }) => {
   return (
@@ -62,7 +70,7 @@ const CouponResList = ({ coupons }) => {
                     <span className="text-gray-400">Tắt</span>
                   )}
                 </td>
-                <td className="py-2 px-4 text-center">{coupon.coupon_type}</td>
+                <td className="py-2 px-4 text-center">{getCouponTypeLabel(coupon.coupon_type)}</td>
               </tr>
             ))
           ) : (

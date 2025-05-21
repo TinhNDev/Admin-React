@@ -30,6 +30,21 @@ const OrderList = ({ orders, userType = "restaurant" }) => {
     return colorMap[status] || "bg-gray-100 text-gray-800";
   };
 
+    const getStatusLabel = (status) => {
+    const labelMap = {
+      PAID: "Đã thanh toán",
+      UNPAID: "Chưa thanh toán",
+      PREPARING_ORDER: "Đang chuẩn bị đơn hàng",
+      ORDER_CANCELED: "Đã hủy đơn hàng",
+      DELIVERING: "Đang giao hàng",
+      GIVED_ORDER: "Đã giao hàng",
+      ORDER_RECEIVED: "Đã nhận hàng",
+      ORDER_CONFIRMED: "Đã xác nhận đơn hàng",
+    };
+    return labelMap[status] || status;
+  };
+
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -78,7 +93,7 @@ const OrderList = ({ orders, userType = "restaurant" }) => {
             </td>
             <td className="py-2 px-4 font-medium text-base">
               <span className={getStatusBadgeStyle(order.order_status)}>
-                {order.order_status}
+                {getStatusLabel(order.order_status)}
               </span>
             </td>
             <td className="py-2 px-4 font-medium text-base">
@@ -136,7 +151,7 @@ const OrderList = ({ orders, userType = "restaurant" }) => {
             </td>
             <td className="py-2 px-4 font-medium text-base">
               <span className={getStatusBadgeStyle(order.order_status)}>
-                {order.order_status}
+                {getStatusLabel(order.order_status)}
               </span>
             </td>
             <td className="py-2 px-4 font-medium text-base">
