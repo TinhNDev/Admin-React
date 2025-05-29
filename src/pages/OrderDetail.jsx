@@ -447,15 +447,15 @@ const OrderDetail = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <span className="font-medium text-orange-600 bg-orange-50 px-3 py-1 rounded border border-orange-100">
-                            {orderDetail.coupon.code}
+                            {orderDetail.coupon.code ? orderDetail.coupon.code : "Không có mã"}
                           </span>
                         </div>
                         <div className="text-right">
                           <span className="font-medium">
                             {orderDetail.coupon.discount_type === "PERCENTAGE"
-                              ? `${orderDetail.coupon.discount_value}%`
+                              ? `${ orderDetail.coupon.discount_value ? orderDetail.coupon.discount_value : 0}%`
                               : formatCurrency(
-                                  parseFloat(orderDetail.coupon.discount_value)
+                                  parseFloat(orderDetail.coupon.discount_value ? orderDetail.coupon.discount_value : 0)
                                 )}
                           </span>
                           <p className="text-xs text-gray-500 mt-1">
@@ -613,12 +613,12 @@ const OrderDetail = () => {
                                   orderDetail.order?.listCartItem
                                 ) *
                                   parseFloat(
-                                    orderDetail.coupon.discount_value
+                                    orderDetail.coupon.discount_value ? orderDetail.coupon.discount_value : 0
                                   )) /
                                   100
                               )
                             : formatCurrency(
-                                parseFloat(orderDetail.coupon.discount_value)
+                                parseFloat( orderDetail.coupon.discount_value ? orderDetail.coupon.discount_value : 0)
                               )}
                         </span>
                       </div>
